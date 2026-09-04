@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="gas-run-shim.js"></script>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PSOSK - Login / Signup</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+    body{background:linear-gradient(135deg,#1A73E8,#0d47a1);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+    .container{background:#fff;border-radius:16px;padding:40px;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+    .container h1{color:#1A73E8;font-size:24px;text-align:center;margin-bottom:5px}
+    .container .subtitle{text-align:center;color:#5f6368;font-size:14px;margin-bottom:25px}
+
+    .logo-wrapper{display:flex;justify-content:center;margin-bottom:10px}
+    .logo-box{width:80px;height:80px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .logo-box img{width:100%;height:100%;object-fit:contain}
+    .logo-box svg{width:100%;height:100%}
+
+    .tabs{display:flex;border-bottom:2px solid #e8eaed;margin-bottom:20px}
+    .tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-weight:600;color:#5f6368;border-bottom:3px solid transparent;transition:all 0.3s}
+    .tab.active{color:#1A73E8;border-bottom-color:#1A73E8}
+
+    .form-group{margin-bottom:12px}
+    .form-group label{display:block;font-size:13px;font-weight:600;color:#5f6368;margin-bottom:4px}
+    .form-group label .required{color:#EA4335}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:1px solid #dadce0;border-radius:8px;font-size:14px;transition:border-color 0.3s}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#1A73E8;box-shadow:0 0 0 2px rgba(26,115,232,0.2)}
+    .form-group textarea{resize:vertical;min-height:60px}
+
+    .btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:background 0.3s;margin-top:5px}
+    .btn-primary{background:#1A73E8;color:#fff}
+    .btn-primary:hover{background:#1557b0}
+    .btn-success{background:#34A853;color:#fff}
+    .btn-success:hover{background:#2d9249}
+    .btn-outline{background:transparent;color:#1A73E8;border:1px solid #1A73E8}
+    .btn-outline:hover{background:#1A73E8;color:#fff}
+    .btn:disabled{opacity:0.7;cursor:not-allowed}
+    .btn-sm{padding:8px 16px;width:auto;font-size:13px}
+
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:16px 32px;border-radius:10px;color:#fff;font-size:16px;font-weight:600;z-index:9999;display:none;text-align:center;min-width:300px;max-width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+    .toast.success{background:#34A853}
+    .toast.error{background:#EA4335}
+
+    .form-section{display:none}
+    .form-section.active{display:block}
+
+    .footer{margin-top:20px;text-align:center;font-size:12px;color:#9e9e9e}
+    .forgot-link{text-align:right;margin-top:5px;font-size:13px}
+    .forgot-link a{color:#1A73E8;text-decoration:none;cursor:pointer}
+    .forgot-link a:hover{text-decoration:underline}
+    .back-link{text-align:center;margin-top:15px}
+    .back-link a{color:#1A73E8;text-decoration:none;cursor:pointer}
+    .back-link a:hover{text-decoration:underline}
+
+    .info-box{background:#e8f0fe;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:13px;color:#1A73E8;text-align:center;line-height:1.5}
+    .info-box .highlight{font-weight:700;background:#fff;padding:2px 8px;border-radius:4px}
+    .step-2-box{background:#fef7e0;padding:12px 15px;border-radius:8px;margin-bottom:15px;font-size:13px;color:#b06000;text-align:center;line-height:1.5}
+    .step-2-box .highlight{font-weight:700;background:#fff;padding:2px 8px;border-radius:4px}
+
+    .success-msg{color:#1e7e34;font-weight:600;padding:8px;background:#e6f4ea;border-radius:6px;margin-bottom:10px;text-align:center}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    html{overflow-x:hidden}
+    @media(max-width:600px){
+      body{padding:12px}
+      .container{padding:28px 20px}
+    }
+    @media(max-width:480px){
+      .container{padding:24px 16px;border-radius:12px}
+      .logo-box{width:64px;height:64px}
+      .form-grid{grid-template-columns:1fr}
+      .container h1{font-size:20px}
+      .container .subtitle{font-size:13px}
+      .tab{padding:9px 6px;font-size:13px}
+      .btn{font-size:14px;padding:11px}
+      .toast{min-width:0;width:90%;padding:12px 18px;font-size:14px}
+      .guide-modal{height:90vh;border-radius:10px}
+      .guide-modal-header{padding:12px 14px;font-size:14px}
+    }
+    @media(max-width:360px){
+      .container{padding:20px 14px}
+      .logo-box{width:56px;height:56px}
+      .tabs{gap:0}
+    }
+
+    .guide-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:10000;align-items:center;justify-content:center;padding:20px}
+    .guide-modal-overlay.show{display:flex}
+    .guide-modal{background:#fff;border-radius:12px;width:100%;max-width:700px;height:85vh;max-height:800px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+    .guide-modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#1A73E8;color:#fff;font-weight:700;font-size:15px}
+    .guide-modal-close{cursor:pointer;font-size:18px;line-height:1;padding:2px 6px;border-radius:4px}
+    .guide-modal-close:hover{background:rgba(255,255,255,0.2)}
+    .guide-modal-body{flex:1;background:#525659}
+    .guide-modal-body iframe{width:100%;height:100%;border:none}
+    .guide-modal-footer{padding:10px 18px;text-align:center;border-top:1px solid #e8eaed}
+    .guide-modal-footer a{color:#1A73E8;font-size:13px;font-weight:600;text-decoration:none}
+    .guide-modal-footer a:hover{text-decoration:underline}
+
+    .education-checkbox-group{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;width:100%}
+    @media(max-width:768px){.education-checkbox-group{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:480px){.education-checkbox-group{grid-template-columns:1fr}}
+    .education-checkbox-group label{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 10px;background:#f8f9fa;border-radius:4px;border:1px solid #e8eaed;transition:all 0.2s;user-select:none;overflow:hidden}
+    .education-checkbox-group label:hover{background:#e8f0fe;border-color:#1A73E8}
+    .education-checkbox-group label.checked{background:#e8f0fe;border-color:#1A73E8}
+    .education-checkbox-group input[type="checkbox"]{width:14px;height:14px;accent-color:#1A73E8;flex-shrink:0;cursor:pointer}
+    .education-tag{background:#e8f0fe;color:#1A73E8;padding:4px 12px;border-radius:16px;font-size:12px;display:inline-flex;align-items:center;gap:6px;border:1px solid #dadce0}
+    .education-tag .remove{color:#EA4335;cursor:pointer;font-weight:bold;font-size:14px;line-height:1;margin-left:2px}
+    .education-tag .remove:hover{color:#c62828}
+    #customEducationInputs{margin-top:10px;padding:12px;background:#f8f9fa;border-radius:8px;border:1px solid #e8eaed}
+    .education-input-group{margin-bottom:8px}
+    .education-input-group:last-child{margin-bottom:0}
+    .education-input-group label{font-size:12px;color:#5f6368;display:block;margin-bottom:2px}
+    .education-input-group input{padding:6px 10px;border:1px solid #dadce0;border-radius:4px;font-size:13px;width:100%}
+    .education-input-group input:focus{outline:none;border-color:#1A73E8}
+    #selectedEducationTags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:30px}
+    
+    /* ===== Center Tag Styles ===== */
+    .center-tag {
+      background: #e8f0fe;
+      color: #1A73E8;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #dadce0;
+    }
+    .center-tag .remove {
+      color: #EA4335;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 1;
+      margin-left: 2px;
+    }
+    .center-tag .remove:hover {
+      color: #c62828;
+    }
+
+    @media(max-width:480px){
+  #signupStep1_5 .btn-outline {
+    width: 100%;
+    justify-content: center;
+  }
+  #verifyCodeForm .btn {
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <div id="guideModalOverlay" class="guide-modal-overlay">
+    <div class="guide-modal">
+      <div class="guide-modal-header">
+        <span>📄 PSOSK ইউজার গাইড</span>
+        <span class="guide-modal-close" onclick="closeGuideModal()">✕</span>
+      </div>
+      <div class="guide-modal-body">
+        <iframe id="guideModalIframe" src="" frameborder="0"></iframe>
+      </div>
+      <div class="guide-modal-footer">
+        <a id="guideModalOpenLink" href="#" target="_blank" rel="noopener noreferrer">নতুন ট্যাবে খুলুন / ডাউনলোড করুন ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- ===================== LOGO ===================== -->
+    <div class="logo-wrapper">
+      <div class="logo-box" id="logoBox">
+        <img id="logoImage" src="" alt="PSOSK Logo" style="width:100%;height:100%;object-fit:contain;">
+      </div>
+    </div>
+
+    <h1>PSOSK</h1>
+    <p class="subtitle">প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র</p>
+
+    <div id="guideBtnWrap" style="display:none;text-align:center;margin-bottom:15px;">
+      <button type="button" class="btn btn-outline" style="width:auto;padding:8px 18px;margin-top:0;" onclick="openGuideModal()">📄 ইউজার গাইড দেখুন</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('login')">🔑 লগইন</div>
+      <div class="tab" onclick="switchTab('signup')">📝 নিবন্ধন</div>
+    </div>
+
+    <!-- ===================== LOGIN SECTION ===================== -->
+    <div id="loginSection" class="form-section active">
+      <form id="loginForm" onsubmit="loginUser(event)">
+        <div class="form-group">
+          <label>ই-মেইল <span class="required">*</span></label>
+          <input type="email" id="loginEmail" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>পাসওয়ার্ড <span class="required">*</span></label>
+          <input type="password" id="loginPassword" placeholder="পাসওয়ার্ড দিন" required>
+        </div>
+        <div class="forgot-link">
+          <a onclick="showForgot()">পাসওয়ার্ড ভুলে গেছেন?</a>
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">🔑 লগইন করুন</button>
+      </form>
+    </div>
+
+    <!-- ===================== SIGNUP SECTION (STEP 1 + STEP 2) ===================== -->
+    <div id="signupSection" class="form-section">
+      <!-- Step 1: Basic Info -->
+      <div id="signupStep1">
+        <div class="info-box" style="background:#e8f0fe;margin-bottom:15px;">
+          📝 ধাপ ১/২: মৌলিক তথ্য দিন। পরবর্তী ধাপে বিস্তারিত প্রোফাইল পূরণ করুন।
+        </div>
+        <form id="signupForm" onsubmit="signupStep1(event)">
+          <div class="form-group">
+            <label>ব্যবহারকারীর নাম (Nickname) <span class="required">*</span></label>
+            <input type="text" id="signupNickname" placeholder="যেমন: robi123" required>
+          </div>
+          <div class="form-group">
+            <label>ই-মেইল <span class="required">*</span></label>
+            <input type="email" id="signupEmail" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label>পাসওয়ার্ড <span class="required">*</span></label>
+            <input type="password" id="signupPassword" placeholder="৬ অক্ষরের বেশি" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label>পাসওয়ার্ড নিশ্চিত করুন <span class="required">*</span></label>
+            <input type="password" id="signupConfirm" placeholder="আবার পাসওয়ার্ড দিন" required>
+          </div>
+          <button type="submit" class="btn btn-success" id="signupBtn">📝 পরবর্তী ধাপ →</button>
+        </form>
+      </div>
+
+<!-- Step 1.5: Email Verification -->
+<div id="signupStep1_5" style="display:none;">
+  <div class="step-2-box">
+    📧 আপনার ই-মেইলে একটি <span class="highlight">৬-সংখ্যার ভেরিফিকেশন কোড</span> পাঠানো হয়েছে।<br>
+    কোডটি বসিয়ে সাইনআপ সম্পূর্ণ করুন।
+  </div>
+  <form id="verifyCodeForm" onsubmit="verifySignupCodeStep(event)">
+    <div class="form-group">
+      <label>ভেরিফিকেশন কোড <span class="required">*</span></label>
+      <input type="text" id="signupVerifyCode" placeholder="৬-সংখ্যার কোড (যেমন: 123456)" required maxlength="6" inputmode="numeric">
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
+      <button type="submit" class="btn btn-success" id="verifyCodeBtn"><i class="fas fa-check"></i> কোড যাচাই করুন</button>
+      <button type="button" class="btn btn-outline" onclick="resendSignupCode()"><i class="fas fa-redo"></i> নতুন কোড পাঠান</button>
+    </div>
+    <div id="verifyMsg" style="margin-top:12px; font-size:13px; font-weight:600;"></div>
+  </form>
+  <div style="margin-top:15px;">
+    <button type="button" class="btn btn-outline" onclick="signupGoBackStep1()"><i class="fas fa-arrow-left"></i> আগের ধাপে ফিরুন</button>
+  </div>
+</div>
+
+<!-- Step 1.5: Email Verification -->
+<div id="signupStep1_5" style="display:none;">
+  <div class="step-2-box">
+    📧 আপনার ই-মেইলে একটি <span class="highlight">৬-সংখ্যার ভেরিফিকেশন কোড</span> পাঠানো হয়েছে।<br>
+    কোডটি বসিয়ে সাইনআপ সম্পূর্ণ করুন।
+  </div>
+  <form id="verifyCodeForm" onsubmit="verifySignupCodeStep(event)">
+    <div class="form-group">
+      <label>ভেরিফিকেশন কোড <span class="required">*</span></label>
+      <input type="text" id="signupVerifyCode" placeholder="৬-সংখ্যার কোড (যেমন: 123456)" required maxlength="6" inputmode="numeric">
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
+      <button type="submit" class="btn btn-success" id="verifyCodeBtn"><i class="fas fa-check"></i> কোড যাচাই করুন</button>
+      <button type="button" class="btn btn-outline" onclick="resendSignupCode()"><i class="fas fa-redo"></i> নতুন কোড পাঠান</button>
+    </div>
+    <div id="verifyMsg" style="margin-top:12px; font-size:13px; font-weight:600;"></div>
+  </form>
+  <div style="margin-top:15px;">
+    <button type="button" class="btn btn-outline" onclick="signupGoBackStep1()"><i class="fas fa-arrow-left"></i> আগের ধাপে ফিরুন</button>
+  </div>
+</div>
+
+      <!-- Step 2: Detailed Profile -->
+      <div id="signupStep2" style="display:none;">
+        <div class="step-2-box">
+          ✅ ধাপ ২/২: আপনার সম্পূর্ণ প্রোফাইল পূরণ করুন। <span class="highlight">*</span> চিহ্নিত ফিল্ড আবশ্যক।
+        </div>
+        <form id="signupProfileForm" onsubmit="signupStep2(event)">
+          <input type="hidden" id="signup_temp_email" value="">
+          <input type="hidden" id="signup_temp_nickname" value="">
+          <input type="hidden" id="signup_temp_password" value="">
+          
+          <div class="form-grid">
+            <!-- বাংলা নাম -->
+            <div class="form-group">
+              <label>পূর্ণ নাম (বাংলা) <span class="required">*</span></label>
+              <input type="text" id="f_name_bn" placeholder="বাংলায় লিখুন" required>
+            </div>
+            <!-- ইংরেজি নাম -->
+            <div class="form-group">
+              <label>পূর্ণ নাম (ইংরেজি) <span class="required">*</span></label>
+              <input type="text" id="f_name_en" placeholder="English" required>
+            </div>
+            <!-- পিতার নাম -->
+            <div class="form-group">
+              <label>পিতার নাম <span class="required">*</span></label>
+              <input type="text" id="f_father" placeholder="বাংলায় লিখুন" required>
+            </div>
+            <!-- মাতার নাম -->
+            <div class="form-group">
+              <label>মাতার নাম <span class="required">*</span></label>
+              <input type="text" id="f_mother" placeholder="বাংলায় লিখুন" required>
+            </div>
+            <!-- জন্ম তারিখ -->
+            <div class="form-group">
+              <label>জন্ম তারিখ <span class="required">*</span></label>
+              <input type="date" id="f_dob" required>
+            </div>
+            <!-- NID -->
+            <div class="form-group">
+              <label>NID <span class="required">*</span></label>
+              <input type="text" id="f_nid" placeholder="ইংরেজি সংখ্যা" required>
+            </div>
+            <!-- লিঙ্গ -->
+            <div class="form-group">
+              <label>লিঙ্গ <span class="required">*</span></label>
+              <select id="f_gender" required>
+                <option value="">নির্বাচন</option>
+                <option value="পুরুষ">পুরুষ</option>
+                <option value="মহিলা">মহিলা</option>
+                <option value="অন্যান্য">অন্যান্য</option>
+              </select>
+            </div>
+            <!-- ধর্ম -->
+            <div class="form-group">
+              <label>ধর্ম <span class="required">*</span></label>
+              <select id="f_religion" required>
+                <option value="">নির্বাচন</option>
+                <option value="ইসলাম">ইসলাম</option>
+                <option value="হিন্দু">হিন্দু</option>
+                <option value="খ্রিস্টান">খ্রিস্টান</option>
+                <option value="বৌদ্ধ">বৌদ্ধ</option>
+                <option value="অন্যান্য">অন্যান্য</option>
+              </select>
+            </div>
+            <!-- রক্তের গ্রুপ (বাধ্যতামূলক) -->
+            <div class="form-group">
+              <label>রক্তের গ্রুপ <span class="required">*</span></label>
+              <select id="f_blood" required>
+                <option value="">নির্বাচন</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+            <!-- মোবাইল -->
+            <div class="form-group">
+              <label>মোবাইল <span class="required">*</span></label>
+              <input type="text" id="f_mobile" placeholder="01XXXXXXX" required>
+            </div>
+            <!-- ই-মেইল (pre-filled) -->
+            <div class="form-group">
+              <label>ই-মেইল <span class="required">*</span></label>
+              <input type="email" id="f_email" readonly style="background:#f5f5f5;color:#333;">
+            </div>
+            <!-- হোয়াটসঅ্যাপ -->
+            <div class="form-group">
+              <label>হোয়াটসঅ্যাপ</label>
+              <input type="text" id="f_whatsapp" placeholder="01XXXXXXX">
+            </div>
+            <!-- স্থায়ী ঠিকানা -->
+            <div class="form-group" style="grid-column:1/2;">
+              <label>স্থায়ী ঠিকানা <span class="required">*</span></label>
+              <textarea id="f_permanent" placeholder="বাংলায় লিখুন" required></textarea>
+            </div>
+            <!-- বর্তমান ঠিকানা -->
+            <div class="form-group" style="grid-column:2/3;">
+              <label>বর্তমান ঠিকানা <span class="required">*</span></label>
+              <textarea id="f_present" placeholder="বাংলায় লিখুন" required></textarea>
+            </div>
+            <!-- জেলা -->
+            <div class="form-group">
+              <label>নিজ জেলা <span class="required">*</span></label>
+              <select id="f_district" required onchange="onFormDistrictChange()">
+                <option value="">নির্বাচন</option>
+              </select>
+            </div>
+            <!-- উপজেলা -->
+            <div class="form-group">
+              <label>নিজ উপজেলা</label>
+              <input type="text" id="f_upazila" placeholder="বাংলায় লিখুন">
+            </div>
+            <!-- বিভাগ -->
+            <div class="form-group">
+              <label>বিভাগ <span class="required">*</span></label>
+              <select id="f_division" required>
+                <option value="">নির্বাচন</option>
+              </select>
+            </div>
+            <!-- পদবী -->
+            <div class="form-group">
+              <label>পদবী <span class="required">*</span></label>
+              <select id="f_designation" required>
+                <option value="">নির্বাচন</option>
+              </select>
+            </div>
+            
+            <!-- ===================== কর্মস্থল ===================== -->
+            <div class="form-group">
+              <label>কর্মস্থল <span class="required">*</span></label>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <select id="f_center" required style="flex:1; min-width:200px;" onchange="onCenterSelectChange()">
+                  <option value="">-- নির্বাচন করুন --</option>
+                </select>
+                <button type="button" class="btn btn-outline btn-sm" style="width:auto; margin-top:0; white-space:nowrap;" onclick="showCenterOtherInput()">
+                  <i class="fas fa-plus"></i> অন্যান্য
+                </button>
+              </div>
+              
+              <!-- ===== ইনপুট বক্স ===== -->
+              <div id="centerOtherInput" style="display:none; margin-top:8px;">
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <input type="text" id="f_center_other" placeholder="কর্মস্থলের নাম লিখুন (যেমন: মেহেরপুর)" style="flex:1; padding:8px 12px; border:1px solid #dadce0; border-radius:6px; font-size:14px;">
+                  <button type="button" class="btn btn-primary btn-sm" onclick="addCustomCenter()" style="white-space:nowrap;">
+                    <i class="fas fa-plus"></i> Add
+                  </button>
+                </div>
+              </div>
+              
+              <!-- ===== যোগ করা নামের তালিকা ===== -->
+              <div id="customCentersList" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;"></div>
+            </div>
+            <!-- ===================== কর্মস্থল শেষ ===================== -->
+            
+            <!-- যোগদান তারিখ -->
+            <div class="form-group">
+              <label>যোগদান তারিখ <span class="required">*</span></label>
+              <input type="date" id="f_joining_date" required>
+            </div>
+            <!-- বর্তমান কেন্দ্র যোগদান -->
+            <div class="form-group">
+              <label>বর্তমান কেন্দ্র যোগদান <span class="required">*</span></label>
+              <input type="date" id="f_center_join" required>
+            </div>
+            <!-- চাকরির ধরন -->
+            <div class="form-group">
+              <label>চাকরির ধরন <span class="required">*</span></label>
+              <select id="f_emp_type" required>
+                <option value="">নির্বাচন</option>
+                <option value="স্থায়ী">স্থায়ী</option>
+                <option value="অস্থায়ী">অস্থায়ী</option>
+                <option value="চুক্তিভিত্তিক">চুক্তিভিত্তিক</option>
+              </select>
+            </div>
+            <!-- অবস্থা -->
+            <div class="form-group">
+              <label>অবস্থা <span class="required">*</span></label>
+              <select id="f_status" required>
+                <option value="">নির্বাচন</option>
+                <option value="কর্মরত">কর্মরত</option>
+                <option value="বদলি">বদলি</option>
+                <option value="ছুটিতে">ছুটিতে</option>
+                <option value="অব্যাহতি">অব্যাহতি</option>
+                <option value="অবসর">অবসর</option>
+                <option value="মৃত">মৃত</option>
+              </select>
+            </div>
+            <!-- কর্মস্থল পরিবর্তন ইতিহাস -->
+            <div class="form-group" style="grid-column:1/3;">
+              <label>কর্মস্থল পরিবর্তন ইতিহাস</label>
+              <textarea id="f_history" placeholder="বাংলায় লিখুন"></textarea>
+            </div>
+            <!-- শিক্ষাগত যোগ্যতা -->
+            <div class="form-group" style="grid-column:1/3;">
+              <label>শিক্ষাগত যোগ্যতা <span class="required">*</span></label>
+              <div class="education-checkbox-group" id="educationCheckboxGroup">
+                <label><input type="checkbox" value="SSC/Equivalent"> SSC/Equivalent</label>
+                <label><input type="checkbox" value="HSC/Equivalent"> HSC/Equivalent</label>
+                <label><input type="checkbox" value="Diploma in Physiotherapy"> Diploma in Physiotherapy</label>
+                <label><input type="checkbox" value="BSc in Physiotherapy"> BSc in Physiotherapy</label>
+                <label><input type="checkbox" value="MSc in Physiotherapy"> MSc in Physiotherapy</label>
+                <label><input type="checkbox" value="BSc in" data-has-input="true"> BSc in</label>
+                <label><input type="checkbox" value="MSc in" data-has-input="true"> MSc in</label>
+                <label><input type="checkbox" value="MBBS"> MBBS</label>
+                <label><input type="checkbox" value="Others" data-has-input="true"> Others</label>
+              </div>
+              <div id="customEducationInputs" style="display:none;margin-top:10px;padding:12px;background:#f8f9fa;border-radius:8px;border:1px solid #e8eaed;">
+                <div class="education-input-group" data-type="BSc in" style="display:none;">
+                  <label>BSc in সাবজেক্ট লিখুন:</label>
+                  <input type="text" id="f_bsc_subject" placeholder="যেমন: Nursing, CSE, Physics">
+                </div>
+                <div class="education-input-group" data-type="MSc in" style="display:none;">
+                  <label>MSc in সাবজেক্ট লিখুন:</label>
+                  <input type="text" id="f_msc_subject" placeholder="যেমন: Data Science, Economics">
+                </div>
+                <div class="education-input-group" data-type="Others" style="display:none;">
+                  <label>আপনার যোগ্যতা লিখুন:</label>
+                  <input type="text" id="f_other_education" placeholder="যেমন: এলএলবি, এমএ, পিএইচডি">
+                </div>
+              </div>
+              <div id="selectedEducationTags"></div>
+              <input type="hidden" id="f_education" value="">
+            </div>
+            <!-- প্রশিক্ষণ বিবরণ -->
+            <div class="form-group">
+              <label>প্রশিক্ষণ বিবরণ</label>
+              <textarea id="f_training_details" placeholder="বাংলায় লিখুন"></textarea>
+            </div>
+            <!-- প্রশিক্ষণ বছর -->
+            <div class="form-group">
+              <label>প্রশিক্ষণ বছর</label>
+              <input type="text" id="f_training_year" placeholder="যেমন: 2020-2022">
+            </div>
+            <!-- বিশেষায়ন -->
+            <div class="form-group">
+              <label>বিশেষায়ন</label>
+              <input type="text" id="f_specialization" placeholder="Ortho, Neuro, Pediatric">
+            </div>
+            <!-- সদস্য অবস্থা -->
+            <div class="form-group">
+              <label>সদস্য অবস্থা <span class="required">*</span></label>
+              <select id="f_membership_status" required>
+                <option value="">নির্বাচন</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Pending">Pending</option>
+                <option value="Suspended">Suspended</option>
+              </select>
+            </div>
+            <!-- ফি প্রদান -->
+            <div class="form-group">
+              <label>ফি প্রদান <span class="required">*</span></label>
+              <select id="f_fee_status" required>
+                <option value="">নির্বাচন</option>
+                <option value="Paid">Paid</option>
+                <option value="Unpaid">Unpaid</option>
+                <option value="Due">Due</option>
+                <option value="Exempted">Exempted</option>
+              </select>
+            </div>
+            <!-- অ্যাসোসিয়েশন পদ -->
+            <div class="form-group">
+              <label>অ্যাসোসিয়েশন পদ</label>
+              <input type="text" id="f_position" placeholder="বাংলায় লিখুন">
+            </div>
+            <!-- প্রোফাইল ছবি -->
+            <div class="form-group">
+              <label>প্রোফাইল ছবি</label>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <img id="f_photo_preview" src="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid #dadce0;display:none;">
+                <button type="button" class="btn btn-outline btn-sm" style="width:auto;margin-top:0;" onclick="document.getElementById('f_photo_file').click()"><i class="fas fa-upload"></i> আপলোড</button>
+                <input type="file" id="f_photo_file" accept="image/jpeg,image/png" style="display:none;" onchange="handleFormPhotoSelected(event)">
+              </div>
+              <input type="text" id="f_photo" placeholder="অথবা Google Drive লিংক দিন" style="margin-top:8px;">
+            </div>
+            <!-- ডকুমেন্ট লিংক -->
+            <div class="form-group">
+              <label>ডকুমেন্ট লিংক</label>
+              <input type="text" id="f_doc" placeholder="Google Drive লিংক">
+            </div>
+            <!-- বিশেষ মন্তব্য -->
+            <div class="form-group" style="grid-column:1/3;">
+              <label>বিশেষ মন্তব্য</label>
+              <textarea id="f_remarks" placeholder="বাংলায় লিখুন"></textarea>
+            </div>
+          </div>
+          
+          <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+            <button type="submit" class="btn btn-success" id="signupProfileBtn"><i class="fas fa-save"></i> নিবন্ধন সম্পূর্ণ করুন</button>
+            <button type="button" class="btn btn-outline" onclick="signupGoBackStep1()"><i class="fas fa-arrow-left"></i> আগের ধাপে ফিরুন</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===================== FORGOT PASSWORD SECTION ===================== -->
+    <div id="forgotSection" style="display:none;">
+      <div class="info-box">
+        📧 আপনার ই-মেইলে <span class="highlight">৬-সংখ্যার রিসেট কোড</span> পাঠানো হবে।<br>
+        কোড দিয়ে নতুন পাসওয়ার্ড সেট করুন।
+      </div>
+
+      <form id="forgotStep1" onsubmit="sendResetCode(event)" style="display:block;">
+        <div class="form-group">
+          <label>ই-মেইল <span class="required">*</span></label>
+          <input type="email" id="forgotEmail" placeholder="your@email.com" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="sendCodeBtn">📧 রিসেট কোড পাঠান</button>
+        <div style="text-align:center;margin-top:10px;font-size:13px;">
+          <span id="codeSentStatus"></span>
+        </div>
+      </form>
+
+      <form id="forgotStep2" onsubmit="resetPasswordWithCode(event)" style="display:none;margin-top:15px;border-top:2px solid #e8eaed;padding-top:20px;">
+        <div class="step-2-box">
+          ✉️ আপনার ই-মেইলে পাঠানো <span class="highlight">৬-সংখ্যার কোড</span> দিন এবং নতুন পাসওয়ার্ড সেট করুন।
+        </div>
+        <div class="form-group">
+          <label>ই-মেইল <span class="required">*</span></label>
+          <input type="email" id="resetEmail" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>রিসেট কোড <span class="required">*</span></label>
+          <input type="text" id="resetCode" placeholder="৬-সংখ্যার কোড (যেমন: 123456)" required maxlength="6" inputmode="numeric" pattern="[0-9]{6}">
+          <div style="font-size:11px;color:#5f6368;margin-top:3px;">📩 আপনার ই-মেইলে প্রাপ্ত ৬-সংখ্যার কোড দিন</div>
+        </div>
+        <div class="form-group">
+          <label>নতুন পাসওয়ার্ড <span class="required">*</span></label>
+          <input type="password" id="newPassword" placeholder="৬ অক্ষরের বেশি" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label>নতুন পাসওয়ার্ড নিশ্চিত করুন <span class="required">*</span></label>
+          <input type="password" id="confirmPassword" placeholder="আবার পাসওয়ার্ড দিন" required>
+        </div>
+        <button type="submit" class="btn btn-success" id="resetBtn">🔑 পাসওয়ার্ড পরিবর্তন করুন</button>
+        <div style="text-align:center;margin-top:10px;font-size:13px;">
+          <span id="resetStatus"></span>
+        </div>
+      </form>
+
+      <div class="back-link">
+        <a onclick="hideForgot()">← লগইন পেজে ফিরে যান</a>
+      </div>
+    </div>
+
+    <div class="footer">&copy; 2026 PSOSK - প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র</div>
+  </div>
+
+  <script>
+    // ===================== CONFIG: Google Drive Logo URL =====================
+    var LOGO_FILE_ID = '1pMM_NAAVUwh7yC97_Q9j4bnqF3b04zM5';
+    var LOGO_DRIVE_URL = 'https://drive.google.com/uc?export=view&id=' + LOGO_FILE_ID;
+    var LOGO_DRIVE_URL_ALT = 'https://lh3.googleusercontent.com/d/' + LOGO_FILE_ID + '=w500';
+
+    function loadLogo() {
+      var img = document.getElementById('logoImage');
+      if (!img) return;
+      img.src = LOGO_DRIVE_URL;
+      img.onerror = function() {
+        img.src = LOGO_DRIVE_URL_ALT;
+        img.onerror = function() {
+          var logoBox = document.getElementById('logoBox');
+          if (logoBox) logoBox.innerHTML = '<span style="font-size:28px;font-weight:700;color:#1A73E8;">PS</span>';
+        };
+      };
+    }
+
+    // ===================== USER GUIDE =====================
+    var guideSettings_ = null;
+
+    function loadGuideButton() {
+      google.script.run
+        .withSuccessHandler(function(settings) {
+          guideSettings_ = settings;
+          var wrap = document.getElementById('guideBtnWrap');
+          if (wrap) wrap.style.display = (settings && settings.hasGuide) ? 'block' : 'none';
+        })
+        .withFailureHandler(function() {})
+        .getSiteSettings();
+    }
+
+    function openGuideModal() {
+      if (!guideSettings_ || !guideSettings_.hasGuide) return;
+      document.getElementById('guideModalIframe').src = guideSettings_.guidePreviewUrl;
+      document.getElementById('guideModalOpenLink').href = guideSettings_.guideViewUrl;
+      document.getElementById('guideModalOverlay').classList.add('show');
+    }
+
+    function closeGuideModal() {
+      document.getElementById('guideModalOverlay').classList.remove('show');
+      document.getElementById('guideModalIframe').src = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var overlay = document.getElementById('guideModalOverlay');
+      if (overlay) overlay.addEventListener('click', function(e) { if (e.target === overlay) closeGuideModal(); });
+    });
+
+    // ===================== SWITCH TABS =====================
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
+      if (tab === 'login') {
+        document.querySelector('.tab:first-child').classList.add('active');
+        document.getElementById('loginSection').classList.add('active');
+        document.getElementById('forgotSection').style.display = 'none';
+      } else {
+        document.querySelector('.tab:last-child').classList.add('active');
+        document.getElementById('signupSection').classList.add('active');
+        document.getElementById('forgotSection').style.display = 'none';
+        document.getElementById('signupStep1').style.display = 'block';
+        document.getElementById('signupStep2').style.display = 'none';
+      }
+    }
+
+    // ===================== TOAST =====================
+    function showToast(msg, type) {
+      var toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = 'toast ' + type;
+      toast.style.display = 'block';
+      setTimeout(function() { toast.style.display = 'none'; }, 4000);
+    }
+
+    // ===================== FORGOT PASSWORD =====================
+    function showForgot() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('signupSection').style.display = 'none';
+      document.getElementById('forgotSection').style.display = 'block';
+      document.getElementById('forgotStep1').style.display = 'block';
+      document.getElementById('forgotStep2').style.display = 'none';
+      document.getElementById('codeSentStatus').textContent = '';
+      document.getElementById('codeSentStatus').className = '';
+      document.getElementById('resetStatus').textContent = '';
+      document.getElementById('resetStatus').className = '';
+    }
+
+    function hideForgot() {
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('signupSection').style.display = 'none';
+      document.getElementById('forgotSection').style.display = 'none';
+    }
+
+    function sendResetCode(e) {
+      e.preventDefault();
+      var email = document.getElementById('forgotEmail').value.trim();
+      var btn = document.getElementById('sendCodeBtn');
+      var status = document.getElementById('codeSentStatus');
+      if (!email) { showToast('❌ ই-মেইল দিন!', 'error'); return; }
+      btn.disabled = true;
+      btn.textContent = '⏳ পাঠানো হচ্ছে...';
+      status.textContent = '';
+      status.className = '';
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.textContent = '📧 রিসেট কোড পাঠান';
+          if (result.success) {
+            status.innerHTML = '✅ ' + result.message + '<br>📩 আপনার ই-মেইল চেক করুন।';
+            status.className = 'success-msg';
+            document.getElementById('forgotStep1').style.display = 'none';
+            document.getElementById('forgotStep2').style.display = 'block';
+            document.getElementById('resetEmail').value = email;
+            setTimeout(function() { document.getElementById('resetCode').focus(); }, 300);
+            showToast('✅ কোড পাঠানো হয়েছে! আপনার ই-মেইল চেক করুন।', 'success');
+          } else {
+            status.textContent = '❌ ' + result.error;
+            status.style.color = '#c62828';
+            showToast('❌ ' + result.error, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.textContent = '📧 রিসেট কোড পাঠান';
+          status.textContent = '❌ Error: ' + error;
+          status.style.color = '#c62828';
+          showToast('❌ Error: ' + error, 'error');
+        })
+        .forgotPassword({email: email});
+    }
+
+    function resetPasswordWithCode(e) {
+      e.preventDefault();
+      var email = document.getElementById('resetEmail').value.trim();
+      var code = document.getElementById('resetCode').value.trim();
+      var newPassword = document.getElementById('newPassword').value;
+      var confirmPassword = document.getElementById('confirmPassword').value;
+      var btn = document.getElementById('resetBtn');
+      var status = document.getElementById('resetStatus');
+      if (!email || !code || !newPassword) { showToast('❌ সব ফিল্ড পূরণ করুন!', 'error'); return; }
+      if (newPassword !== confirmPassword) { showToast('❌ পাসওয়ার্ড মিলছে না!', 'error'); return; }
+      if (newPassword.length < 6) { showToast('❌ পাসওয়ার্ড ৬ অক্ষরের বেশি হতে হবে!', 'error'); return; }
+      btn.disabled = true;
+      btn.textContent = '⏳ পরিবর্তন হচ্ছে...';
+      status.textContent = '';
+      status.className = '';
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.textContent = '🔑 পাসওয়ার্ড পরিবর্তন করুন';
+          if (result.success) {
+            status.innerHTML = '✅ ' + result.message;
+            status.className = 'success-msg';
+            showToast('✅ পাসওয়ার্ড পরিবর্তন করা হয়েছে! লগইন করুন।', 'success');
+            setTimeout(function() {
+              hideForgot();
+              document.getElementById('loginEmail').value = email;
+              document.getElementById('loginPassword').focus();
+            }, 1500);
+          } else {
+            status.textContent = '❌ ' + result.error;
+            status.style.color = '#c62828';
+            showToast('❌ ' + result.error, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.textContent = '🔑 পাসওয়ার্ড পরিবর্তন করুন';
+          status.textContent = '❌ Error: ' + error;
+          status.style.color = '#c62828';
+          showToast('❌ Error: ' + error, 'error');
+        })
+        .resetPassword({ email: email, code: code, newPassword: newPassword });
+    }
+
+    // ===================== LOGIN =====================
+    function loginUser(e) {
+      e.preventDefault();
+      var email = document.getElementById('loginEmail').value;
+      var password = document.getElementById('loginPassword').value;
+      var btn = document.getElementById('loginBtn');
+      btn.textContent = '⏳ লগইন হচ্ছে...';
+      btn.disabled = true;
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.textContent = '🔑 লগইন করুন';
+          btn.disabled = false;
+          if (result.success) {
+            showToast('✅ লগইন সফল!', 'success');
+            localStorage.setItem('userEmail', result.email);
+                        var target = 'Dashboard.html?email=' + encodeURIComponent(result.email);
+            try { window.top.location.href = target; } catch (navErr) {
+              console.warn('Auto-redirect blocked by sandbox:', navErr);
+            }
+            setTimeout(function() { showContinueLink_(target); }, 400);
+          } else {
+            showToast('❌ ' + result.error, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.textContent = '🔑 লগইন করুন';
+          btn.disabled = false;
+          showToast('❌ Error: ' + error, 'error');
+        })
+        .loginUser({email: email, password: password});
+    }
+
+    function showContinueLink_(url) {
+      var old = document.getElementById('continueLinkBox');
+      if (old) old.remove();
+      var box = document.getElementById('loginSection') || document.querySelector('.container');
+      var div = document.createElement('div');
+      div.id = 'continueLinkBox';
+      div.style.cssText = 'margin-top:15px;text-align:center;';
+      div.innerHTML = '<a href="' + url + '" target="_top" style="display:inline-block;background:#34A853;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(52,168,83,0.35);">✅ ড্যাশবোর্ডে যেতে এখানে ক্লিক করুন</a>';
+      box.appendChild(div);
+    }
+
+    // ===================== SIGNUP: TWO-STEP =====================
+
+    function signupStep1(e) {
+  e.preventDefault();
+  var nickname = document.getElementById('signupNickname').value.trim();
+  var email = document.getElementById('signupEmail').value.trim();
+  var password = document.getElementById('signupPassword').value;
+  var confirm = document.getElementById('signupConfirm').value;
+
+  if (!nickname || !email || !password || !confirm) {
+    showToast('❌ সব ফিল্ড পূরণ করুন!', 'error');
+    return;
+  }
+  if (password !== confirm) {
+    showToast('❌ পাসওয়ার্ড মিলছে না!', 'error');
+    return;
+  }
+  if (password.length < 6) {
+    showToast('❌ পাসওয়ার্ড ৬ অক্ষরের বেশি হতে হবে!', 'error');
+    return;
+  }
+  if (!email.includes('@') || !email.includes('.')) {
+    showToast('❌ সঠিক ই-মেইল দিন!', 'error');
+    return;
+  }
+
+  var btn = document.getElementById('signupBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ চেক করা হচ্ছে...';
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      btn.disabled = false;
+      btn.textContent = '📝 পরবর্তী ধাপ →';
+      if (result && result.exists) {
+        showToast('❌ এই ই-মেইল আগে থেকে নিবন্ধিত!', 'error');
+        return;
+      }
+      // কোড পাঠান
+      sendVerificationCode(email);
+    })
+    .withFailureHandler(function(error) {
+      btn.disabled = false;
+      btn.textContent = '📝 পরবর্তী ধাপ →';
+      showToast('❌ Error: ' + error, 'error');
+    })
+    .checkEmailExists({ email: email });
+}
+
+function sendVerificationCode(email) {
+  var btn = document.getElementById('signupBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ কোড পাঠানো হচ্ছে...';
+  google.script.run
+    .withSuccessHandler(function(result) {
+      btn.disabled = false;
+      btn.textContent = '📝 পরবর্তী ধাপ →';
+      if (result && result.success) {
+        showToast(result.message, 'success');
+        document.getElementById('signup_temp_email').value = email;
+        document.getElementById('signup_temp_nickname').value = document.getElementById('signupNickname').value.trim();
+        document.getElementById('signup_temp_password').value = document.getElementById('signupPassword').value;
+        document.getElementById('signupStep1').style.display = 'none';
+        document.getElementById('signupStep1_5').style.display = 'block';
+        document.getElementById('signupVerifyCode').value = '';
+        document.getElementById('verifyMsg').textContent = '';
+      } else {
+        showToast('❌ ' + (result ? result.error : 'কোড পাঠানো ব্যর্থ'), 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      btn.disabled = false;
+      btn.textContent = '📝 পরবর্তী ধাপ →';
+      showToast('❌ Error: ' + error, 'error');
+    })
+    .sendSignupVerificationCode(email);
+}
+
+function verifySignupCodeStep(e) {
+  e.preventDefault();
+  var email = document.getElementById('signup_temp_email').value;
+  var code = document.getElementById('signupVerifyCode').value.trim();
+  var msg = document.getElementById('verifyMsg');
+  var btn = document.getElementById('verifyCodeBtn');
+  
+  if (!email || !code) {
+    msg.innerHTML = '❌ ই-মেইল ও কোড দিন!';
+    msg.style.color = '#c62828';
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যাচাই হচ্ছে...';
+  msg.innerHTML = '';
+  
+  google.script.run
+    .withSuccessHandler(function(result) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> কোড যাচাই করুন';
+      
+      console.log('🔍 verifySignupCode result:', result);
+      
+      if (result && result.success) {
+        msg.innerHTML = '✅ ' + result.message;
+        msg.style.color = '#1e7e34';
+        msg.style.background = '#e6f4ea';
+        msg.style.padding = '10px';
+        msg.style.borderRadius = '6px';
+        
+        // ===== স্টেপ ২ দেখান =====
+        document.getElementById('signupStep1_5').style.display = 'none';
+        document.getElementById('signupStep2').style.display = 'block';
+        document.getElementById('f_email').value = email;
+        
+        // প্রয়োজনীয় ডেটা লোড করুন
+        loadDistrictsForSignup();
+        loadDivisionsForSignup();
+        loadDesignationsForSignup();
+        loadServiceCenters();
+        
+        showToast('✅ কোড সঠিক! এখন আপনার প্রোফাইল পূরণ করুন।', 'success');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        msg.innerHTML = '❌ ' + (result ? result.error : 'কোড মেলেনি');
+        msg.style.color = '#c62828';
+        msg.style.background = '#fce8e6';
+        msg.style.padding = '10px';
+        msg.style.borderRadius = '6px';
+        showToast('❌ ' + (result ? result.error : 'ভুল কোড, আবার চেষ্টা করুন।'), 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> কোড যাচাই করুন';
+      msg.innerHTML = '❌ Error: ' + error;
+      msg.style.color = '#c62828';
+      msg.style.background = '#fce8e6';
+      msg.style.padding = '10px';
+      msg.style.borderRadius = '6px';
+      showToast('❌ Error: ' + error, 'error');
+    })
+    .verifySignupCode(email, code);
+}
+
+function resendSignupCode() {
+  var email = document.getElementById('signup_temp_email').value;
+  if (!email) {
+    showToast('❌ ই-মেইল পাওয়া যায়নি! আবার স্টেপ ১ থেকে শুরু করুন।', 'error');
+    return;
+  }
+  
+  var btn = document.querySelector('#verifyCodeForm .btn-outline');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পাঠানো হচ্ছে...';
+  
+  google.script.run
+    .withSuccessHandler(function(result) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-redo"></i> নতুন কোড পাঠান';
+      if (result && result.success) {
+        showToast('✅ নতুন কোড ই-মেইলে পাঠানো হয়েছে।', 'success');
+        document.getElementById('signupVerifyCode').value = '';
+        document.getElementById('verifyMsg').innerHTML = '';
+        document.getElementById('verifyMsg').style.background = 'transparent';
+        document.getElementById('verifyMsg').style.padding = '0';
+      } else {
+        showToast('❌ ' + (result ? result.error : 'পাঠানো ব্যর্থ'), 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-redo"></i> নতুন কোড পাঠান';
+      showToast('❌ Error: ' + error, 'error');
+    })
+    .sendSignupVerificationCode(email);
+}
+
+function signupGoBackStep1() {
+  document.getElementById('signupStep2').style.display = 'none';
+  document.getElementById('signupStep1_5').style.display = 'none';
+  document.getElementById('signupStep1').style.display = 'block';
+  document.getElementById('signupVerifyCode').value = '';
+  document.getElementById('verifyMsg').innerHTML = '';
+  document.getElementById('verifyMsg').style.background = 'transparent';
+  document.getElementById('verifyMsg').style.padding = '0';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+    function signupStep2(e) {
+  e.preventDefault();
+  
+  var centerShort = getCenterValue();
+  if (centerShort === '') {
+    showToast('❌ দয়া করে একটি কর্মস্থল নির্বাচন করুন অথবা "অন্যান্য" এ নাম লিখুন!', 'error');
+    return;
+  }
+  
+  var centerFull = centerShort ? 'প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র, ' + centerShort : '';
+
+  var data = {
+    email: document.getElementById('signup_temp_email').value,
+    nickname: document.getElementById('signup_temp_nickname').value,
+    password: document.getElementById('signup_temp_password').value,
+    nameBn: document.getElementById('f_name_bn').value.trim(),
+    nameEn: document.getElementById('f_name_en').value.trim(),
+    father: document.getElementById('f_father').value.trim(),
+    mother: document.getElementById('f_mother').value.trim(),
+    dob: document.getElementById('f_dob').value,
+    nid: document.getElementById('f_nid').value.trim(),
+    gender: document.getElementById('f_gender').value,
+    religion: document.getElementById('f_religion').value,
+    blood: document.getElementById('f_blood').value,
+    mobile: document.getElementById('f_mobile').value.trim(),
+    whatsapp: document.getElementById('f_whatsapp').value.trim(),
+    permanent: document.getElementById('f_permanent').value.trim(),
+    present: document.getElementById('f_present').value.trim(),
+    district: document.getElementById('f_district').value,
+    upazila: document.getElementById('f_upazila').value.trim(),
+    division: document.getElementById('f_division').value,
+    designation: document.getElementById('f_designation').value,
+    center: centerFull,
+    joiningDate: document.getElementById('f_joining_date').value,
+    centerJoin: document.getElementById('f_center_join').value,
+    empType: document.getElementById('f_emp_type').value,
+    status: document.getElementById('f_status').value,
+    history: document.getElementById('f_history').value.trim(),
+    education: getEducationData().join(', '),
+    trainingDetails: document.getElementById('f_training_details').value.trim(),
+    trainingYear: document.getElementById('f_training_year').value.trim(),
+    specialization: document.getElementById('f_specialization').value.trim(),
+    membershipStatus: document.getElementById('f_membership_status').value,
+    feeStatus: document.getElementById('f_fee_status').value,
+    position: document.getElementById('f_position').value.trim(),
+    photo: document.getElementById('f_photo').value.trim(),
+    doc: document.getElementById('f_doc').value.trim(),
+    remarks: document.getElementById('f_remarks').value.trim()
+  };
+
+  var requiredFields = ['nameBn', 'nameEn', 'father', 'mother', 'dob', 'nid', 'gender', 'religion', 'blood', 'mobile', 'permanent', 'present', 'district', 'division', 'designation', 'center', 'joiningDate', 'centerJoin', 'empType', 'status', 'membershipStatus', 'feeStatus'];
+  for (var i = 0; i < requiredFields.length; i++) {
+    if (!data[requiredFields[i]]) {
+      showToast('❌ সব প্রয়োজনীয় ফিল্ড পূরণ করুন!', 'error');
+      return;
+    }
+  }
+
+  var btn = document.getElementById('signupProfileBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> নিবন্ধন হচ্ছে...';
+
+  submitSignupStep2_(data, btn, data.email);
+}
+
+    function submitSignupStep2_(data, btn, email) {
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> নিবন্ধন হচ্ছে...';
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-save"></i> নিবন্ধন সম্পূর্ণ করুন';
+          if (result && result.success) {
+            showToast('✅ ' + result.message, 'success');
+            setTimeout(function() {
+              document.getElementById('signupStep2').style.display = 'none';
+              document.getElementById('signupStep1').style.display = 'block';
+              document.getElementById('signupForm').reset();
+              switchTab('login');
+              document.getElementById('loginEmail').value = email;
+              showToast('✅ নিবন্ধন সম্পূর্ণ! অনুমোদনের জন্য অপেক্ষা করুন।', 'success');
+            }, 2000);
+          } else {
+            showToast('❌ ' + (result ? result.error : 'নিবন্ধন ব্যর্থ হয়েছে'), 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-save"></i> নিবন্ধন সম্পূর্ণ করুন';
+          showToast('❌ Error: ' + error, 'error');
+        })
+        .signupUserComplete(data);
+    }
+
+    function loadDistrictsForSignup() {
+      google.script.run
+        .withSuccessHandler(function(districts) {
+          var select = document.getElementById('f_district');
+          select.innerHTML = '<option value="">নির্বাচন করুন</option>';
+          for (var i = 0; i < districts.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = districts[i];
+            opt.textContent = districts[i];
+            select.appendChild(opt);
+          }
+        })
+        .withFailureHandler(function() {})
+        .getDistricts();
+    }
+
+    function loadDivisionsForSignup() {
+      google.script.run
+        .withSuccessHandler(function(map) {
+          var seen = {}, list = [];
+          for (var d in map) {
+            var div = map[d];
+            if (div && !seen[div]) { seen[div] = true; list.push(div); }
+          }
+          list.sort();
+          var select = document.getElementById('f_division');
+          select.innerHTML = '<option value="">নির্বাচন</option>';
+          for (var i = 0; i < list.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = list[i];
+            opt.textContent = list[i];
+            select.appendChild(opt);
+          }
+          window.FORM_DISTRICT_DIVISION_MAP = map;
+        })
+        .withFailureHandler(function() {})
+        .getDistrictDivisionMap();
+    }
+
+    function loadDesignationsForSignup() {
+      google.script.run
+        .withSuccessHandler(function(list) {
+          var select = document.getElementById('f_designation');
+          select.innerHTML = '<option value="">নির্বাচন</option>';
+          for (var i = 0; i < list.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = list[i];
+            opt.textContent = list[i];
+            select.appendChild(opt);
+          }
+        })
+        .withFailureHandler(function() {})
+        .getDesignationsList();
+    }
+
+    function onFormDistrictChange() {
+      var district = document.getElementById('f_district').value;
+      var map = window.FORM_DISTRICT_DIVISION_MAP || {};
+      var division = map[district] || '';
+      if (division) document.getElementById('f_division').value = division;
+    }
+
+    // ===================== EDUCATION FUNCTIONS =====================
+    function getEducationData() {
+      var checkboxes = document.querySelectorAll('#educationCheckboxGroup input[type="checkbox"]:checked');
+      var educationList = [];
+      checkboxes.forEach(function(cb) {
+        var val = cb.value;
+        if (val === 'BSc in') {
+          var subject = document.getElementById('f_bsc_subject');
+          var subjectVal = subject ? subject.value.trim() : '';
+          educationList.push(subjectVal ? 'BSc in ' + subjectVal : 'BSc in');
+        } else if (val === 'MSc in') {
+          var subject = document.getElementById('f_msc_subject');
+          var subjectVal = subject ? subject.value.trim() : '';
+          educationList.push(subjectVal ? 'MSc in ' + subjectVal : 'MSc in');
+        } else if (val === 'Others') {
+          var other = document.getElementById('f_other_education');
+          var otherVal = other ? other.value.trim() : '';
+          educationList.push(otherVal || 'Others');
+        } else {
+          educationList.push(val);
+        }
+      });
+      return educationList;
+    }
+
+    function handleFormPhotoSelected(event) {
+      var file = event.target.files[0];
+      event.target.value = '';
+      if (!file) return;
+      if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+        showToast('❌ শুধুমাত্র JPG বা PNG ছবি আপলোড করুন!', 'error');
+        return;
+      }
+      if (file.size > 3 * 1024 * 1024) {
+        showToast('❌ ছবির সাইজ ৩MB এর কম হতে হবে!', 'error');
+        return;
+      }
+      var email = document.getElementById('signup_temp_email').value;
+      if (!email) {
+        showToast('❌ প্রথমে ই-মেইল দিন!', 'error');
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function() {
+        var base64 = reader.result.split(',')[1];
+        showToast('⏳ ছবি আপলোড হচ্ছে...', 'success');
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result && result.success) {
+              showToast('✅ ছবি আপলোড হয়েছে!', 'success');
+              document.getElementById('f_photo').value = result.url;
+              var preview = document.getElementById('f_photo_preview');
+              preview.style.display = 'inline-block';
+              preview.src = result.url;
+            } else {
+              showToast('❌ ' + (result ? result.error : 'আপলোড ব্যর্থ'), 'error');
+            }
+          })
+          .withFailureHandler(function(err) {
+            showToast('❌ Error: ' + err, 'error');
+          })
+          .uploadProfilePhoto(base64, file.type, file.name, '', email);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function initEducationField() {
+      var checkboxes = document.querySelectorAll('#educationCheckboxGroup input[type="checkbox"]');
+      checkboxes.forEach(function(cb) {
+        cb.addEventListener('change', function() {
+          this.closest('label').classList.toggle('checked', this.checked);
+          updateEducationFromCheckboxes();
+        });
+      });
+      var bscInput = document.getElementById('f_bsc_subject');
+      var mscInput = document.getElementById('f_msc_subject');
+      var otherInput = document.getElementById('f_other_education');
+      if (bscInput) bscInput.addEventListener('input', updateEducationFromCheckboxes);
+      if (mscInput) mscInput.addEventListener('input', updateEducationFromCheckboxes);
+      if (otherInput) otherInput.addEventListener('input', updateEducationFromCheckboxes);
+      updateEducationFromCheckboxes();
+    }
+
+    function updateEducationFromCheckboxes() {
+      var checkboxes = document.querySelectorAll('#educationCheckboxGroup input[type="checkbox"]:checked');
+      var customInputs = document.getElementById('customEducationInputs');
+      document.querySelectorAll('.education-input-group').forEach(function(el) { el.style.display = 'none'; });
+      var showCustom = false;
+      checkboxes.forEach(function(cb) {
+        var val = cb.value;
+        if (val === 'BSc in' || val === 'MSc in' || val === 'Others') {
+          showCustom = true;
+          var inputGroup = document.querySelector('.education-input-group[data-type="' + val + '"]');
+          if (inputGroup) inputGroup.style.display = 'block';
+        }
+      });
+      if (customInputs) customInputs.style.display = showCustom ? 'block' : 'none';
+      renderEducationTags(getEducationData());
+    }
+
+    function renderEducationTags(values) {
+      var container = document.getElementById('selectedEducationTags');
+      if (!container) return;
+      container.innerHTML = '';
+      values.forEach(function(text) {
+        var tag = document.createElement('span');
+        tag.className = 'education-tag';
+        tag.innerHTML = text + ' <span class="remove" data-value="' + text + '">×</span>';
+        container.appendChild(tag);
+      });
+      container.querySelectorAll('.remove').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var text = this.getAttribute('data-value');
+          var checkboxes = document.querySelectorAll('#educationCheckboxGroup input[type="checkbox"]');
+          checkboxes.forEach(function(cb) {
+            if (cb.value === text) { cb.checked = false; }
+            if (cb.value === 'BSc in' && text.indexOf('BSc in') === 0) {
+              cb.checked = false;
+              var input = document.getElementById('f_bsc_subject');
+              if (input) input.value = '';
+            }
+            if (cb.value === 'MSc in' && text.indexOf('MSc in') === 0) {
+              cb.checked = false;
+              var input = document.getElementById('f_msc_subject');
+              if (input) input.value = '';
+            }
+            if (cb.value === 'Others' && text !== 'Others') {
+              cb.checked = false;
+              var input = document.getElementById('f_other_education');
+              if (input) input.value = '';
+            }
+          });
+          updateEducationFromCheckboxes();
+        });
+      });
+    }
+
+    // ===================== CENTER FUNCTIONS =====================
+
+    function loadServiceCenters() {
+      google.script.run
+        .withSuccessHandler(function(centers) {
+          var select = document.getElementById('f_center');
+          if (!select) return;
+          
+          select.innerHTML = '<option value="">-- নির্বাচন করুন --</option>';
+          
+          centers.sort();
+          for (var i = 0; i < centers.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = centers[i];
+            opt.textContent = centers[i];
+            select.appendChild(opt);
+          }
+          
+          // ===== "অন্যান্য" অপশন যোগ করুন (এখন onchange কাজ করবে) =====
+          var otherOpt = document.createElement('option');
+          otherOpt.value = 'other';
+          otherOpt.textContent = '➕ অন্যান্য (নতুন যোগ করুন)';
+          select.appendChild(otherOpt);
+        })
+        .withFailureHandler(function(error) {
+          console.error('❌ Failed to load centers:', error);
+          showToast('❌ কর্মস্থল তালিকা লোড করতে ব্যর্থ!', 'error');
+        })
+        .getServiceCenters();
+    }
+
+    function onCenterSelectChange() {
+  var select = document.getElementById('f_center');
+  var otherInput = document.getElementById('centerOtherInput');
+  var otherText = document.getElementById('f_center_other');
+  
+  if (select.value === 'other') {
+    otherInput.style.display = 'block';
+    otherText.focus();
+    select.removeAttribute('required');
+  } else {
+    otherInput.style.display = 'none';
+    otherText.value = '';
+    select.setAttribute('required', 'required');
+  }
+}
+
+    function showCenterOtherInput() {
+      var select = document.getElementById('f_center');
+      select.value = 'other';
+      onCenterSelectChange(); // এখন কাজ করবে, কারণ "other" অপশন আছে
+    }
+
+    function addCustomCenter() {
+  var otherText = document.getElementById('f_center_other');
+  var select = document.getElementById('f_center');
+  var val = otherText.value.trim();
+  
+  if (!val) {
+    showToast('❌ দয়া করে একটি নাম লিখুন!', 'error');
+    return;
+  }
+  
+  // চেক করুন ইতিমধ্যে আছে কিনা
+  var exists = false;
+  for (var i = 0; i < select.options.length; i++) {
+    if (select.options[i].value === val) {
+      exists = true;
+      break;
+    }
+  }
+  
+  if (exists) {
+    showToast('⚠️ এই নামটি ইতিমধ্যে তালিকায় আছে!', 'error');
+    return;
+  }
+  
+  // নতুন অপশন যোগ করুন
+  var opt = document.createElement('option');
+  opt.value = val;
+  opt.textContent = val;
+  select.insertBefore(opt, select.options[select.options.length - 1]);
+  
+  // সিলেক্ট করুন
+  select.value = val;
+  
+  // ইনপুট বক্স ক্লিয়ার করুন
+  otherText.value = '';
+  document.getElementById('centerOtherInput').style.display = 'none';
+  select.setAttribute('required', 'required'); // required ফিরিয়ে দিন
+  
+  // যোগ করা নামের ট্যাগ দেখান
+  addCustomCenterTag(val);
+  
+  showToast('✅ "' + val + '" যোগ করা হয়েছে!', 'success');
+}
+
+    function addCustomCenterTag(name) {
+      var container = document.getElementById('customCentersList');
+      if (!container) return;
+      
+      var tag = document.createElement('span');
+      tag.className = 'center-tag';
+      tag.innerHTML = name + ' <span class="remove" onclick="removeCustomCenter(\'' + name + '\', this)" style="cursor:pointer;color:#EA4335;font-weight:bold;margin-left:4px;">×</span>';
+      container.appendChild(tag);
+    }
+
+    function removeCustomCenter(name, el) {
+      var select = document.getElementById('f_center');
+      
+      // ড্রপডাউন থেকে অপশন সরান
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === name) {
+          select.remove(i);
+          break;
+        }
+      }
+      
+      // ট্যাগ সরান
+      if (el) {
+        var tag = el.closest('.center-tag');
+        if (tag) tag.remove();
+      }
+      
+      // যদি সিলেক্টেড থাকে তাহলে আনসিলেক্ট করুন
+      if (select.value === name) {
+        select.value = '';
+      }
+      
+      showToast('✅ "' + name + '" সরানো হয়েছে!', 'success');
+    }
+
+    function getCenterValue() {
+  var select = document.getElementById('f_center');
+  var otherText = document.getElementById('f_center_other');
+  
+  // যদি "অন্যান্য" সিলেক্ট করা থাকে
+  if (select.value === 'other') {
+    var otherVal = otherText.value.trim();
+    if (otherVal) {
+      return otherVal; // টেক্সট থাকলে সেটা রিটার্ন করবে
+    } else {
+      // টেক্সট খালি থাকলে ড্রপডাউনের প্রথম অপশন (খালি) সিলেক্ট করে ফাঁকা রিটার্ন করবে
+      select.value = '';
+      showToast('⚠️ "অন্যান্য" সিলেক্ট করলে দয়া করে একটি নাম লিখুন!', 'error');
+      return '';
+    }
+  }
+  
+  return select.value;
+}
+
+    // ===================== INPUT VALIDATION =====================
+
+    function validateEnglish(input) {
+  var regex = /^[A-Za-z0-9\s\.\-\,_@+()\/><?:=+*#@!~`|\\^&%$"]*$/;
+  if (!regex.test(input.value)) {
+    input.value = input.value.replace(/[^A-Za-z0-9\s\.\-\,_@+()\/><?:=+*#@!~`|\\^&%$"]/g, '');
+    showToast('❌ শুধু ইংরেজি অক্ষর, সংখ্যা ও অনুমোদিত চিহ্ন দিন!', 'error');
+  }
+}
+
+    function validateBangla(input) {
+  var regex = /^[\u0980-\u09FF\s\.\-\,\u0964\u0965()\u09E6-\u09EF\/><?:=+*#@!~`|\\^&%$"]*$/;
+  if (!regex.test(input.value)) {
+    input.value = input.value.replace(/[^\u0980-\u09FF\s\.\-\,\u0964\u0965()\u09E6-\u09EF\/><?:=+*#@!~`|\\^&%$"]/g, '');
+    showToast('❌ শুধু বাংলা অক্ষর ও অনুমোদিত চিহ্ন দিন!', 'error');
+  }
+}
+
+    function validateDigits(input) {
+      var regex = /^[0-9]*$/;
+      if (!regex.test(input.value)) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+        showToast('❌ শুধু ইংরেজি সংখ্যা দিন!', 'error');
+      }
+    }
+
+    function attachValidation() {
+      var banglaFields = ['f_name_bn', 'f_father', 'f_mother', 'f_permanent', 'f_present', 'f_upazila', 'f_center', 'f_history', 'f_training_details', 'f_position', 'f_remarks', 'f_other_education'];
+      banglaFields.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', function() { validateBangla(this); });
+        }
+      });
+
+      var englishFields = ['f_name_en', 'f_training_year', 'f_specialization', 'f_bsc_subject', 'f_msc_subject'];
+      englishFields.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', function() { validateEnglish(this); });
+        }
+      });
+
+      var digitFields = ['f_nid', 'f_mobile', 'f_whatsapp'];
+      digitFields.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', function() { validateDigits(this); });
+        }
+      });
+    }
+
+    // ===================== ONLOAD =====================
+    window.onload = function() {
+      loadLogo();
+      loadGuideButton();
+      loadServiceCenters();
+      initEducationField();
+      attachValidation();
+    };
+  </script>
+</body>
+</html>
