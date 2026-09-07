@@ -7875,6 +7875,22 @@ function viewFollowupPrescription(index) {
       .getServiceCategoryCounts(PD_USER_EMAIL);
   }
 
+  // ===== রিপোর্ট এক্সপোর্টে (সব ধরনের রিপোর্টে — রোগীর তথ্য ও সেবা প্রদান তথ্য উভয়ই) আজকের পরের তারিখ ব্লক =====
+(function() {
+  function blockFutureDates() {
+    var todayStr = new Date().toISOString().split('T')[0];
+    var fromInput = document.getElementById('reportDateFrom');
+    var toInput = document.getElementById('reportDateTo');
+    if (fromInput) fromInput.max = todayStr;
+    if (toInput) toInput.max = todayStr;
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', blockFutureDates);
+  } else {
+    blockFutureDates();
+  }
+})();
+
   // ================================================================
   // ===== EXPOSE GLOBAL FUNCTIONS ===================================
   // ================================================================
