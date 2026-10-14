@@ -2240,9 +2240,15 @@
       <button class="btn btn-primary" onclick="loadSavedPrescriptions()"><i class="fas fa-rotate"></i> রিফ্রেশ</button>
     </div>
     <div class="pd-table-wrap">
-      <div class="table-header">
-        <h3><i class="fas fa-check-circle"></i> 💊 আমার প্রেসক্রিপশন <span id="spCount"></span></h3>
-      </div>
+  <div class="table-header">
+    <h3><i class="fas fa-check-circle"></i> 💊 আমার প্রেসক্রিপশন <span id="spCount"></span></h3>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <button type="button" class="btn btn-primary" onclick="openManualPrescription()" title="শুধু প্রিন্টের জন্য — কোনো ডেটা সেভ হবে না">
+        <i class="fas fa-print"></i> 🖨️ ম্যানুয়াল প্রেসক্রিপশন (Print Only)
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="loadSavedPrescriptions()"><i class="fas fa-rotate"></i> রিফ্রেশ</button>
+    </div>
+  </div>
       <div style="overflow-x:auto;max-height:500px;overflow-y:auto;">
         <table>
           <thead><tr><th>#</th><th>Centre PIN</th><th>রোগীর নাম</th><th>তারিখ</th><th>কার্যক্রম</th></tr></thead>
@@ -2944,7 +2950,7 @@
       </div>
       <div class="footer">JPUF, Ministry of Social Welfare</div>
       <div class="form-actions no-print">
-        <button type="button" class="btn btn-success" onclick="submitPrescriptionForm()"><i class="fas fa-save"></i> Submit</button>
+        <button type="button" class="btn btn-success" id="prescSubmitBtn" onclick="submitPrescriptionForm()"><i class="fas fa-save"></i> Submit</button>
         <button type="button" class="btn btn-outline" onclick="resetPrescriptionForm()"><i class="fas fa-undo"></i> Reset</button>
         <span class="pd-font-ctrl no-print" title="প্রিন্ট ফন্ট সাইজ">
           <button type="button" class="btn-sm" onclick="pdAdjustPrintFontSize('prescriptionModal',-1)"><i class="fas fa-minus"></i></button>
@@ -4337,6 +4343,13 @@
   // ================================================================
 
   function submitPrescriptionForm() {
+  // ===== ম্যানুয়াল মোড গার্ড — কোনো ডেটা সেভ হবে না =====
+  var prescTypeGuard = document.getElementById('prescType').value || 'regular';
+  if (prescTypeGuard === 'manual') {
+    showPdToast('❌ ম্যানুয়াল মোডে সেভ করা যাবে না — শুধু Print করুন', 'error');
+    return;
+  }
+
   var patientId = document.getElementById('prescPatientId').value;
   var rxBox = document.getElementById('prescRx');
   var rxHtml = rxBox.innerHTML.trim();
@@ -5412,12 +5425,77 @@ function initReceptionChatDragDrop_() {
     showPdToast('🔄 Form reset', 'info');
   }
 
-  function closePrescriptionForm() {
-    var modal = document.getElementById('prescriptionModal');
-    modal.classList.remove('show');
-    modal.style.display = 'none';
-    pdResetFontControl_('prescriptionModal');
+function closePrescriptionForm() {
+  var modal = document.getElementById('prescriptionModal');
+  modal.classList.remove('show');
+  modal.style.display = 'none';
+  pdResetFontControl_('prescriptionModal');
+  // Save button আবার স্বাভাবিক অবস্থায় ফিরিয়ে আনা
+  var saveBtn = document.getElementById('prescSubmitBtn');
+  if (saveBtn) {
+    saveBtn.disabled = false;
+    saveBtn.title = '';
+    saveBtn.style.opacity = '';
+    saveBtn.style.cursor = '';
+    saveBtn.innerHTML = '<i class="fas fa-save"></i> Submit';
   }
+  document.getElementById('prescType').value = 'regular';
+}
+
+// ===== ম্যানুয়াল প্রেসক্রিপশন (Print Only) — কোনো ডেটা সেভ হবে না =====
+function openManualPrescription() {
+  // আগের কোনো print scale যেন থেকে না যায়
+  pdResetFontControl_('prescriptionModal');
+
+  var modal = document.getElementById('prescriptionModal');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+
+  // সব field একদম খালি — কোনো prefill নেই
+  document.getElementById('prescPatientId').value = '';
+  document.getElementById('prescFromPending').value = 'false';
+  document.getElementById('prescType').value = 'manual';
+  document.getElementById('prescRegNo').value = '';
+  autoSizeRegInput(document.getElementById('prescRegNo'));
+
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('prescDate').value = today;
+
+  document.getElementById('prescClientName').value = '';
+  document.getElementById('prescAge').value = '';
+  document.getElementById('prescGuardianName').value = '';
+  document.getElementById('prescMotherName').value = '';
+  document.getElementById('prescAddress').value = '';
+  document.getElementById('prescGender').value = '';
+  document.getElementById('prescDisabilityRegNo').value = '';
+
+  document.getElementById('prescCc').value = '';
+  document.getElementById('prescHpc').value = '';
+  document.getElementById('prescPmh').value = '';
+  document.getElementById('prescDh').value = '';
+  document.getElementById('prescOe').value = '';
+  document.getElementById('prescInvestigation').value = '';
+  document.getElementById('prescAdvice').value = '';
+  document.getElementById('prescDiagnosis').value = '';
+  document.getElementById('prescRx').innerHTML = '';
+  document.getElementById('prescSignatureDesignation').textContent = PD_USER_ROLE || 'Consultant (Physiotherapist)';
+
+  // Save button disabled
+  var saveBtn = document.getElementById('prescSubmitBtn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.title = 'ম্যানুয়াল মোডে সেভ করা যাবে না — শুধু প্রিন্ট করা যাবে';
+    saveBtn.style.opacity = '0.55';
+    saveBtn.style.cursor = 'not-allowed';
+    saveBtn.innerHTML = '<i class="fas fa-lock"></i> Save (Disabled)';
+  }
+
+  document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
+    if (typeof autoGrow === 'function') autoGrow(ta);
+  });
+
+  showPdToast('📄 ম্যানুয়াল মোড — কোনো ডেটা সেভ হবে না, শুধু প্রিন্ট করা যাবে', 'info');
+}
 
   function resetPrescriptionForm() {
     if (!confirm('Reset all fields?')) return;
@@ -7915,6 +7993,7 @@ function viewFollowupPrescription(index) {
 
   window.openPrescriptionFromPending = openPrescriptionFromPending;
   window.closePrescriptionForm = closePrescriptionForm;
+  window.openManualPrescription = openManualPrescription;
   window.resetPrescriptionForm = resetPrescriptionForm;
   window.submitPrescriptionForm = submitPrescriptionForm;
   window.viewSavedPrescription = viewSavedPrescription;
