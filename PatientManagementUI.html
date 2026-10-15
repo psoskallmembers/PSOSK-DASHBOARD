@@ -2928,7 +2928,6 @@
           <div class="field-row"><div class="field-label">Diagnosis:</div><div class="field-value"><textarea id="prescDiagnosis" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
         </div>
         <div class="right-col">
-          <div class="rx-header">Rx</div>
           <div class="rx-toolbar no-print" id="prescRxToolbar">
             <button type="button" title="Bold" onclick="richExec('bold')"><i class="fas fa-bold"></i></button>
             <button type="button" title="Italic" onclick="richExec('italic')"><i class="fas fa-italic"></i></button>
@@ -6405,7 +6404,7 @@ function openManualPrescription() {
 
     setupOtherCheckbox('eduOtherCheck', 'eduOtherText');
     setupOtherCheckbox('profOtherCheck', 'profOtherText');
-    setupOtherCheck('disOtherCheck', 'disOtherText');
+    setupOtherCheckbox('disOtherCheck', 'disOtherText');
     setupOtherCheckbox('sourceOtherCheck', 'sourceOtherText');
 
     initRegSignaturePad();
