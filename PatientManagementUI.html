@@ -1929,6 +1929,625 @@
     .pd-tab-btn .rc-unread-badge.show {
       display: inline-block;
     }
+
+        /* ===== B&W / Colour toggle button ===== */
+    .bw-toggle-btn.active-colour {
+      background: #3f8f5f;
+      color: #fff;
+      border: 1px solid #3f8f5f;
+    }
+    .bw-toggle-btn.active-bw {
+      background: #333;
+      color: #fff;
+      border: 1px solid #333;
+    }
+    .notepad-btn {
+      background: #fff8e1;
+      color: #f57f17;
+      border: 1px solid #f9a825;
+    }
+    .notepad-btn:hover { background: #ffecb3; }
+
+    /* ===== B&W mode — prescription preview grayscale (corrected) ===== */
+#prescriptionModal.paper-grayscale .prescription-wrapper .header {
+  border-bottom-color: #000 !important;
+}
+#prescriptionModal.paper-grayscale .prescription-wrapper .header-center .govt,
+#prescriptionModal.paper-grayscale .prescription-wrapper .header-center .org,
+#prescriptionModal.paper-grayscale .prescription-wrapper .header-center .ministry,
+#prescriptionModal.paper-grayscale .prescription-wrapper .header-center .kendro,
+#prescriptionModal.paper-grayscale .prescription-wrapper .header-center .form-title,
+#prescriptionModal.paper-grayscale .prescription-wrapper .header-right .reg-label,
+#prescriptionModal.paper-grayscale .prescription-wrapper .client-info .info-row .label,
+#prescriptionModal.paper-grayscale .prescription-wrapper .left-col .field-row .field-label,
+#prescriptionModal.paper-grayscale .prescription-wrapper .right-col .rx-header,
+#prescriptionModal.paper-grayscale .prescription-wrapper .signature-row .sig-label,
+#prescriptionModal.paper-grayscale .prescription-wrapper .signature-row .sig-text {
+  color: #000 !important;
+}
+#prescriptionModal.paper-grayscale .prescription-wrapper .client-info,
+#prescriptionModal.paper-grayscale .prescription-wrapper .prescription-table,
+#prescriptionModal.paper-grayscale .prescription-wrapper .left-col,
+#prescriptionModal.paper-grayscale .prescription-wrapper .left-col .field-row,
+#prescriptionModal.paper-grayscale .prescription-wrapper .left-col .field-row .field-label,
+#prescriptionModal.paper-grayscale .prescription-wrapper .signature-row,
+#prescriptionModal.paper-grayscale .prescription-wrapper .signature-row .sig-right .sig-line {
+  border-color: #000 !important;
+}
+#prescriptionModal.paper-grayscale .prescription-wrapper .left-col .field-row .field-label,
+#prescriptionModal.paper-grayscale .prescription-wrapper .right-col .rx-header,
+#prescriptionModal.paper-grayscale .prescription-wrapper .right-col .rx-toolbar {
+  background: #f5f5f5 !important;
+}
+#prescriptionModal.paper-grayscale .prescription-wrapper .footer {
+  color: #000 !important;
+  border-top-color: #000 !important;
+}
+#prescriptionModal.paper-grayscale .prescription-wrapper .header-left .logo img {
+  filter: grayscale(100%) !important;
+}
+
+    /* ================================================================ */
+/* ===== RX MODE TOGGLE (Segmented Control) ======================= */
+/* ================================================================ */
+.rx-mode-toggle {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  margin: 0 0 6px 0;
+  background: #f1f3f4;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dadce0;
+}
+.rx-mode-toggle .rx-mode-btn {
+  flex: 1;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5f6368;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: inherit;
+}
+.rx-mode-toggle .rx-mode-btn:hover { background: #e8eaed; }
+.rx-mode-toggle .rx-mode-btn.active {
+  background: #1a3c6e;
+  color: #fff;
+  box-shadow: inset 0 0 0 1px #1a3c6e;
+}
+.rx-mode-toggle .rx-mode-btn i { font-size: 12px; }
+
+/* ===== Mode panels ===== */
+.rx-mode-panel { display: none; flex-direction: column; flex: 1; min-height: 0; }
+.rx-mode-panel.active { display: flex; }
+
+/* ================================================================ */
+/* ===== INPUT MODE — 3 SECTIONS ================================== */
+/* ================================================================ */
+.rx-input-section {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+.rx-input-section:last-child { margin-bottom: 0; }
+.rx-input-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+.rx-input-head .rx-sec-check {
+  margin: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #3f8f5f;
+  flex-shrink: 0;
+}
+.rx-input-head .rx-sec-title {
+  flex: 1;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: #2f6f47;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+}
+.rx-input-head .rx-sec-title i { margin-right: 5px; color: #3f8f5f; }
+.rx-input-head .rx-sec-add {
+  background: #3f8f5f;
+  color: #fff;
+  border: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.rx-input-head .rx-sec-add:hover { background: #2f6f47; }
+.rx-input-body { padding: 8px 10px; }
+
+/* ===== Accordion ===== */
+.rx-cat-acc .accordion-item {
+  border: 1px solid #e8eaed !important;
+  border-radius: 6px !important;
+  margin-bottom: 4px;
+  overflow: hidden;
+}
+.rx-cat-acc .accordion-button {
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  background: #fafbfc !important;
+  color: #3c4043 !important;
+  font-weight: 600;
+  border-radius: 6px !important;
+}
+.rx-cat-acc .accordion-button:not(.collapsed) {
+  background: #eaf5ee !important;
+  color: #2f6f47 !important;
+}
+.rx-cat-acc .accordion-button:focus { box-shadow: none !important; }
+.rx-cat-acc .accordion-button::after { width: 12px; height: 12px; background-size: 12px; }
+.rx-cat-acc .accordion-body { padding: 6px 12px !important; font-size: 12px; }
+.rx-cat-acc .form-check { padding: 2px 0 2px 1.6em; margin: 0; }
+.rx-cat-acc .form-check-label { font-size: 12px; cursor: pointer; }
+.rx-cat-acc .form-check-input { cursor: pointer; }
+.rx-cat-acc .form-check-input:checked { background-color: #3f8f5f; border-color: #3f8f5f; }
+.rx-cat-acc .cat-count-badge {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+/* ===== Quick add ===== */
+.rx-quick-add {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+}
+.rx-quick-add input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 5px;
+  font-size: 11.5px;
+  font-family: inherit;
+}
+.rx-quick-add input:focus { outline: none; border-color: #3f8f5f; box-shadow: 0 0 0 2px rgba(63,143,95,0.15); }
+.rx-quick-add button {
+  background: #fff;
+  border: 1px solid #3f8f5f;
+  color: #3f8f5f;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.rx-quick-add button:hover { background: #3f8f5f; color: #fff; }
+
+/* ===== Medicine input row ===== */
+.med-input-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 70px 70px 30px;
+  gap: 4px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.med-input-row input {
+  font-size: 11.5px;
+  padding: 5px 7px;
+  border: 1px solid #dadce0;
+  border-radius: 5px;
+  font-family: inherit;
+  min-width: 0;
+}
+.med-input-row input:focus { outline: none; border-color: #3f8f5f; box-shadow: 0 0 0 2px rgba(63,143,95,0.15); }
+.med-input-row .med-cat-input { font-weight: 700; color: #2f6f47; text-align: center; }
+.med-input-row .med-add-btn {
+  background: #3f8f5f;
+  color: #fff;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.med-input-row .med-add-btn:hover { background: #2f6f47; }
+
+/* ===== Medicine list in input ===== */
+.rx-med-list-box {
+  border: 1px solid #e8eaed;
+  border-radius: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: #fafafa;
+  padding: 4px;
+  margin-bottom: 8px;
+}
+.med-list-item {
+  display: grid;
+  grid-template-columns: 60px 1fr 24px;
+  gap: 6px;
+  padding: 5px 8px;
+  border-bottom: 1px dashed #eee;
+  font-size: 11.5px;
+  align-items: center;
+}
+.med-list-item:last-child { border-bottom: none; }
+.med-list-item .m-cat { font-weight: 700; color: #2f6f47; }
+.med-list-item .m-info { line-height: 1.25; }
+.med-list-item .m-name { font-weight: 600; }
+.med-list-item .m-dose { color: #555; }
+.med-list-item .m-del {
+  background: #dc3545; color: #fff; border: none;
+  width: 20px; height: 20px; border-radius: 4px; font-size: 10px;
+  cursor: pointer;
+}
+.med-list-item .m-del:hover { background: #b02a37; }
+
+/* ===== Free-text note ===== */
+.rx-free-note-label {
+  display: block;
+  font-weight: 700;
+  font-size: 11.5px;
+  color: #202124;
+  margin: 8px 0 4px;
+}
+.rx-free-note {
+  width: 100%;
+  font-family: 'Courier New', monospace;
+  font-size: 11.5px;
+  min-height: 70px;
+  padding: 6px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  resize: vertical;
+  background: #fafbfc;
+}
+.rx-free-note:focus { outline: none; border-color: #3f8f5f; box-shadow: 0 0 0 2px rgba(63,143,95,0.15); background: #fff; }
+
+/* ================================================================ */
+/* ===== MAXIMIZED MANAGE MODAL ==================================== */
+/* ================================================================ */
+.rx-manage-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+.rx-manage-modal.show { display: flex; }
+.rx-manage-box {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 1100px;
+  height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+.rx-manage-header {
+  background: linear-gradient(135deg, #1a3c6e, #0d2646);
+  color: #fff;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.rx-manage-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rx-manage-close {
+  color: #fff;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rx-manage-close:hover { background: rgba(255,255,255,0.3); }
+.rx-manage-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  flex-shrink: 0;
+}
+.rx-manage-tab {
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5f6368;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  font-family: inherit;
+}
+.rx-manage-tab:hover { color: #1a3c6e; }
+.rx-manage-tab.active { color: #1a3c6e; border-bottom-color: #1a3c6e; }
+.rx-manage-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #fafbfc;
+}
+.rx-manage-panel { display: none; }
+.rx-manage-panel.active { display: block; }
+.rx-manage-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+}
+.rx-manage-toolbar input,
+.rx-manage-toolbar select {
+  padding: 7px 10px;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-family: inherit;
+}
+.rx-manage-toolbar input:focus,
+.rx-manage-toolbar select:focus { outline: none; border-color: #1a3c6e; box-shadow: 0 0 0 2px rgba(26,60,110,0.15); }
+.rx-manage-toolbar .btn-add-cat {
+  background: #1a3c6e; color: #fff; border: none;
+  padding: 7px 16px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+}
+.rx-manage-toolbar .btn-add-cat:hover { background: #0d2646; }
+.rx-manage-toolbar .btn-add-item {
+  background: #3f8f5f; color: #fff; border: none;
+  padding: 7px 16px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+}
+.rx-manage-toolbar .btn-add-item:hover { background: #2f6f47; }
+
+.rx-manage-cat-card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+.rx-manage-cat-head {
+  background: #eaf5ee;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+.rx-manage-cat-head .cat-title {
+  flex: 1;
+  font-weight: 700;
+  color: #2f6f47;
+  font-size: 13.5px;
+}
+.rx-manage-cat-head .badge-cnt {
+  background: #3f8f5f;
+  color: #fff;
+  font-size: 10.5px;
+  padding: 2px 9px;
+  border-radius: 10px;
+}
+.rx-manage-cat-head button {
+  padding: 4px 10px; border-radius: 5px; font-size: 11px; cursor: pointer;
+  border: 1px solid; font-family: inherit;
+}
+.rx-manage-cat-head .btn-edit-cat { background: #fff; color: #1a3c6e; border-color: #1a3c6e; }
+.rx-manage-cat-head .btn-del-cat { background: #fff; color: #dc3545; border-color: #dc3545; }
+.rx-manage-cat-head .btn-edit-cat:hover { background: #1a3c6e; color: #fff; }
+.rx-manage-cat-head .btn-del-cat:hover { background: #dc3545; color: #fff; }
+
+.rx-manage-item-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px auto;
+  gap: 8px;
+  padding: 7px 14px 7px 30px;
+  border-bottom: 1px dashed #eee;
+  align-items: center;
+  font-size: 12.5px;
+}
+.rx-manage-item-row:last-child { border-bottom: none; }
+.rx-manage-item-row .m-name { font-weight: 600; color: #202124; }
+.rx-manage-item-row .m-dose { color: #555; }
+.rx-manage-item-row .m-dur { color: #777; font-style: italic; }
+.rx-manage-item-row .item-actions button {
+  padding: 3px 9px; font-size: 11px; border-radius: 4px;
+  border: 1px solid; cursor: pointer; font-family: inherit;
+  margin-left: 3px;
+}
+.rx-manage-item-row .btn-edit-item { background: #fff; color: #1a3c6e; border-color: #1a3c6e; }
+.rx-manage-item-row .btn-del-item { background: #fff; color: #dc3545; border-color: #dc3545; }
+.rx-manage-item-row .btn-edit-item:hover { background: #1a3c6e; color: #fff; }
+.rx-manage-item-row .btn-del-item:hover { background: #dc3545; color: #fff; }
+
+/* ================================================================ */
+/* ===== RX INPUT POPUP (floating left side) ====================== */
+/* ================================================================ */
+.rx-input-popup {
+  position: fixed;
+  top: 60px;
+  left: 20px;
+  width: 420px;
+  max-height: calc(100vh - 80px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  display: none;
+  flex-direction: column;
+  z-index: 10001;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+}
+.rx-input-popup.show { display: flex; }
+.rx-input-popup-head {
+  background: linear-gradient(135deg, #3f8f5f, #2f6f47);
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.rx-input-popup-head h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rx-input-popup-close {
+  color: #fff;
+  background: rgba(255,255,255,0.18);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+}
+.rx-input-popup-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  background: #fafbfc;
+}
+
+/* Toggle overlay on prescription */
+.rx-mode-toggle-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transform: translateY(-100%);
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 8px;
+  padding: 3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: 1px solid #dadce0;
+}
+.rx-mode-toggle-overlay .rx-mode-btn {
+  padding: 5px 12px;
+  border: none;
+  background: transparent;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #5f6368;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rx-mode-toggle-overlay .rx-mode-btn:hover { background: #e8eaed; }
+.rx-mode-toggle-overlay .rx-mode-btn.active {
+  background: #1a3c6e;
+  color: #fff;
+}
+
+/* ===== Print rules — hide all edit UI ===== */
+@media print {
+  .rx-mode-toggle,
+  .rx-toolbar,
+  .rx-quick-add,
+  .med-input-row,
+  .med-list-item .m-del,
+  .rx-free-note-label,
+  .rx-sec-add,
+  .rx-sec-check,
+  .rx-manage-modal,
+  .no-print {
+    display: none !important;
+  }
+  /* Section header — checkbox আর + button হাইড, শুধু title bold করে দেখাবে */
+  .rx-input-head {
+    display: flex !important;
+    padding: 0 !important;
+    margin: 6px 0 3px 0 !important;
+    background: transparent !important;
+    border: none !important;
+    gap: 0 !important;
+  }
+  .rx-input-head .rx-sec-title {
+    color: #1a3c6e !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid #999;
+    padding-bottom: 1px;
+    width: 100%;
+    margin: 0 !important;
+  }
+  .rx-input-head .rx-sec-title i {
+    display: none !important;
+  }
+  .rx-input-section {
+    border: none !important;
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+  .rx-input-body { padding: 0 !important; }
+  .rx-cat-acc .accordion-item {
+    border: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+  .rx-cat-acc .accordion-button { display: none !important; }
+  .rx-cat-acc .accordion-collapse { display: block !important; }
+  .rx-cat-acc .accordion-body { padding: 0 !important; }
+  .rx-cat-acc .form-check-input { display: none !important; }
+  .rx-cat-acc .form-check { padding-left: 0 !important; }
+  .rx-med-list-box { border: none !important; padding: 0 !important; background: transparent !important; max-height: none !important; }
+  .rx-free-note { border: none !important; padding: 0 !important; background: transparent !important; }
+}
+
+
   </style>
 </head>
 <body>
@@ -2240,15 +2859,15 @@
       <button class="btn btn-primary" onclick="loadSavedPrescriptions()"><i class="fas fa-rotate"></i> রিফ্রেশ</button>
     </div>
     <div class="pd-table-wrap">
-  <div class="table-header">
-    <h3><i class="fas fa-check-circle"></i> 💊 আমার প্রেসক্রিপশন <span id="spCount"></span></h3>
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-      <button type="button" class="btn btn-primary" onclick="openManualPrescription()" title="শুধু প্রিন্টের জন্য — কোনো ডেটা সেভ হবে না">
-        <i class="fas fa-print"></i> 🖨️ ম্যানুয়াল প্রেসক্রিপশন (Print Only)
-      </button>
-      <button class="btn btn-outline btn-sm" onclick="loadSavedPrescriptions()"><i class="fas fa-rotate"></i> রিফ্রেশ</button>
-    </div>
-  </div>
+      <div class="table-header">
+        <h3><i class="fas fa-check-circle"></i> 💊 আমার প্রেসক্রিপশন <span id="spCount"></span></h3>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary" onclick="openManualPrescription()" title="শুধু প্রিন্টের জন্য — কোনো ডেটা সেভ হবে না">
+            <i class="fas fa-print"></i> 🖨️ ম্যানুয়াল প্রেসক্রিপশন (Print Only)
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="loadSavedPrescriptions()"><i class="fas fa-rotate"></i> রিফ্রেশ</button>
+        </div>
+      </div>
       <div style="overflow-x:auto;max-height:500px;overflow-y:auto;">
         <table>
           <thead><tr><th>#</th><th>Centre PIN</th><th>রোগীর নাম</th><th>তারিখ</th><th>কার্যক্রম</th></tr></thead>
@@ -2878,17 +3497,38 @@
 <div class="pd-modal-overlay" id="prescriptionModal">
   <div class="pd-modal-box" style="max-width:880px;">
     <span class="pd-modal-close" onclick="closePrescriptionForm()"><i class="fas fa-times"></i></span>
-    <div class="prescription-wrapper" style="max-width:100%;padding:22px 28px 18px 28px;margin:0;box-shadow:none;border-radius:0;">
+        <div class="prescription-wrapper" style="position:relative;max-width:100%;padding:22px 28px 18px 28px;margin:0;box-shadow:none;border-radius:0;">
+      <!-- ===== Mode toggle overlay (Input/Type) ===== -->
+      <div class="rx-mode-toggle-overlay no-print" role="tablist">
+        <button type="button" class="rx-mode-btn" data-mode="input" onclick="switchRxMode('input')">
+          <i class="fas fa-list-check"></i> Input
+        </button>
+        <button type="button" class="rx-mode-btn active" data-mode="type" onclick="switchRxMode('type')">
+          <i class="fas fa-pen"></i> Type
+        </button>
+      </div>
+
+      <!-- ===== B&W + KHOSRA buttons ===== -->
+      <div class="no-print" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;padding-right:160px;">
+        <button type="button" class="btn btn-sm bw-toggle-btn active-colour" id="rxBwToggle" onclick="togglePrescriptionBw()" title="Colour / B&W">
+          <i class="fas fa-palette"></i> <span id="rxBwLabel">Colour</span>
+        </button>
+        <button type="button" class="btn btn-sm notepad-btn" onclick="openKhosraNotepad()" title="Notepad (KHOSRA)">
+          <i class="fas fa-sticky-note"></i> KHOSRA
+        </button>
+      </div>
+
       <input type="hidden" id="prescPatientId">
       <input type="hidden" id="prescFromPending" value="false">
       <input type="hidden" id="prescType" value="regular">
+
       <div class="header">
         <div class="header-left">
           <div class="logo">
-        <img src="https://drive.google.com/thumbnail?id=1p9abwO8b0L_0ZIFi8o0MWWq7IuHMVLUQ&sz=w200"
-       alt="BD Government Logo"
-       onerror="this.onerror=null; this.src='https://drive.google.com/uc?export=view&id=1p9abwO8b0L_0ZIFi8o0MWWq7IuHMVLUQ';">
-        </div>
+            <img src="https://drive.google.com/thumbnail?id=1p9abwO8b0L_0ZIFi8o0MWWq7IuHMVLUQ&sz=w200"
+                 alt="BD Government Logo"
+                 onerror="this.onerror=null; this.src='https://drive.google.com/uc?export=view&id=1p9abwO8b0L_0ZIFi8o0MWWq7IuHMVLUQ';">
+          </div>
         </div>
         <div class="header-center">
           <div class="govt">Government of the People's Republic of Bangladesh</div>
@@ -2902,6 +3542,7 @@
           <input type="text" class="reg-input" id="prescRegNo" placeholder="PIN" oninput="autoSizeRegInput(this)">
         </div>
       </div>
+
       <div class="client-info">
         <div>
           <div class="info-row"><span class="label">Client Name:</span><span class="value"><input type="text" id="prescClientName" placeholder=""></span></div>
@@ -2916,7 +3557,9 @@
           <div class="info-row"><span class="label">Disability reg no:</span><span class="value"><input type="text" id="prescDisabilityRegNo" placeholder=""></span></div>
         </div>
       </div>
+
       <div class="prescription-table">
+        <!-- ===== LEFT COLUMN (unchanged — typing fields) ===== -->
         <div class="left-col">
           <div class="field-row"><div class="field-label">C/C:</div><div class="field-value"><textarea id="prescCc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
           <div class="field-row"><div class="field-label">HPC:</div><div class="field-value"><textarea id="prescHpc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
@@ -2927,27 +3570,32 @@
           <div class="field-row"><div class="field-label">Advice:</div><div class="field-value"><textarea id="prescAdvice" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
           <div class="field-row"><div class="field-label">Diagnosis:</div><div class="field-value"><textarea id="prescDiagnosis" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
         </div>
-        <div class="right-col">
+
+        <!-- ===== RIGHT COLUMN (Mode toggle + Type mode + Input mode) ===== -->
+                <div class="right-col">
           <div class="rx-toolbar no-print" id="prescRxToolbar">
             <button type="button" title="Bold" onclick="richExec('bold')"><i class="fas fa-bold"></i></button>
             <button type="button" title="Italic" onclick="richExec('italic')"><i class="fas fa-italic"></i></button>
-            <select title="Font size" onchange="richExec('fontSize', this.value); this.selectedIndex=0;">
+            <button type="button" title="Underline" onclick="richExec('underline')"><i class="fas fa-underline"></i></button>
+            <select title="Font size" id="rxFontSizeSelect" onchange="richExec('fontSize', this.value); this.selectedIndex=0;">
               <option value="">Size</option>
-              <option value="1">Small</option>
-              <option value="3">Normal</option>
-              <option value="5">Large</option>
-              <option value="7">X-Large</option>
+              <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+              <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+              <option value="8">8</option><option value="10">10</option><option value="12">12</option>
+              <option value="14">14</option><option value="16">16</option><option value="18">18</option>
             </select>
             <input type="color" title="Text color" onchange="richExec('foreColor', this.value)" value="#000000">
           </div>
           <div class="rx-body" id="prescRx" contenteditable="true" data-placeholder="প্রেসক্রিপশন লিখুন..."></div>
         </div>
       </div>
+
       <div class="signature-row">
         <div class="sig-left"><div class="sig-text"><i class="fas fa-check-circle"></i> Prescription valid with signature</div></div>
         <div class="sig-right"><div class="sig-line"></div><div class="sig-label">Signature</div><div class="sig-sub" id="prescSignatureDesignation">Consultant (Physiotherapist)</div></div>
       </div>
       <div class="footer">JPUF, Ministry of Social Welfare</div>
+
       <div class="form-actions no-print">
         <button type="button" class="btn btn-success" id="prescSubmitBtn" onclick="submitPrescriptionForm()"><i class="fas fa-save"></i> Submit</button>
         <button type="button" class="btn btn-outline" onclick="resetPrescriptionForm()"><i class="fas fa-undo"></i> Reset</button>
@@ -2958,6 +3606,148 @@
         </span>
         <button type="button" class="btn btn-primary" onclick="printModalOnly('prescriptionModal')"><i class="fas fa-print"></i> Print</button>
         <button type="button" class="btn btn-danger" onclick="closePrescriptionForm()"><i class="fas fa-times"></i> Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- ===== RX INPUT POPUP (floating left panel) ==================== -->
+<!-- ================================================================ -->
+<div class="rx-input-popup no-print" id="rxInputPopup">
+  <div class="rx-input-popup-head">
+    <h4><i class="fas fa-list-check"></i> Prescription Items</h4>
+    <button type="button" class="rx-input-popup-close" onclick="switchRxMode('type')"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="rx-input-popup-body">
+    <!-- Physiotherapy Intervention -->
+    <div class="rx-input-section" id="physioInputSection">
+      <div class="rx-input-head">
+        <input type="checkbox" class="rx-sec-check" id="physioSecCheck" checked onchange="toggleRxInputSection('physio')">
+        <label class="rx-sec-title" for="physioSecCheck">
+          <i class="fas fa-hand-holding-medical"></i> Physiotherapy Intervention
+        </label>
+        <button type="button" class="rx-sec-add" onclick="openRxManageModal('physio')" title="Add / manage"><i class="fas fa-plus"></i></button>
+      </div>
+      <div class="rx-input-body">
+        <div class="accordion rx-cat-acc" id="physioCatAcc">
+          <div class="text-muted small p-2">Loading...</div>
+        </div>
+        <div class="rx-quick-add no-print">
+          <input type="text" id="physioQuickAdd" placeholder="Quick add item..." onkeypress="if(event.key==='Enter'){event.preventDefault();quickAddRxItem('physio');}">
+          <button type="button" onclick="quickAddRxItem('physio')"><i class="fas fa-plus"></i></button>
+        </div>
+        <small id="physioQuickHint" class="d-block mt-1 text-muted"></small>
+      </div>
+    </div>
+
+    <!-- Home Management -->
+    <div class="rx-input-section" id="hmInputSection">
+      <div class="rx-input-head">
+        <input type="checkbox" class="rx-sec-check" id="hmSecCheck" checked onchange="toggleRxInputSection('hm')">
+        <label class="rx-sec-title" for="hmSecCheck">
+          <i class="fas fa-home"></i> Home Management
+        </label>
+        <button type="button" class="rx-sec-add" onclick="openRxManageModal('hm')" title="Add / manage"><i class="fas fa-plus"></i></button>
+      </div>
+      <div class="rx-input-body">
+        <div class="accordion rx-cat-acc" id="hmCatAcc">
+          <div class="text-muted small p-2">Loading...</div>
+        </div>
+        <div class="rx-quick-add no-print">
+          <input type="text" id="hmQuickAdd" placeholder="Quick add item..." onkeypress="if(event.key==='Enter'){event.preventDefault();quickAddRxItem('hm');}">
+          <button type="button" onclick="quickAddRxItem('hm')"><i class="fas fa-plus"></i></button>
+        </div>
+        <small id="hmQuickHint" class="d-block mt-1 text-muted"></small>
+      </div>
+    </div>
+
+    <!-- Rx (Medicine) -->
+    <div class="rx-input-section" id="rxInputSection">
+      <div class="rx-input-head">
+        <input type="checkbox" class="rx-sec-check" id="rxSecCheck" onchange="toggleRxInputSection('rx')">
+        <label class="rx-sec-title" for="rxSecCheck">
+          <i class="fas fa-prescription"></i> Rx (Medicine)
+        </label>
+        <button type="button" class="rx-sec-add" onclick="openRxManageModal('rx')" title="Add / manage"><i class="fas fa-plus"></i></button>
+      </div>
+      <div class="rx-input-body">
+        <div class="med-input-row no-print">
+          <input type="text" id="medCatInp" class="med-cat-input" list="medCatList2" placeholder="Cat">
+          <datalist id="medCatList2"></datalist>
+          <input type="text" id="medNameInp" placeholder="Medicine name">
+          <input type="text" id="medDoseInp" placeholder="Dose">
+          <input type="text" id="medDurInp" placeholder="Duration">
+          <button type="button" class="med-add-btn" onclick="quickAddMedicine()" title="Add"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="rx-med-list-box" id="rxMedListBox">
+          <div class="text-muted small p-2" id="rxMedEmpty">No medicine added yet.</div>
+        </div>
+        <label class="rx-free-note-label no-print"><i class="fas fa-paragraph"></i> Free-text Note (optional)</label>
+        <textarea id="rxFreeNote" class="rx-free-note" placeholder="Tab:      Mayolax 50mg&#10;          1+0+1   -------- 1month" oninput="rxRebuildRxBox_()"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- ===== RX MANAGE MODAL (Maximized, 3 tabs) ====================== -->
+<!-- ================================================================ -->
+<div class="rx-manage-modal" id="rxManageModal">
+  <div class="rx-manage-box">
+    <div class="rx-manage-header">
+      <h3><i class="fas fa-list-check"></i> Prescription Item Management</h3>
+      <button type="button" class="rx-manage-close" onclick="closeRxManageModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="rx-manage-tabs">
+      <button type="button" class="rx-manage-tab" data-mtype="physio" onclick="switchRxManageTab('physio')">
+        <i class="fas fa-hand-holding-medical"></i> Physiotherapy
+      </button>
+      <button type="button" class="rx-manage-tab" data-mtype="hm" onclick="switchRxManageTab('hm')">
+        <i class="fas fa-home"></i> Home Management
+      </button>
+      <button type="button" class="rx-manage-tab" data-mtype="rx" onclick="switchRxManageTab('rx')">
+        <i class="fas fa-prescription"></i> Medicine
+      </button>
+    </div>
+    <div class="rx-manage-body">
+      <!-- PHYSIO PANEL -->
+      <div class="rx-manage-panel" id="rxManagePanelPhysio">
+        <div class="rx-manage-toolbar">
+          <input type="text" id="rxMngPhysioNewCat" placeholder="New category name (e.g., Manual Therapy)">
+          <button type="button" class="btn-add-cat" onclick="rxMngAddCategory('physio')"><i class="fas fa-folder-plus"></i> Add Category</button>
+          <span style="flex:1;"></span>
+          <select id="rxMngPhysioCatSel"></select>
+          <input type="text" id="rxMngPhysioNewItem" placeholder="New item name (e.g., Traction 15 min)">
+          <button type="button" class="btn-add-item" onclick="rxMngAddItem('physio')"><i class="fas fa-plus"></i> Add Item</button>
+        </div>
+        <div id="rxMngPhysioList"></div>
+      </div>
+      <!-- HM PANEL -->
+      <div class="rx-manage-panel" id="rxManagePanelHm">
+        <div class="rx-manage-toolbar">
+          <input type="text" id="rxMngHmNewCat" placeholder="New category name">
+          <button type="button" class="btn-add-cat" onclick="rxMngAddCategory('hm')"><i class="fas fa-folder-plus"></i> Add Category</button>
+          <span style="flex:1;"></span>
+          <select id="rxMngHmCatSel"></select>
+          <input type="text" id="rxMngHmNewItem" placeholder="New item name">
+          <button type="button" class="btn-add-item" onclick="rxMngAddItem('hm')"><i class="fas fa-plus"></i> Add Item</button>
+        </div>
+        <div id="rxMngHmList"></div>
+      </div>
+      <!-- RX/MED PANEL -->
+      <div class="rx-manage-panel" id="rxManagePanelRx">
+        <div class="rx-manage-toolbar">
+          <input type="text" id="rxMngRxNewCat" placeholder="New category (e.g., Tab, Cap)">
+          <button type="button" class="btn-add-cat" onclick="rxMngAddCategory('rx')"><i class="fas fa-folder-plus"></i> Add Category</button>
+          <span style="flex:1;"></span>
+          <select id="rxMngRxCatSel"></select>
+          <input type="text" id="rxMngRxNewName" placeholder="Medicine name">
+          <input type="text" id="rxMngRxNewDose" placeholder="Dose" style="width:70px;">
+          <input type="text" id="rxMngRxNewDur" placeholder="Duration" style="width:80px;">
+          <button type="button" class="btn-add-item" onclick="rxMngAddItem('rx')"><i class="fas fa-plus"></i> Add</button>
+        </div>
+        <div id="rxMngRxList"></div>
       </div>
     </div>
   </div>
@@ -3137,14 +3927,14 @@
         <button type="button" class="pd-period-chip" data-period="yearly" onclick="setReportPeriod('yearly')">বাৎসরিক</button>
         <button type="button" class="pd-period-chip" data-period="custom" onclick="setReportPeriod('custom')">কাস্টম তারিখ</button>
       </div>
-      <div class="pd-custom-range" id="reportCustomRange">
+            <div class="pd-custom-range" id="reportCustomRange">
         <div class="pd-form-group" style="flex:1;">
           <label>তারিখ থেকে</label>
-          <input type="date" id="reportDateFrom">
+          <input type="date" id="reportDateFrom" max="">
         </div>
         <div class="pd-form-group" style="flex:1;">
           <label>তারিখ পর্যন্ত</label>
-          <input type="date" id="reportDateTo">
+          <input type="date" id="reportDateTo" max="">
         </div>
       </div>
     </div>
@@ -3371,10 +4161,11 @@
     } else {
       nameInput.style.display = 'none';
       padWrapper.style.display = 'block';
-      setTimeout(function() {
-        padWrapper.classList.add('show');
-        resizeRegSignatureCanvas();
-      }, 100);
+            setTimeout(function() {
+        if (typeof initRxMode === 'function') initRxMode();
+        if (typeof loadRxInputSections === 'function') loadRxInputSections();
+        if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+      }, 150);
     }
   }
 
@@ -4283,67 +5074,92 @@
   // ================================================================
 
   function openPrescriptionFromPending(patientId) {
-    if (!patientId) {
-      showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
-      return;
-    }
-
-    google.script.run
-      .withSuccessHandler(function(result) {
-        if (!result || !result.success) {
-          showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
-          return;
-        }
-        var p = result.patient;
-
-        var modal = document.getElementById('prescriptionModal');
-        modal.classList.add('show');
-        modal.style.display = 'flex';
-
-        document.getElementById('prescPatientId').value = p.id || '';
-        document.getElementById('prescFromPending').value = 'true';
-        document.getElementById('prescRegNo').value = p.centerPin || ''; autoSizeRegInput(document.getElementById('prescRegNo'));
-
-        var today = new Date().toISOString().split('T')[0];
-        document.getElementById('prescDate').value = today;
-        document.getElementById('prescDate').max = today;
-
-        document.getElementById('prescClientName').value = p.name || '';
-        document.getElementById('prescAge').value = p.age || '';
-        document.getElementById('prescGuardianName').value = p.father || '';
-        document.getElementById('prescMotherName').value = p.mother || '';
-        document.getElementById('prescAddress').value = p.address || '';
-        document.getElementById('prescGender').value = p.gender || '';
-        document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
-
-        document.getElementById('prescCc').value = '';
-        document.getElementById('prescHpc').value = '';
-        document.getElementById('prescPmh').value = '';
-        document.getElementById('prescDh').value = '';
-        document.getElementById('prescOe').value = '';
-        document.getElementById('prescAdvice').value = '';
-        document.getElementById('prescDiagnosis').value = '';
-        document.getElementById('prescRx').innerHTML = '';
-        document.getElementById('prescSignatureDesignation').textContent = PD_USER_ROLE || 'Consultant (Physiotherapist)';
-
-        document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
-          if (typeof autoGrow === 'function') autoGrow(ta);
-        });
-
-        showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে', 'info');
-      })
-      .withFailureHandler(function(e) {
-        showPdToast('❌ Error: ' + e, 'error');
-      })
-      .getPatientById(patientId, PD_USER_EMAIL);
+  if (!patientId) {
+    showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
+    return;
   }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (!result || !result.success) {
+        showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
+        return;
+      }
+      var p = result.patient;
+
+      var modal = document.getElementById('prescriptionModal');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+
+      document.getElementById('prescPatientId').value = p.id || '';
+      document.getElementById('prescFromPending').value = 'true';
+      document.getElementById('prescType').value = 'regular';
+      document.getElementById('prescRegNo').value = p.centerPin || '';
+      autoSizeRegInput(document.getElementById('prescRegNo'));
+
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('prescDate').value = today;
+      document.getElementById('prescDate').max = today;
+
+      document.getElementById('prescClientName').value = p.name || '';
+      document.getElementById('prescAge').value = p.age || '';
+      document.getElementById('prescGuardianName').value = p.father || '';
+      document.getElementById('prescMotherName').value = p.mother || '';
+      document.getElementById('prescAddress').value = p.address || '';
+      document.getElementById('prescGender').value = p.gender || '';
+      document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
+
+      // Clear left column
+      document.getElementById('prescCc').value = '';
+      document.getElementById('prescHpc').value = '';
+      document.getElementById('prescPmh').value = '';
+      document.getElementById('prescDh').value = '';
+      document.getElementById('prescOe').value = '';
+      document.getElementById('prescInvestigation').value = '';
+      document.getElementById('prescAdvice').value = '';
+      document.getElementById('prescDiagnosis').value = '';
+      document.getElementById('prescRx').innerHTML = '';
+      document.getElementById('prescSignatureDesignation').textContent = PD_USER_ROLE || 'Consultant (Physiotherapist)';
+
+      // ===== Reset Rx session state =====
+      PD_RX_MEDICINES = [];
+      if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+      var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
+      // Reset section checkboxes
+      var phyChk = document.getElementById('physioSecCheck'); if (phyChk) phyChk.checked = true;
+      var hmChk = document.getElementById('hmSecCheck'); if (hmChk) hmChk.checked = true;
+      var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = false;
+      // Reset accordion badges
+      document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
+        b.innerText = '0';
+        b.className = 'badge cat-count-badge bg-secondary';
+      });
+
+      document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
+        if (typeof autoGrow === 'function') autoGrow(ta);
+      });
+
+      // ===== Init Rx mode + load sections + B&W =====
+      setTimeout(function() {
+        if (typeof initRxMode === 'function') initRxMode();
+        if (typeof loadRxInputSections === 'function') loadRxInputSections();
+        if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+      }, 150);
+
+      showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে', 'info');
+    })
+    .withFailureHandler(function(e) {
+      showPdToast('❌ Error: ' + e, 'error');
+    })
+    .getPatientById(patientId, PD_USER_EMAIL);
+}
 
   // ================================================================
   // ===== SUBMIT PRESCRIPTION =======================================
   // ================================================================
 
   function submitPrescriptionForm() {
-  // ===== ম্যানুয়াল মোড গার্ড — কোনো ডেটা সেভ হবে না =====
+  // ===== Manual mode guard =====
   var prescTypeGuard = document.getElementById('prescType').value || 'regular';
   if (prescTypeGuard === 'manual') {
     showPdToast('❌ ম্যানুয়াল মোডে সেভ করা যাবে না — শুধু Print করুন', 'error');
@@ -4351,16 +5167,42 @@
   }
 
   var patientId = document.getElementById('prescPatientId').value;
-  var rxBox = document.getElementById('prescRx');
-  var rxHtml = rxBox.innerHTML.trim();
-  var rxText = rxBox.textContent.trim();
-
   if (!patientId) {
     showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
     return;
   }
-  if (!rxText) {
-    showPdToast('❌ প্রেসক্রিপশন লিখুন!', 'error');
+
+  // ===== Determine active mode =====
+  var mode = 'input';
+  var activeBtn = document.querySelector('.rx-mode-btn.active');
+  if (activeBtn) mode = activeBtn.getAttribute('data-mode');
+
+  // ===== Type mode =====
+  var rxHtml = '';
+  var rxText = '';
+  if (mode === 'type') {
+    var rxBox = document.getElementById('prescRx');
+    if (rxBox) {
+      rxHtml = rxBox.innerHTML.trim();
+      rxText = rxBox.textContent.trim();
+    }
+  }
+
+  // ===== Input mode =====
+  var physioItems = [];
+  var hmItems = [];
+  if (mode === 'input') {
+    physioItems = getSelectedPhysioItems();
+    hmItems = getSelectedHmItems();
+  }
+  var medicineItems = PD_RX_MEDICINES.slice();
+  var medicineNote = (document.getElementById('rxFreeNote') || {}).value || '';
+
+  // ===== Validation: at least one item OR legacy note =====
+  var hasStructured = physioItems.length || hmItems.length || medicineItems.length;
+  var hasLegacy = rxText;
+  if (!hasStructured && !hasLegacy && !medicineNote.trim()) {
+    showPdToast('❌ অন্তত একটি Physio / HM / Medicine আইটেম যোগ করুন', 'error');
     return;
   }
 
@@ -4373,12 +5215,18 @@
     investigation: document.getElementById('prescInvestigation').value.trim(),
     advice: document.getElementById('prescAdvice').value.trim(),
     diagnosis: document.getElementById('prescDiagnosis').value.trim(),
-    rx: rxHtml
+    // ===== Type mode (legacy) =====
+    rx: rxHtml,
+    // ===== Input mode (structured) =====
+    physiotherapyItems: physioItems,
+    homeManagement: hmItems,
+    medicineItems: medicineItems,
+    medicineNote: medicineNote
   };
 
   var prescType = document.getElementById('prescType').value || 'regular';
 
-  // ===== FOLLOWUP প্রেসক্রিপশন =====
+  // ===== FOLLOWUP =====
   if (prescType === 'followup') {
     google.script.run
       .withSuccessHandler(function(result) {
@@ -4391,17 +5239,15 @@
             loadPatients();
           }, 1500);
         } else {
-          showPdToast('❌ ' + (result && result.error) || 'সেভ করতে ব্যর্থ', 'error');
+          showPdToast('❌ ' + ((result && result.error) || 'সেভ করতে ব্যর্থ'), 'error');
         }
       })
-      .withFailureHandler(function(e) {
-        showPdToast('❌ Error: ' + e, 'error');
-      })
+      .withFailureHandler(function(e) { showPdToast('❌ Error: ' + e, 'error'); })
       .addFollowupPrescription(patientId, data, PD_USER_EMAIL);
     return;
   }
 
-  // ===== REGULAR প্রেসক্রিপশন (পুরনো লজিক) =====
+  // ===== REGULAR =====
   google.script.run
     .withSuccessHandler(function(result) {
       if (result.success) {
@@ -4417,12 +5263,10 @@
           }
         }, 1500);
       } else {
-        showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
+        showPdToast('❌ ' + ((result && result.error) || 'সার্ভার থেকে রেসপন্স নেই'), 'error');
       }
     })
-    .withFailureHandler(function(e) {
-      showPdToast('❌ Error: ' + e, 'error');
-    })
+    .withFailureHandler(function(e) { showPdToast('❌ Error: ' + e, 'error'); })
     .savePatientPrescription(patientId, data, PD_USER_EMAIL);
 }
 
@@ -4470,15 +5314,14 @@ function viewFollowupPatient(patientId, requestId) {
 
 function openFollowupPrescription(patientId, requestId) {
   if (!patientId) { showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error'); return; }
-  
-  // Request টি Viewed হিসেবে মার্ক করুন
+
+  // Mark request as Viewed
   if (requestId) {
     google.script.run
       .withFailureHandler(function() {})
       .markFollowupViewed(requestId, PD_USER_EMAIL);
   }
 
-  // Patient info load করুন এবং prescription form খুলুন
   google.script.run
     .withSuccessHandler(function(result) {
       if (!result || !result.success) {
@@ -4494,7 +5337,7 @@ function openFollowupPrescription(patientId, requestId) {
       document.getElementById('prescPatientId').value = p.id || '';
       document.getElementById('prescFromPending').value = 'false';
       document.getElementById('prescType').value = 'followup';
-      document.getElementById('prescRegNo').value = p.centerPin || ''; 
+      document.getElementById('prescRegNo').value = p.centerPin || '';
       autoSizeRegInput(document.getElementById('prescRegNo'));
 
       var today = new Date().toISOString().split('T')[0];
@@ -4509,19 +5352,41 @@ function openFollowupPrescription(patientId, requestId) {
       document.getElementById('prescGender').value = p.gender || '';
       document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
 
+      // Clear left column
       document.getElementById('prescCc').value = '';
       document.getElementById('prescHpc').value = '';
       document.getElementById('prescPmh').value = '';
       document.getElementById('prescDh').value = '';
       document.getElementById('prescOe').value = '';
+      document.getElementById('prescInvestigation').value = '';
       document.getElementById('prescAdvice').value = '';
       document.getElementById('prescDiagnosis').value = '';
       document.getElementById('prescRx').innerHTML = '';
       document.getElementById('prescSignatureDesignation').textContent = PD_USER_ROLE || 'Consultant (Physiotherapist)';
 
+      // Reset Rx session
+      PD_RX_MEDICINES = [];
+      if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+      var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
+      var phyChk = document.getElementById('physioSecCheck'); if (phyChk) phyChk.checked = true;
+      var hmChk = document.getElementById('hmSecCheck'); if (hmChk) hmChk.checked = true;
+      var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = false;
+      document.querySelectorAll('.phy-rx-check, .hm-rx-check').forEach(function(cb) { cb.checked = false; });
+      document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
+        b.innerText = '0';
+        b.className = 'badge cat-count-badge bg-secondary';
+      });
+
       document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
         if (typeof autoGrow === 'function') autoGrow(ta);
       });
+
+      // Init Rx mode + sections + B&W
+      setTimeout(function() {
+        if (typeof initRxMode === 'function') initRxMode();
+        if (typeof loadRxInputSections === 'function') loadRxInputSections();
+        if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+      }, 150);
 
       showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে — ফলোআপ প্রেসক্রিপশন লিখুন', 'info');
     })
@@ -4715,65 +5580,183 @@ function openFollowupPrescription(patientId, requestId) {
   }
 
   function viewSavedPrescription(patientId) {
-    if (!patientId) {
-      showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
-      return;
-    }
-
-    google.script.run
-      .withSuccessHandler(function(result) {
-        if (!result || !result.success) {
-          showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
-          return;
-        }
-        var p = result.patient;
-
-        var modal = document.getElementById('prescriptionModal');
-        modal.classList.add('show');
-        modal.style.display = 'flex';
-
-        document.getElementById('prescPatientId').value = p.id || '';
-        document.getElementById('prescFromPending').value = 'false';
-        document.getElementById('prescRegNo').value = p.centerPin || ''; autoSizeRegInput(document.getElementById('prescRegNo'));
-
-        var today = new Date().toISOString().split('T')[0];
-        document.getElementById('prescDate').value = today;
-        document.getElementById('prescDate').max = today;
-
-        document.getElementById('prescClientName').value = p.name || '';
-        document.getElementById('prescAge').value = p.age || '';
-        document.getElementById('prescGuardianName').value = p.father || '';
-        document.getElementById('prescMotherName').value = p.mother || '';
-        document.getElementById('prescAddress').value = p.address || '';
-        document.getElementById('prescGender').value = p.gender || '';
-        document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
-
-        if (p.prescriptionData) {
-          try {
-            var presc = JSON.parse(p.prescriptionData);
-            document.getElementById('prescCc').value = presc.cc || '';
-            document.getElementById('prescHpc').value = presc.hpc || '';
-            document.getElementById('prescPmh').value = presc.pmh || '';
-            document.getElementById('prescDh').value = presc.dh || '';
-            document.getElementById('prescOe').value = presc.oe || '';
-            document.getElementById('prescAdvice').value = presc.advice || '';
-            document.getElementById('prescDiagnosis').value = presc.diagnosis || '';
-            document.getElementById('prescRx').innerHTML = presc.rx || '';
-            document.getElementById('prescSignatureDesignation').textContent = presc.prescribedByDesignation || PD_USER_ROLE || 'Consultant (Physiotherapist)';
-          } catch (e) {}
-        }
-
-        document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
-          if (typeof autoGrow === 'function') autoGrow(ta);
-        });
-
-        showPdToast('📋 সংরক্ষিত প্রেসক্রিপশন লোড করা হয়েছে', 'info');
-      })
-      .withFailureHandler(function(e) {
-        showPdToast('❌ Error: ' + e, 'error');
-      })
-      .getPatientById(patientId, PD_USER_EMAIL);
+  if (!patientId) {
+    showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
+    return;
   }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (!result || !result.success) {
+        showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
+        return;
+      }
+      var p = result.patient;
+
+      var modal = document.getElementById('prescriptionModal');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+
+      document.getElementById('prescPatientId').value = p.id || '';
+      document.getElementById('prescFromPending').value = 'false';
+      document.getElementById('prescType').value = 'regular';
+      document.getElementById('prescRegNo').value = p.centerPin || '';
+      autoSizeRegInput(document.getElementById('prescRegNo'));
+
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('prescDate').value = today;
+      document.getElementById('prescDate').max = today;
+
+      document.getElementById('prescClientName').value = p.name || '';
+      document.getElementById('prescAge').value = p.age || '';
+      document.getElementById('prescGuardianName').value = p.father || '';
+      document.getElementById('prescMotherName').value = p.mother || '';
+      document.getElementById('prescAddress').value = p.address || '';
+      document.getElementById('prescGender').value = p.gender || '';
+      document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
+
+      // ===== Reset Rx session state =====
+      PD_RX_MEDICINES = [];
+      var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
+      document.getElementById('prescRx').innerHTML = '';
+      document.querySelectorAll('.phy-rx-check, .hm-rx-check').forEach(function(cb) { cb.checked = false; });
+      document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
+        b.innerText = '0';
+        b.className = 'badge cat-count-badge bg-secondary';
+      });
+
+      // ===== Populate from existing prescriptionData =====
+      var presc = null;
+      if (p.prescriptionData) {
+        try { presc = JSON.parse(p.prescriptionData); } catch (e) { presc = null; }
+      }
+
+      if (presc) {
+        document.getElementById('prescCc').value = presc.cc || '';
+        document.getElementById('prescHpc').value = presc.hpc || '';
+        document.getElementById('prescPmh').value = presc.pmh || '';
+        document.getElementById('prescDh').value = presc.dh || '';
+        document.getElementById('prescOe').value = presc.oe || '';
+        document.getElementById('prescInvestigation').value = presc.investigation || '';
+        document.getElementById('prescAdvice').value = presc.advice || '';
+        document.getElementById('prescDiagnosis').value = presc.diagnosis || '';
+        document.getElementById('prescRx').innerHTML = presc.rx || '';
+        document.getElementById('prescSignatureDesignation').textContent = presc.prescribedByDesignation || PD_USER_ROLE || 'Consultant (Physiotherapist)';
+
+        // Restore structured data
+        var physioSaved = presc.physiotherapyItems || [];
+        var hmSaved = presc.homeManagement || [];
+        var medSaved = presc.medicineItems || [];
+        var noteSaved = presc.medicineNote || '';
+
+        PD_RX_MEDICINES = Array.isArray(medSaved) ? medSaved.slice() : [];
+        if (fn) fn.value = noteSaved;
+        if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+
+        // Show Rx section if has meds
+        var rxChk = document.getElementById('rxSecCheck');
+        if (rxChk) rxChk.checked = (PD_RX_MEDICINES.length > 0 || noteSaved.trim());
+      } else {
+        document.getElementById('prescCc').value = '';
+        document.getElementById('prescHpc').value = '';
+        document.getElementById('prescPmh').value = '';
+        document.getElementById('prescDh').value = '';
+        document.getElementById('prescOe').value = '';
+        document.getElementById('prescInvestigation').value = '';
+        document.getElementById('prescAdvice').value = '';
+        document.getElementById('prescDiagnosis').value = '';
+      }
+
+      document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
+        if (typeof autoGrow === 'function') autoGrow(ta);
+      });
+
+      // ===== Init Rx mode + load sections + B&W, then restore checkbox selections =====
+      setTimeout(function() {
+        if (typeof initRxMode === 'function') initRxMode();
+        if (typeof loadRxInputSections === 'function') loadRxInputSections();
+        if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+
+        // After sections load, restore checkbox states
+        // After sections load, restore checkbox states + re-tag Rx box items
+        setTimeout(function() {
+          if (presc) {
+            var physioSaved = presc.physiotherapyItems || [];
+            var hmSaved = presc.homeManagement || [];
+            var medSaved = presc.medicineItems || [];
+
+            // 1) চেকবক্স restore
+            document.querySelectorAll('#physioCatAcc .phy-rx-check').forEach(function(cb) {
+              var key = cb.getAttribute('data-cat') + '||' + cb.value;
+              cb.checked = physioSaved.indexOf(key) !== -1;
+            });
+            document.querySelectorAll('#hmCatAcc .hm-rx-check').forEach(function(cb) {
+              var key = cb.getAttribute('data-cat') + '||' + cb.value;
+              cb.checked = hmSaved.indexOf(key) !== -1;
+            });
+
+            // 2) Badge update
+            document.querySelectorAll('.rx-cat-acc .accordion-item').forEach(function(w) {
+              var badge = w.querySelector('.cat-count-badge');
+              if (badge) {
+                var checked = w.querySelectorAll('input[type=checkbox]:checked').length;
+                badge.innerText = checked;
+                badge.className = 'badge cat-count-badge ' + (checked > 0 ? 'bg-success' : 'bg-secondary');
+              }
+            });
+
+            // 3) Rx box-এর synced লাইনগুলোতে data-sync-key আবার tag করা
+            var rxBox = document.getElementById('prescRx');
+            if (rxBox) {
+              rxBox.querySelectorAll('div').forEach(function(div) {
+                if (div.getAttribute('data-sync-key')) return; // already tagged
+                var txt = (div.textContent || '').trim();
+
+                // Physiotherapy items
+                physioSaved.forEach(function(entry) {
+                  var parts = entry.split('||');
+                  var itemName = (parts[1] || '').trim();
+                  if (!itemName) return;
+                  if (txt === '• ' + itemName || txt === itemName) {
+                    div.setAttribute('data-sync-key', 'PHY::' + parts[0] + '::' + itemName);
+                    div.setAttribute('data-sync-type', 'physio');
+                  }
+                });
+
+                // Home Management items
+                hmSaved.forEach(function(entry) {
+                  var parts = entry.split('||');
+                  var itemName = (parts[1] || '').trim();
+                  if (!itemName) return;
+                  if (txt === '• ' + itemName || txt === itemName) {
+                    div.setAttribute('data-sync-key', 'HM::' + parts[0] + '::' + itemName);
+                    div.setAttribute('data-sync-type', 'hm');
+                  }
+                });
+
+                // Medicine items
+                medSaved.forEach(function(m) {
+                  var medName = (m.medicineName || '').trim();
+                  if (!medName) return;
+                  if (txt.indexOf(medName) !== -1) {
+                    var key = 'MED::' + (m.category || '') + '::' + medName + '::' + (m.dose || '');
+                    div.setAttribute('data-sync-key', key);
+                    div.setAttribute('data-sync-type', 'medicine');
+                  }
+                });
+              });
+            }
+          }
+        }, 500);
+      }, 150);
+
+      showPdToast('📋 সংরক্ষিত প্রেসক্রিপশন লোড করা হয়েছে', 'info');
+    })
+    .withFailureHandler(function(e) {
+      showPdToast('❌ Error: ' + e, 'error');
+    })
+    .getPatientById(patientId, PD_USER_EMAIL);
+}
 
   // ================================================================
   // ===== FILTER FUNCTIONS ==========================================
@@ -5431,8 +6414,13 @@ function closePrescriptionForm() {
   var modal = document.getElementById('prescriptionModal');
   modal.classList.remove('show');
   modal.style.display = 'none';
-  pdResetFontControl_('prescriptionModal');
-  // Save button আবার স্বাভাবিক অবস্থায় ফিরিয়ে আনা
+  if (typeof pdResetFontControl_ === 'function') pdResetFontControl_('prescriptionModal');
+
+  // ===== NEW: Hide input popup =====
+  var popup = document.getElementById('rxInputPopup');
+  if (popup) popup.classList.remove('show');
+
+  // Re-enable save button
   var saveBtn = document.getElementById('prescSubmitBtn');
   if (saveBtn) {
     saveBtn.disabled = false;
@@ -5441,19 +6429,23 @@ function closePrescriptionForm() {
     saveBtn.style.cursor = '';
     saveBtn.innerHTML = '<i class="fas fa-save"></i> Submit';
   }
+
   document.getElementById('prescType').value = 'regular';
+
+  // ===== Cleanup Rx session =====
+  PD_RX_MEDICINES = [];
+  if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+  var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
 }
 
-// ===== ম্যানুয়াল প্রেসক্রিপশন (Print Only) — কোনো ডেটা সেভ হবে না =====
+  // ===== ম্যানুয়াল প্রেসক্রিপশন (Print Only) — কোনো ডেটা সেভ হবে না =====
 function openManualPrescription() {
-  // আগের কোনো print scale যেন থেকে না যায়
-  pdResetFontControl_('prescriptionModal');
-
+  if (typeof pdResetFontControl_ === 'function') pdResetFontControl_('prescriptionModal');
   var modal = document.getElementById('prescriptionModal');
   modal.classList.add('show');
   modal.style.display = 'flex';
 
-  // সব field একদম খালি — কোনো prefill নেই
+  // All fields empty — no prefill
   document.getElementById('prescPatientId').value = '';
   document.getElementById('prescFromPending').value = 'false';
   document.getElementById('prescType').value = 'manual';
@@ -5483,11 +6475,24 @@ function openManualPrescription() {
   document.getElementById('prescRx').innerHTML = '';
   document.getElementById('prescSignatureDesignation').textContent = PD_USER_ROLE || 'Consultant (Physiotherapist)';
 
-  // Save button disabled
+  // Reset Rx session
+  PD_RX_MEDICINES = [];
+  if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+  var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
+  var phyChk = document.getElementById('physioSecCheck'); if (phyChk) phyChk.checked = true;
+  var hmChk = document.getElementById('hmSecCheck'); if (hmChk) hmChk.checked = true;
+  var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = false;
+  document.querySelectorAll('.phy-rx-check, .hm-rx-check').forEach(function(cb) { cb.checked = false; });
+  document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
+    b.innerText = '0';
+    b.className = 'badge cat-count-badge bg-secondary';
+  });
+
+  // Disable save button
   var saveBtn = document.getElementById('prescSubmitBtn');
   if (saveBtn) {
     saveBtn.disabled = true;
-    saveBtn.title = 'ম্যানুয়াল মোডে সেভ করা যাবে না — শুধু প্রিন্ট করা যাবে';
+    saveBtn.title = 'ম্যানুয়াল মোডে সেভ করা যাবে না — শুধু প্রিন্ট';
     saveBtn.style.opacity = '0.55';
     saveBtn.style.cursor = 'not-allowed';
     saveBtn.innerHTML = '<i class="fas fa-lock"></i> Save (Disabled)';
@@ -5497,30 +6502,58 @@ function openManualPrescription() {
     if (typeof autoGrow === 'function') autoGrow(ta);
   });
 
+  // Init mode + load sections + B&W
+  setTimeout(function() {
+    if (typeof initRxMode === 'function') initRxMode();
+    if (typeof loadRxInputSections === 'function') loadRxInputSections();
+    if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+  }, 150);
+
   showPdToast('📄 ম্যানুয়াল মোড — কোনো ডেটা সেভ হবে না, শুধু প্রিন্ট করা যাবে', 'info');
 }
 
-  function resetPrescriptionForm() {
-    if (!confirm('Reset all fields?')) return;
-    document.querySelectorAll('#prescriptionModal input, #prescriptionModal select, #prescriptionModal textarea').forEach(function(el) {
-      if (el.type === 'radio' || el.type === 'checkbox') {
-        if (el.defaultChecked) el.checked = true;
-        else el.checked = false;
-      } else if (el.tagName === 'SELECT') {
-        el.selectedIndex = 0;
-      } else {
-        el.value = '';
-      }
-    });
-    document.getElementById('prescDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('prescRx').innerHTML = '';
-    var regEl = document.getElementById('prescRegNo');
-    if (regEl) autoSizeRegInput(regEl);
-    document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
-      if (typeof autoGrow === 'function') autoGrow(ta);
-    });
-    showPdToast('🔄 Form reset', 'info');
-  }
+function resetPrescriptionForm() {
+  if (!confirm('Reset all fields?')) return;
+
+  document.querySelectorAll('#prescriptionModal input, #prescriptionModal select, #prescriptionModal textarea').forEach(function(el) {
+    if (el.type === 'radio' || el.type === 'checkbox') {
+      if (el.defaultChecked) el.checked = true;
+      else el.checked = false;
+    } else if (el.tagName === 'SELECT') {
+      el.selectedIndex = 0;
+    } else {
+      el.value = '';
+    }
+  });
+
+  document.getElementById('prescDate').value = new Date().toISOString().split('T')[0];
+
+  var rxBox = document.getElementById('prescRx');
+  if (rxBox) rxBox.innerHTML = '';
+
+  // ===== Reset Rx input session =====
+  PD_RX_MEDICINES = [];
+  if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+
+  document.querySelectorAll('.phy-rx-check, .hm-rx-check').forEach(function(cb) { cb.checked = false; });
+  document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
+    b.innerText = '0';
+    b.className = 'badge cat-count-badge bg-secondary';
+  });
+
+  var phyChk = document.getElementById('physioSecCheck'); if (phyChk) phyChk.checked = true;
+  var hmChk = document.getElementById('hmSecCheck'); if (hmChk) hmChk.checked = true;
+  var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = false;
+
+  var regEl = document.getElementById('prescRegNo');
+  if (regEl) autoSizeRegInput(regEl);
+
+  document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
+    if (typeof autoGrow === 'function') autoGrow(ta);
+  });
+
+  showPdToast('🔄 Form reset', 'info');
+}
 
 
 
@@ -5771,13 +6804,34 @@ function openManualPrescription() {
   }
 
   // ===== প্রেসক্রিপশন ফর্মের Rx বক্সের জন্য mini rich-text টুলবার (MS Word স্টাইলে) =====
-  function richExec(command, value) {
-    var rxBox = document.getElementById('prescRx');
-    if (rxBox) rxBox.focus();
-    try {
-      document.execCommand(command, false, value || null);
-    } catch (e) {}
+function richExec(command, value) {
+  var rxBox = document.getElementById('prescRx');
+  if (rxBox) rxBox.focus();
+
+  try {
+    // ===== Font size (1-18) — MS Word style =====
+    if (command === 'fontSize' && value) {
+      var targetPx = parseInt(value, 10) || 12;
+      // Use marker size 7 (largest execCommand supports), then replace with px
+      document.execCommand('fontSize', false, '7');
+      if (rxBox) {
+        var fonts = rxBox.querySelectorAll('font[size="7"]');
+        for (var i = 0; i < fonts.length; i++) {
+          var f = fonts[i];
+          var span = document.createElement('span');
+          span.style.fontSize = targetPx + 'px';
+          while (f.firstChild) span.appendChild(f.firstChild);
+          f.parentNode.replaceChild(span, f);
+        }
+      }
+      return;
+    }
+    // ===== Standard commands (bold, italic, underline, foreColor) =====
+    document.execCommand(command, false, value || null);
+  } catch (e) {
+    console.warn('richExec error:', e);
   }
+}
 
   function autoGrowAll(containerId) {
     var container = containerId ? document.getElementById(containerId) : document;
@@ -6361,7 +7415,7 @@ function openManualPrescription() {
   // ===== INIT ======================================================
   // ================================================================
 
-  (function init() {
+(function init() {
     console.log('🚀 Patient Management UI loaded');
     loadPatientDashboard();
 
@@ -7922,14 +8976,94 @@ function viewFollowupPrescription(index) {
       document.getElementById('prescPmh').value = presc.pmh || '';
       document.getElementById('prescDh').value = presc.dh || '';
       document.getElementById('prescOe').value = presc.oe || '';
+      document.getElementById('prescInvestigation').value = presc.investigation || '';
       document.getElementById('prescAdvice').value = presc.advice || '';
       document.getElementById('prescDiagnosis').value = presc.diagnosis || '';
       document.getElementById('prescRx').innerHTML = presc.rx || '';
       document.getElementById('prescSignatureDesignation').textContent = presc.prescribedByDesignation || PD_USER_ROLE || 'Consultant (Physiotherapist)';
 
+      // Restore structured data
+      var physioSaved = presc.physiotherapyItems || [];
+      var hmSaved = presc.homeManagement || [];
+      var medSaved = presc.medicineItems || [];
+      var noteSaved = presc.medicineNote || '';
+
+      PD_RX_MEDICINES = Array.isArray(medSaved) ? medSaved.slice() : [];
+      if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+      var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = noteSaved;
+      var rxChk = document.getElementById('rxSecCheck');
+      if (rxChk) rxChk.checked = (PD_RX_MEDICINES.length > 0 || noteSaved.trim());
+
       document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
         if (typeof autoGrow === 'function') autoGrow(ta);
       });
+
+      // Init mode + load sections + B&W + restore checkboxes
+      setTimeout(function() {
+        if (typeof initRxMode === 'function') initRxMode();
+        if (typeof loadRxInputSections === 'function') loadRxInputSections();
+        if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+        setTimeout(function() {
+          if (presc) {
+            var physioSaved = presc.physiotherapyItems || [];
+            var hmSaved = presc.homeManagement || [];
+            var medSaved = presc.medicineItems || [];
+
+            document.querySelectorAll('#physioCatAcc .phy-rx-check').forEach(function(cb) {
+              var key = cb.getAttribute('data-cat') + '||' + cb.value;
+              cb.checked = physioSaved.indexOf(key) !== -1;
+            });
+            document.querySelectorAll('#hmCatAcc .hm-rx-check').forEach(function(cb) {
+              var key = cb.getAttribute('data-cat') + '||' + cb.value;
+              cb.checked = hmSaved.indexOf(key) !== -1;
+            });
+
+            document.querySelectorAll('.rx-cat-acc .accordion-item').forEach(function(w) {
+              var badge = w.querySelector('.cat-count-badge');
+              if (badge) {
+                var checked = w.querySelectorAll('input[type=checkbox]:checked').length;
+                badge.innerText = checked;
+                badge.className = 'badge cat-count-badge ' + (checked > 0 ? 'bg-success' : 'bg-secondary');
+              }
+            });
+
+            var rxBox = document.getElementById('prescRx');
+            if (rxBox) {
+              rxBox.querySelectorAll('div').forEach(function(div) {
+                if (div.getAttribute('data-sync-key')) return;
+                var txt = (div.textContent || '').trim();
+                physioSaved.forEach(function(entry) {
+                  var parts = entry.split('||');
+                  var itemName = (parts[1] || '').trim();
+                  if (!itemName) return;
+                  if (txt === '• ' + itemName || txt === itemName) {
+                    div.setAttribute('data-sync-key', 'PHY::' + parts[0] + '::' + itemName);
+                    div.setAttribute('data-sync-type', 'physio');
+                  }
+                });
+                hmSaved.forEach(function(entry) {
+                  var parts = entry.split('||');
+                  var itemName = (parts[1] || '').trim();
+                  if (!itemName) return;
+                  if (txt === '• ' + itemName || txt === itemName) {
+                    div.setAttribute('data-sync-key', 'HM::' + parts[0] + '::' + itemName);
+                    div.setAttribute('data-sync-type', 'hm');
+                  }
+                });
+                medSaved.forEach(function(m) {
+                  var medName = (m.medicineName || '').trim();
+                  if (!medName) return;
+                  if (txt.indexOf(medName) !== -1) {
+                    var key = 'MED::' + (m.category || '') + '::' + medName + '::' + (m.dose || '');
+                    div.setAttribute('data-sync-key', key);
+                    div.setAttribute('data-sync-type', 'medicine');
+                  }
+                });
+              });
+            }
+          }
+        }, 500);
+      }, 150);
 
       showPdToast('📋 ফলোআপ প্রেসক্রিপশন লোড হয়েছে — প্রয়োজনে এডিট করে সেভ করতে পারবেন', 'info');
     })
@@ -7965,20 +9099,14 @@ function viewFollowupPrescription(index) {
       .getServiceCategoryCounts(PD_USER_EMAIL);
   }
 
-  // ===== রিপোর্ট এক্সপোর্টে (সব ধরনের রিপোর্টে — রোগীর তথ্য ও সেবা প্রদান তথ্য উভয়ই) আজকের পরের তারিখ ব্লক =====
+
+  // ===== রিপোর্ট কাস্টম তারিখে আজকের পরের তারিখ ব্লক =====
 (function() {
-  function blockFutureDates() {
-    var todayStr = new Date().toISOString().split('T')[0];
-    var fromInput = document.getElementById('reportDateFrom');
-    var toInput = document.getElementById('reportDateTo');
-    if (fromInput) fromInput.max = todayStr;
-    if (toInput) toInput.max = todayStr;
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', blockFutureDates);
-  } else {
-    blockFutureDates();
-  }
+  var todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD ফরম্যাট
+  var fromInput = document.getElementById('reportDateFrom');
+  var toInput = document.getElementById('reportDateTo');
+  if (fromInput) fromInput.max = todayStr;
+  if (toInput) toInput.max = todayStr;
 })();
 
   // ================================================================
@@ -8054,6 +9182,811 @@ function viewFollowupPrescription(index) {
   window.closeAdminBackupModal = closeAdminBackupModal;
   window.exportPatientManagementJSON = exportPatientManagementJSON;
   window.importPatientManagementJSON = importPatientManagementJSON;
+
+  /* ================================================================ */
+/* ===== RX MODE TOGGLE (Segmented Control) ======================= */
+/* ================================================================ */
+var PD_RX_MODE_KEY = 'psosk_rx_mode_v1';
+
+function initRxMode() {
+  var savedMode = 'type';
+  try { savedMode = localStorage.getItem(PD_RX_MODE_KEY) || 'type'; } catch(e) {}
+  switchRxMode(savedMode);
+}
+
+function switchRxMode(mode) {
+  if (mode !== 'input' && mode !== 'type') mode = 'type';
+  var popup = document.getElementById('rxInputPopup');
+  var rxBox = document.getElementById('prescRx');
+
+  document.querySelectorAll('.rx-mode-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
+  });
+
+  if (mode === 'input') {
+    if (popup) popup.classList.add('show');
+    if (rxBox) { rxBox.contentEditable = 'false'; rxBox.style.background = '#fafbfc'; }
+    loadRxInputSections();
+  } else {
+    if (popup) popup.classList.remove('show');
+    if (rxBox) { rxBox.contentEditable = 'true'; rxBox.style.background = ''; }
+  }
+  try { localStorage.setItem(PD_RX_MODE_KEY, mode); } catch(e) {}
+}
+
+/* ================================================================ */
+/* ===== RX INPUT SECTIONS ======================================== */
+/* ================================================================ */
+var PD_RX_CACHED_CATS = { physio: [], hm: [], rx: [] };
+
+function toggleRxInputSection(type) {
+  var map = { physio: 'physioSecCheck', hm: 'hmSecCheck', rx: 'rxSecCheck' };
+  var chk = document.getElementById(map[type]);
+  if (!chk) return;
+  var section = document.getElementById(map[type].replace('Check', 'InputSection'));
+  if (section) section.style.opacity = chk.checked ? '1' : '0.5';
+  // also hide the preview block if there was one — we don't have one separate
+}
+
+function loadRxInputSections() {
+  if (!PD_USER_EMAIL) return;
+
+  // ===== Physiotherapy =====
+  google.script.run
+    .withSuccessHandler(function(res) {
+      console.log('✅ physio categories:', res);
+      var box = document.getElementById('physioCatAcc');
+      if (!res || !res.success) {
+        if (box) box.innerHTML = '<div class="text-danger small p-2">❌ ' +
+          ((res && res.error) || 'Load failed') + '</div>';
+        return;
+      }
+      PD_RX_CACHED_CATS.physio = res.categories || [];
+      renderRxAccordion('physioCatAcc', PD_RX_CACHED_CATS.physio, 'phy-rx-check', 'physio');
+    })
+    .withFailureHandler(function(err) {
+      console.error('❌ physio load error:', err);
+      var box = document.getElementById('physioCatAcc');
+      if (box) box.innerHTML = '<div class="text-danger small p-2">❌ ' +
+        ((err && err.message) || err) + '</div>';
+    })
+    .getUserPhysioCategories(PD_USER_EMAIL);
+
+  // ===== Home Management =====
+  google.script.run
+    .withSuccessHandler(function(res) {
+      console.log('✅ hm categories:', res);
+      var box = document.getElementById('hmCatAcc');
+      if (!res || !res.success) {
+        if (box) box.innerHTML = '<div class="text-danger small p-2">❌ ' +
+          ((res && res.error) || 'Load failed') + '</div>';
+        return;
+      }
+      PD_RX_CACHED_CATS.hm = res.categories || [];
+      renderRxAccordion('hmCatAcc', PD_RX_CACHED_CATS.hm, 'hm-rx-check', 'hm');
+    })
+    .withFailureHandler(function(err) {
+      console.error('❌ hm load error:', err);
+      var box = document.getElementById('hmCatAcc');
+      if (box) box.innerHTML = '<div class="text-danger small p-2">❌ ' +
+        ((err && err.message) || err) + '</div>';
+    })
+    .getUserHmCategories(PD_USER_EMAIL);
+
+  // ===== Medicine (datalist) =====
+  google.script.run
+    .withSuccessHandler(function(res) {
+      console.log('✅ med categories:', res);
+      if (!res || !res.success) return;
+      PD_RX_CACHED_CATS.rx = res.categories || [];
+      var dl = document.getElementById('medCatList2');
+      if (dl) {
+        dl.innerHTML = '';
+        PD_RX_CACHED_CATS.rx.forEach(function(c) {
+          var opt = document.createElement('option');
+          opt.value = c.categoryName;
+          dl.appendChild(opt);
+        });
+      }
+    })
+    .withFailureHandler(function(err) {
+      console.error('❌ med load error:', err);
+    })
+    .getUserMedicineCategories(PD_USER_EMAIL);
+}
+
+function renderRxAccordion(containerId, cats, checkboxClass, type) {
+  console.log('🔧 renderRxAccordion called:', containerId, 'cats count:', cats ? cats.length : 0);
+  var container = document.getElementById(containerId);
+  console.log('🔧 container found:', !!container);
+  if (!container) { console.warn('❌ container NOT found:', containerId); return; }
+  if (!cats || !cats.length) {
+    container.innerHTML = '<div class="text-muted small p-2">No items yet.</div>';
+    return;
+  }
+  try {
+    var html = '';
+    cats.forEach(function(cat, idx) {
+      var collapseId = containerId + '_c_' + idx;
+      var itemCount = (cat.items || []).length;
+      html += '<div class="accordion-item">';
+      html += '<h2 class="accordion-header">';
+      html += '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#' + collapseId + '">';
+      html += '<i class="fas fa-folder-open me-2"></i> ' + esc_(cat.categoryName);
+      html += ' <span class="badge bg-secondary cat-count-badge">0</span>';
+      html += ' <span class="text-muted small ms-2">(' + itemCount + ')</span>';
+      html += '</button></h2>';
+      html += '<div id="' + collapseId + '" class="accordion-collapse collapse show" data-bs-parent="#' + containerId + '">';
+      html += '<div class="accordion-body">';
+      if (!itemCount) {
+        html += '<div class="text-muted small">No items in this category.</div>';
+      } else {
+        cat.items.forEach(function(it, i) {
+          var cid = containerId + '_' + idx + '_' + i;
+          var itemName = it.itemName || it.medicineName || '';
+          var doseVal = it.dose || '';
+          var durVal = it.duration || '';
+          html += '<div class="form-check">';
+          html += '<input class="form-check-input ' + checkboxClass + '" type="checkbox" ';
+          html += 'value="' + esc_(itemName) + '" ';
+          html += 'data-cat="' + esc_(cat.categoryName) + '" ';
+          html += 'data-catid="' + esc_(cat.categoryId) + '" ';
+          html += 'data-dose="' + esc_(doseVal) + '" ';
+          html += 'data-dur="' + esc_(durVal) + '" ';
+          html += 'id="' + cid + '">';
+          html += '<label class="form-check-label" for="' + cid + '">' + esc_(itemName);
+          if (doseVal) html += ' — <small class="text-muted">' + esc_(doseVal) + (durVal ? ' / ' + esc_(durVal) : '') + '</small>';
+          html += '</label></div>';
+        });
+      }
+      html += '</div></div></div>';
+    });
+    container.innerHTML = html;
+    console.log('✅ renderRxAccordion HTML set, length =', html.length);
+
+    container.querySelectorAll('.' + checkboxClass).forEach(function(cb) {
+      cb.addEventListener('change', function() {
+        var wrapper = this.closest('.accordion-item');
+        if (wrapper) {
+          var badge = wrapper.querySelector('.cat-count-badge');
+          if (badge) {
+            var checked = wrapper.querySelectorAll('input[type=checkbox]:checked').length;
+            badge.innerText = checked;
+            badge.className = 'badge cat-count-badge ' + (checked > 0 ? 'bg-success' : 'bg-secondary');
+          }
+        }
+        var cat = this.getAttribute('data-cat') || '';
+        var name = this.value;
+        if (checkboxClass === 'phy-rx-check') {
+          if (this.checked) rxInsertPhysioItem(cat, name);
+          else rxRemovePhysioItem(cat, name);
+        } else if (checkboxClass === 'hm-rx-check') {
+          if (this.checked) rxInsertHmItem(cat, name);
+          else rxRemoveHmItem(cat, name);
+        }
+      });
+    });
+    console.log('✅ renderRxAccordion listeners bound');
+  } catch (err) {
+    console.error('❌ renderRxAccordion THREW:', err);
+  }
+}
+
+/* ================================================================ */
+/* ===== QUICK ADD ================================================ */
+/* ================================================================ */
+function quickAddRxItem(type) {
+  var map = { physio: 'physioQuickAdd', hm: 'hmQuickAdd' };
+  var hintMap = { physio: 'physioQuickHint', hm: 'hmQuickHint' };
+  var inp = document.getElementById(map[type]);
+  var hint = document.getElementById(hintMap[type]);
+  if (!inp) return;
+  var val = inp.value.trim();
+  if (!val) return;
+
+  // Find "General" category (or create one)
+  var catList = PD_RX_CACHED_CATS[type] || [];
+  var generalCat = catList.find(function(c) { return c.categoryName.toLowerCase() === 'general'; });
+
+  if (!generalCat) {
+    // Create General category first
+    var apiType = type === 'physio' ? 'PHYSIO' : 'HM';
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res && res.success) {
+          // Then add the item
+          google.script.run
+            .withSuccessHandler(function(r2) {
+              if (r2 && r2.success) {
+                inp.value = '';
+                if (hint) { hint.className = 'd-block mt-1 text-success'; hint.innerText = '✅ Added'; setTimeout(function(){ hint.innerText=''; }, 1500); }
+                loadRxInputSections();
+              } else {
+                if (hint) { hint.className = 'd-block mt-1 text-danger'; hint.innerText = '❌ ' + ((r2 && r2.error) || 'Failed'); }
+              }
+            })
+            .userAddItem(PD_USER_EMAIL, apiType, res.categoryId, val, '', '');
+        } else {
+          if (hint) { hint.className = 'd-block mt-1 text-danger'; hint.innerText = '❌ ' + ((res && res.error) || 'Failed'); }
+        }
+      })
+      .userAddCategory(PD_USER_EMAIL, apiType, 'General');
+    return;
+  }
+
+  // Add to existing General
+  var apiType2 = type === 'physio' ? 'PHYSIO' : 'HM';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) {
+        inp.value = '';
+        if (hint) { hint.className = 'd-block mt-1 text-success'; hint.innerText = '✅ Added to General'; setTimeout(function(){ hint.innerText=''; }, 1500); }
+        loadRxInputSections();
+      } else {
+        if (hint) { hint.className = 'd-block mt-1 text-danger'; hint.innerText = '❌ ' + ((res && res.error) || 'Failed'); }
+      }
+    })
+    .userAddItem(PD_USER_EMAIL, apiType2, generalCat.categoryId, val, '', '');
+}
+
+/* ================================================================ */
+/* ===== MEDICINE QUICK ADD ======================================= */
+/* ================================================================ */
+var PD_RX_MEDICINES = []; // [{category, medicineName, dose, duration}]
+
+function quickAddMedicine() {
+  var catInp = document.getElementById('medCatInp');
+  var nameInp = document.getElementById('medNameInp');
+  var doseInp = document.getElementById('medDoseInp');
+  var durInp = document.getElementById('medDurInp');
+  var cat = catInp.value.trim();
+  var name = nameInp.value.trim();
+  var dose = doseInp.value.trim();
+  var dur = durInp.value.trim();
+  if (!cat) { showPdToast('Category দিন (Tab / Cap / Syrup)', 'error'); catInp.focus(); return; }
+  if (!name) { showPdToast('Medicine name দিন', 'error'); nameInp.focus(); return; }
+  if (!dose) { showPdToast('Dose দিন (1+0+1)', 'error'); doseInp.focus(); return; }
+
+  var newMed = { category: cat, medicineName: name, dose: dose, duration: dur };
+  PD_RX_MEDICINES.push(newMed);
+  renderRxMedListInInput();
+  rxInsertMedicine(newMed);
+
+  // Auto-check Rx section
+  var rxChk = document.getElementById('rxSecCheck');
+  if (rxChk && !rxChk.checked) { rxChk.checked = true; toggleRxInputSection('rx'); }
+
+  // Clear inputs (keep category)
+  nameInp.value = ''; doseInp.value = ''; durInp.value = '';
+  nameInp.focus();
+
+  // Save to backend (find or create category, then add medicine)
+  var existing = PD_RX_CACHED_CATS.rx.find(function(c) { return c.categoryName.toLowerCase() === cat.toLowerCase(); });
+  if (existing) {
+    google.script.run.withSuccessHandler(function() { loadRxInputSections(); })
+      .userAddItem(PD_USER_EMAIL, 'MED', existing.categoryId, name, dose, dur);
+  } else {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res && res.success) {
+          google.script.run.withSuccessHandler(function() { loadRxInputSections(); })
+            .userAddItem(PD_USER_EMAIL, 'MED', res.categoryId, name, dose, dur);
+        }
+      })
+      .userAddCategory(PD_USER_EMAIL, 'MED', cat);
+  }
+}
+
+function renderRxMedListInInput() {
+  var box = document.getElementById('rxMedListBox');
+  if (!box) return;
+  if (!PD_RX_MEDICINES.length) {
+    box.innerHTML = '<div class="text-muted small p-2" id="rxMedEmpty">No medicine added yet.</div>';
+    return;
+  }
+  var html = '';
+  PD_RX_MEDICINES.forEach(function(m, idx) {
+    html += '<div class="med-list-item">';
+    html += '<div class="m-cat">' + esc_(m.category) + ':</div>';
+    html += '<div class="m-info"><div class="m-name">' + esc_(m.medicineName) + '</div>';
+    html += '<div class="m-dose">' + esc_(m.dose) + (m.duration ? '  -------- ' + esc_(m.duration) : '') + '</div></div>';
+    html += '<button type="button" class="m-del no-print" onclick="removeRxMedicine(' + idx + ')" title="Remove"><i class="fas fa-times"></i></button>';
+    html += '</div>';
+  });
+  box.innerHTML = html;
+}
+
+function removeRxMedicine(idx) {
+  if (idx < 0 || idx >= PD_RX_MEDICINES.length) return;
+  var med = PD_RX_MEDICINES[idx];
+  rxRemoveMedicine(med);
+  PD_RX_MEDICINES.splice(idx, 1);
+  renderRxMedListInInput();
+}
+
+/* ================================================================ */
+/* ===== COLLECT INPUT MODE DATA FOR SAVE ========================= */
+/* ================================================================ */
+function getSelectedPhysioItems() {
+  var out = [];
+  document.querySelectorAll('#physioCatAcc .phy-rx-check:checked').forEach(function(cb) {
+    out.push(cb.getAttribute('data-cat') + '||' + cb.value);
+  });
+  return out;
+}
+function getSelectedHmItems() {
+  var out = [];
+  document.querySelectorAll('#hmCatAcc .hm-rx-check:checked').forEach(function(cb) {
+    out.push(cb.getAttribute('data-cat') + '||' + cb.value);
+  });
+  return out;
+}
+
+/* ================================================================ */
+/* ===== MAXIMIZED MANAGE MODAL =================================== */
+/* ================================================================ */
+var PD_RX_MANAGE_CURRENT = 'physio';
+
+function openRxManageModal(type) {
+  PD_RX_MANAGE_CURRENT = type;
+  var modal = document.getElementById('rxManageModal');
+  if (!modal) return;
+  modal.classList.add('show');
+  switchRxManageTab(type);
+}
+
+function closeRxManageModal() {
+  var modal = document.getElementById('rxManageModal');
+  if (modal) modal.classList.remove('show');
+  // Refresh accordion lists in input mode
+  loadRxInputSections();
+}
+
+function switchRxManageTab(type) {
+  PD_RX_MANAGE_CURRENT = type;
+  document.querySelectorAll('.rx-manage-tab').forEach(function(t) {
+    t.classList.toggle('active', t.getAttribute('data-mtype') === type);
+  });
+  document.querySelectorAll('.rx-manage-panel').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  var map = { physio: 'rxManagePanelPhysio', hm: 'rxManagePanelHm', rx: 'rxManagePanelRx' };
+  var panel = document.getElementById(map[type]);
+  if (panel) panel.classList.add('active');
+  loadManageModalContent(type);
+}
+
+function loadManageModalContent(type) {
+  var listIdMap = { physio: 'rxMngPhysioList', hm: 'rxMngHmList', rx: 'rxMngRxList' };
+  var catSelMap = { physio: 'rxMngPhysioCatSel', hm: 'rxMngHmCatSel', rx: 'rxMngRxCatSel' };
+  var cacheKeyMap = { physio: 'physio', hm: 'hm', rx: 'rx' };
+  var listId = listIdMap[type];
+  var catSelId = catSelMap[type];
+  var cacheKey = cacheKeyMap[type];
+  var listEl = document.getElementById(listId);
+  if (listEl) listEl.innerHTML = '<div class="text-muted p-3">Loading...</div>';
+
+  // ===== Common handlers =====
+  function onSuccess(res) {
+    console.log('✅ ' + type + ' response:', res);
+    if (!res || !res.success) {
+      var errMsg = (res && res.error) || 'Unknown error';
+      if (listEl) listEl.innerHTML = '<div class="text-danger p-3">❌ ' + errMsg + '</div>';
+      return;
+    }
+    var cats = res.categories || [];
+    console.log('📦 ' + type + ' categories count = ' + cats.length, cats);
+    PD_RX_CACHED_CATS[cacheKey] = cats;
+    renderManageList(type, cats);
+
+    var sel = document.getElementById(catSelId);
+    if (sel) {
+      sel.innerHTML = '<option value="">-- Select Category --</option>';
+      cats.forEach(function(c) {
+        var o = document.createElement('option');
+        o.value = c.categoryId;
+        o.textContent = c.categoryName;
+        sel.appendChild(o);
+      });
+    }
+  }
+
+  function onFailure(err) {
+    console.error('❌ ' + type + ' load failed:', err);
+    var msg = (err && err.message) ? err.message : (err ? err.toString() : 'Unknown error');
+    if (listEl) listEl.innerHTML = '<div class="text-danger p-3">❌ ' + msg + '</div>';
+  }
+
+  // ===== Direct calls — bracket notation সরিয়ে ফেলা হলো =====
+  if (type === 'physio') {
+    google.script.run
+      .withSuccessHandler(onSuccess)
+      .withFailureHandler(onFailure)
+      .getUserPhysioCategories(PD_USER_EMAIL);
+  } else if (type === 'hm') {
+    google.script.run
+      .withSuccessHandler(onSuccess)
+      .withFailureHandler(onFailure)
+      .getUserHmCategories(PD_USER_EMAIL);
+  } else {
+    google.script.run
+      .withSuccessHandler(onSuccess)
+      .withFailureHandler(onFailure)
+      .getUserMedicineCategories(PD_USER_EMAIL);
+  }
+}
+
+function renderManageList(type, cats) {
+  var listIdMap = { physio: 'rxMngPhysioList', hm: 'rxMngHmList', rx: 'rxMngRxList' };
+  var listEl = document.getElementById(listIdMap[type]);
+  if (!listEl) return;
+  if (!cats.length) {
+    listEl.innerHTML = '<div class="text-muted p-4 text-center">No categories yet. Add one above.</div>';
+    return;
+  }
+  var html = '';
+  cats.forEach(function(cat) {
+    var cnt = (cat.items || []).length;
+    html += '<div class="rx-manage-cat-card">';
+    html += '<div class="rx-manage-cat-head">';
+    html += '<i class="fas fa-folder-open" style="color:#3f8f5f;"></i>';
+    html += '<span class="cat-title">' + esc_(cat.categoryName) + '</span>';
+    html += '<span class="badge-cnt">' + cnt + '</span>';
+    html += '<button type="button" class="btn-edit-cat" onclick="rxMngEditCategory(\'' + type + '\',\'' + esc_(cat.categoryId) + '\',\'' + esc_(cat.categoryName).replace(/'/g, "\\'") + '\')"><i class="fas fa-edit"></i> Edit</button>';
+    html += '<button type="button" class="btn-del-cat" onclick="rxMngDeleteCategory(\'' + type + '\',\'' + esc_(cat.categoryId) + '\',\'' + esc_(cat.categoryName).replace(/'/g, "\\'") + '\',' + cnt + ')"><i class="fas fa-trash"></i> Delete</button>';
+    html += '</div>';
+    if (cnt === 0) {
+      html += '<div class="text-muted p-2" style="padding-left:30px;">No items.</div>';
+    } else {
+      cat.items.forEach(function(it) {
+        var nm = it.itemName || it.medicineName || '';
+        var dose = it.dose || '';
+        var dur = it.duration || '';
+        html += '<div class="rx-manage-item-row">';
+        html += '<span class="m-name">' + esc_(nm) + '</span>';
+        html += '<span class="m-dose">' + esc_(dose) + '</span>';
+        html += '<span class="m-dur">' + esc_(dur) + '</span>';
+        html += '<span class="item-actions">';
+        html += '<button type="button" class="btn-edit-item" onclick="rxMngEditItem(\'' + type + '\',\'' + esc_(cat.categoryId) + '\',\'' + esc_(it.itemId) + '\',\'' + esc_(nm).replace(/'/g, "\\'") + '\',\'' + esc_(dose).replace(/'/g, "\\'") + '\',\'' + esc_(dur).replace(/'/g, "\\'") + '\')"><i class="fas fa-edit"></i></button>';
+        html += '<button type="button" class="btn-del-item" onclick="rxMngDeleteItem(\'' + type + '\',\'' + esc_(cat.categoryId) + '\',\'' + esc_(it.itemId) + '\')"><i class="fas fa-trash"></i></button>';
+        html += '</span>';
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+  });
+  listEl.innerHTML = html;
+}
+
+function rxMngAddCategory(type) {
+  var inpMap = { physio: 'rxMngPhysioNewCat', hm: 'rxMngHmNewCat', rx: 'rxMngRxNewCat' };
+  var inp = document.getElementById(inpMap[type]);
+  if (!inp) return;
+  var name = inp.value.trim();
+  if (!name) { showPdToast('Category name দিন', 'error'); return; }
+  var apiType = type === 'physio' ? 'PHYSIO' : (type === 'hm' ? 'HM' : 'MED');
+
+  console.log('📤 userAddCategory →', { type: apiType, name: name });
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      console.log('✅ userAddCategory response:', res);
+      if (res && res.success) {
+        inp.value = '';
+        showPdToast('✅ Category added', 'success');
+        // reload list
+        setTimeout(function() { loadManageModalContent(type); }, 200);
+      } else {
+        showPdToast('❌ ' + ((res && res.error) || 'Failed'), 'error');
+      }
+    })
+    .withFailureHandler(function(err) {
+      console.error('❌ userAddCategory failed:', err);
+      var msg = (err && err.message) ? err.message : (err ? err.toString() : 'Unknown error');
+      showPdToast('❌ ' + msg, 'error');
+    })
+    .userAddCategory(PD_USER_EMAIL, apiType, name);
+}
+
+function rxMngAddItem(type) {
+  var catSelMap = { physio: 'rxMngPhysioCatSel', hm: 'rxMngHmCatSel', rx: 'rxMngRxCatSel' };
+  var nameMap = { physio: 'rxMngPhysioNewItem', hm: 'rxMngHmNewItem', rx: 'rxMngRxNewName' };
+  var doseMap = { rx: 'rxMngRxNewDose' };
+  var durMap = { rx: 'rxMngRxNewDur' };
+  var catId = (document.getElementById(catSelMap[type]) || {}).value;
+  var name = (document.getElementById(nameMap[type]) || {}).value || '';
+  var dose = (document.getElementById(doseMap[type] || '') || {}).value || '';
+  var dur = (document.getElementById(durMap[type] || '') || {}).value || '';
+  name = name.trim(); dose = dose.trim(); dur = dur.trim();
+  if (!catId) { showPdToast('Category select করুন', 'error'); return; }
+  if (!name) { showPdToast('Item name দিন', 'error'); return; }
+  if (type === 'rx' && !dose) { showPdToast('Dose দিন', 'error'); return; }
+  var apiType = type === 'physio' ? 'PHYSIO' : (type === 'hm' ? 'HM' : 'MED');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) {
+        var nmInp = document.getElementById(nameMap[type]); if (nmInp) nmInp.value = '';
+        var dInp = document.getElementById(doseMap[type] || ''); if (dInp) dInp.value = '';
+        var duInp = document.getElementById(durMap[type] || ''); if (duInp) duInp.value = '';
+        showPdToast('✅ Item added', 'success');
+        loadManageModalContent(type);
+      } else {
+        showPdToast('❌ ' + ((res && res.error) || 'Failed'), 'error');
+      }
+    })
+    .userAddItem(PD_USER_EMAIL, apiType, catId, name, dose, dur);
+}
+
+function rxMngEditCategory(type, catId, oldName) {
+  var newName = prompt('Rename category:', oldName);
+  if (newName === null) return;
+  newName = newName.trim();
+  if (!newName) return;
+  var apiType = type === 'physio' ? 'PHYSIO' : (type === 'hm' ? 'HM' : 'MED');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) { showPdToast('✅ Updated', 'success'); loadManageModalContent(type); }
+      else showPdToast('❌ ' + ((res && res.error) || 'Failed'), 'error');
+    })
+    .userUpdateCategory(PD_USER_EMAIL, apiType, catId, newName);
+}
+
+function rxMngDeleteCategory(type, catId, name, cnt) {
+  var msg = 'Delete category "' + name + '"?';
+  if (cnt > 0) msg += '\n\n⚠️ ' + cnt + ' item(s) will also be deleted!';
+  if (!confirm(msg)) return;
+  var apiType = type === 'physio' ? 'PHYSIO' : (type === 'hm' ? 'HM' : 'MED');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) { showPdToast('✅ Deleted', 'success'); loadManageModalContent(type); }
+      else showPdToast('❌ ' + ((res && res.error) || 'Failed'), 'error');
+    })
+    .userDeleteCategory(PD_USER_EMAIL, apiType, catId);
+}
+
+function rxMngEditItem(type, catId, itemId, oldName, oldDose, oldDur) {
+  var newName = prompt('Edit name:', oldName);
+  if (newName === null) return;
+  newName = newName.trim();
+  if (!newName) return;
+  var newDose = oldDose, newDur = oldDur;
+  if (type === 'rx') {
+    var d = prompt('Edit dose:', oldDose);
+    if (d === null) return;
+    newDose = d.trim();
+    var du = prompt('Edit duration:', oldDur);
+    if (du === null) return;
+    newDur = du.trim();
+  }
+  var apiType = type === 'physio' ? 'PHYSIO' : (type === 'hm' ? 'HM' : 'MED');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) { showPdToast('✅ Updated', 'success'); loadManageModalContent(type); }
+      else showPdToast('❌ ' + ((res && res.error) || 'Failed'), 'error');
+    })
+    .userUpdateItem(PD_USER_EMAIL, apiType, itemId, newName, newDose, newDur);
+}
+
+function rxMngDeleteItem(type, catId, itemId) {
+  if (!confirm('Delete this item?')) return;
+  var apiType = type === 'physio' ? 'PHYSIO' : (type === 'hm' ? 'HM' : 'MED');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) { showPdToast('✅ Deleted', 'success'); loadManageModalContent(type); }
+      else showPdToast('❌ ' + ((res && res.error) || 'Failed'), 'error');
+    })
+    .userDeleteItem(PD_USER_EMAIL, apiType, itemId);
+}
+
+// Expose to window
+window.switchRxMode = switchRxMode;
+window.toggleRxInputSection = toggleRxInputSection;
+window.quickAddRxItem = quickAddRxItem;
+window.quickAddMedicine = quickAddMedicine;
+window.removeRxMedicine = removeRxMedicine;
+window.openRxManageModal = openRxManageModal;
+window.closeRxManageModal = closeRxManageModal;
+window.switchRxManageTab = switchRxManageTab;
+window.rxMngAddCategory = rxMngAddCategory;
+window.rxMngAddItem = rxMngAddItem;
+window.rxMngEditCategory = rxMngEditCategory;
+window.rxMngDeleteCategory = rxMngDeleteCategory;
+window.rxMngEditItem = rxMngEditItem;
+
+/* ================================================================ */
+/* ===== PRESCRIPTION B&W/COLOUR TOGGLE ============================ */
+/* ================================================================ */
+var PD_RX_BW_KEY = 'psosk_rx_bw_v1';
+
+function togglePrescriptionBw() {
+  var modal = document.getElementById('prescriptionModal');
+  if (!modal) return;
+  var isBw = modal.classList.toggle('paper-grayscale');
+  try { localStorage.setItem(PD_RX_BW_KEY, isBw ? '1' : '0'); } catch(e) {}
+  var btn = document.getElementById('rxBwToggle');
+  var lbl = document.getElementById('rxBwLabel');
+  if (btn && lbl) {
+    btn.classList.toggle('active-bw', isBw);
+    btn.classList.toggle('active-colour', !isBw);
+    lbl.innerText = isBw ? 'B&W' : 'Colour';
+  }
+}
+
+function initPrescriptionBw() {
+  var modal = document.getElementById('prescriptionModal');
+  if (!modal) return;
+  var isBw = false;
+  try { isBw = localStorage.getItem(PD_RX_BW_KEY) === '1'; } catch(e) {}
+  modal.classList.toggle('paper-grayscale', isBw);
+  var btn = document.getElementById('rxBwToggle');
+  var lbl = document.getElementById('rxBwLabel');
+  if (btn && lbl) {
+    btn.classList.toggle('active-bw', isBw);
+    btn.classList.toggle('active-colour', !isBw);
+    lbl.innerText = isBw ? 'B&W' : 'Colour';
+  }
+}
+
+/* ================================================================ */
+/* ===== KHOSRA NOTEPAD ============================================ */
+/* ================================================================ */
+function openKhosraNotepad() {
+  if (!PD_USER_EMAIL) { showPdToast('❌ লগইন করুন', 'error'); return; }
+  showPdToast('⏳ Notepad খোলা হচ্ছে...', 'info');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success && res.url) {
+        window.open(res.url, '_blank');
+        showPdToast('✅ KHOSRA খোলা হয়েছে', 'success');
+      } else {
+        showPdToast('❌ ' + ((res && res.error) || 'Notepad খোলা যায়নি'), 'error');
+      }
+    })
+    .withFailureHandler(function(e) {
+      showPdToast('❌ Error: ' + e, 'error');
+    })
+    .openKhosraNotepad(PD_USER_EMAIL);
+}
+
+window.togglePrescriptionBw = togglePrescriptionBw;
+window.openKhosraNotepad = openKhosraNotepad;
+
+/* ================================================================ */
+/* ===== Rx Box Rebuild (section headers সহ) ===================== */
+/* ================================================================ */
+function rxRebuildRxBox_() {
+  var rxBox = document.getElementById('prescRx');
+  if (!rxBox) return;
+
+  // Type mode-এ user নিজে টাইপ করছে — সেখানে হাত দেব না
+  if (rxBox.contentEditable === 'true') return;
+
+  var physioItems = (typeof getSelectedPhysioItems === 'function') ? getSelectedPhysioItems() : [];
+  var hmItems = (typeof getSelectedHmItems === 'function') ? getSelectedHmItems() : [];
+  var medItems = Array.isArray(PD_RX_MEDICINES) ? PD_RX_MEDICINES.slice() : [];
+  var medNote = (document.getElementById('rxFreeNote') || {}).value || '';
+
+  var headerStyle = 'font-weight:700;color:#1a3c6e;font-size:12px;' +
+                    'margin:8px 0 3px 0;border-bottom:1px solid #ccc;padding-bottom:1px;';
+
+  var html = '';
+
+  // ===== PHYSIOTHERAPY INTERVENTION =====
+  if (physioItems.length) {
+    html += '<div style="' + headerStyle + '">PHYSIOTHERAPY INTERVENTION:</div>';
+    physioItems.forEach(function (entry) {
+      var parts = entry.split('||');
+      var cat = (parts[0] || '').trim();
+      var itemName = (parts[1] || entry).trim();
+      var key = 'PHY::' + cat + '::' + itemName;
+      html += '<div data-sync-key="' + esc_(key) + '" data-sync-type="physio">• ' + esc_(itemName) + '</div>';
+    });
+  }
+
+  // ===== HOME MANAGEMENT =====
+  if (hmItems.length) {
+    html += '<div style="' + headerStyle + '">HOME MANAGEMENT:</div>';
+    hmItems.forEach(function (entry) {
+      var parts = entry.split('||');
+      var cat = (parts[0] || '').trim();
+      var itemName = (parts[1] || entry).trim();
+      var key = 'HM::' + cat + '::' + itemName;
+      html += '<div data-sync-key="' + esc_(key) + '" data-sync-type="hm">• ' + esc_(itemName) + '</div>';
+    });
+  }
+
+  // ===== Rx (Medicine) =====
+    // ===== Rx (Medicine) — input section-এর সাথে হুবহু মিলিয়ে =====
+  if (medItems.length || medNote.trim()) {
+    html += '<div style="font-weight:700;color:#1a3c6e;font-size:14px;' +
+            'margin:8px 0 3px 0;border-bottom:1px solid #ccc;padding-bottom:1px;">' +
+            '<span style="font-family:Times New Roman,serif;font-size:18px;">℞</span></div>';
+
+    var order = [];
+    var grouped = {};
+    medItems.forEach(function (m) {
+      var cat = m.category || '';
+      if (!grouped[cat]) { grouped[cat] = []; order.push(cat); }
+      grouped[cat].push(m);
+    });
+
+    // প্রতিটি medicine — input section-এর মতো দুই লাইনে
+    // লাইন ১: [Category]:   Name
+    // লাইন ২:              Dose   -------- Duration
+    order.forEach(function (cat) {
+      grouped[cat].forEach(function (m) {
+        var key = 'MED::' + (m.category || '') + '::' + (m.medicineName || '') + '::' + (m.dose || '');
+        html += '<div data-sync-key="' + esc_(key) + '" data-sync-type="medicine" ' +
+                'style="display:flex;gap:8px;margin:6px 0;align-items:flex-start;">';
+
+        // বাম দিকে category (bold, নীল)
+        html += '<strong style="color:#1a3c6e;min-width:44px;flex-shrink:0;">' +
+                esc_(cat) + ':</strong>';
+
+        // ডান দিকে দুই লাইন: name উপরে, dose + duration নিচে
+        html += '<div style="flex:1;min-width:0;">';
+        html += '<div style="font-weight:600;color:#202124;">' +
+                esc_(m.medicineName || '') + '</div>';
+        if (m.dose) {
+          html += '<div style="color:#333;font-size:11.5px;">' +
+                  esc_(m.dose) +
+                  (m.duration ? '   -------- ' + esc_(m.duration) : '') +
+                  '</div>';
+        }
+        html += '</div>';
+
+        html += '</div>';
+      });
+    });
+
+    // Free-text note (থাকলে)
+    if (medNote.trim()) {
+      html += '<div style="font-size:11.5px;white-space:pre-wrap;margin-top:8px;' +
+              'padding-top:5px;border-top:1px dashed #ddd;color:#202124;">' +
+              esc_(medNote) + '</div>';
+    }
+  }
+
+  rxBox.innerHTML = html;
+}
+
+/* ================================================================ */
+/* ===== LIVE SYNC: popup selections → prescription rich text ===== */
+/* ================================================================ */
+function rxInsertPhysioItem(category, itemName) {
+  rxRebuildRxBox_();
+}
+
+function rxRemovePhysioItem(category, itemName) {
+  rxRebuildRxBox_();
+}
+
+function rxInsertHmItem(category, itemName) {
+  rxRebuildRxBox_();
+}
+
+function rxRemoveHmItem(category, itemName) {
+  rxRebuildRxBox_();
+}
+
+function rxInsertMedicine(med) {
+  rxRebuildRxBox_();
+}
+
+function rxRemoveMedicine(med) {
+  rxRebuildRxBox_();
+}
+
+window.switchRxMode = switchRxMode;
+window.rxInsertPhysioItem = rxInsertPhysioItem;
+window.rxRemovePhysioItem = rxRemovePhysioItem;
+window.rxInsertHmItem = rxInsertHmItem;
+window.rxRemoveHmItem = rxRemoveHmItem;
+window.rxInsertMedicine = rxInsertMedicine;
+window.rxRemoveMedicine = rxRemoveMedicine;
+
+window.rxMngDeleteItem = rxMngDeleteItem;
+
 </script>
 </body>
 </html>
