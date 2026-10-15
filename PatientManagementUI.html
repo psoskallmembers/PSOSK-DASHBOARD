@@ -4307,6 +4307,7 @@
 
         var today = new Date().toISOString().split('T')[0];
         document.getElementById('prescDate').value = today;
+        document.getElementById('prescDate').max = today;
 
         document.getElementById('prescClientName').value = p.name || '';
         document.getElementById('prescAge').value = p.age || '';
@@ -4499,6 +4500,7 @@ function openFollowupPrescription(patientId, requestId) {
 
       var today = new Date().toISOString().split('T')[0];
       document.getElementById('prescDate').value = today;
+      document.getElementById('prescDate').max = today;
 
       document.getElementById('prescClientName').value = p.name || '';
       document.getElementById('prescAge').value = p.age || '';
@@ -4737,6 +4739,7 @@ function openFollowupPrescription(patientId, requestId) {
 
         var today = new Date().toISOString().split('T')[0];
         document.getElementById('prescDate').value = today;
+        document.getElementById('prescDate').max = today;
 
         document.getElementById('prescClientName').value = p.name || '';
         document.getElementById('prescAge').value = p.age || '';
@@ -5460,6 +5463,7 @@ function openManualPrescription() {
 
   var today = new Date().toISOString().split('T')[0];
   document.getElementById('prescDate').value = today;
+  document.getElementById('prescDate').max = today;
 
   document.getElementById('prescClientName').value = '';
   document.getElementById('prescAge').value = '';
@@ -6362,6 +6366,15 @@ function openManualPrescription() {
     console.log('🚀 Patient Management UI loaded');
     loadPatientDashboard();
 
+    // ===== ভবিষ্যতের তারিখ ব্লক: registration ও prescription উভয় ফর্মের date input-এ =====
+    (function blockFutureDatesOnForms() {
+      var todayStr = new Date().toISOString().split('T')[0];
+      var regEl = document.getElementById('regDate');
+      var prescEl = document.getElementById('prescDate');
+      if (regEl) regEl.max = todayStr;
+      if (prescEl) prescEl.max = todayStr;
+    })();
+
     document.getElementById('regDss').addEventListener('change', function() {
       var fields = document.getElementById('dssFields');
       if (this.value === 'Yes') {
@@ -6392,7 +6405,7 @@ function openManualPrescription() {
 
     setupOtherCheckbox('eduOtherCheck', 'eduOtherText');
     setupOtherCheckbox('profOtherCheck', 'profOtherText');
-    setupOtherCheckbox('disOtherCheck', 'disOtherText');
+    setupOtherCheck('disOtherCheck', 'disOtherText');
     setupOtherCheckbox('sourceOtherCheck', 'sourceOtherText');
 
     initRegSignaturePad();
