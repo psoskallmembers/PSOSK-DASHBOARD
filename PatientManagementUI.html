@@ -4813,7 +4813,7 @@
             var status = p.status || 'Registered';
             var statusClass = status === 'Registered' ? 'badge-pending' :
                               status === 'Assessed' ? 'badge-completed' : 'badge-active';
-            var regDate = p.registrationDate ? new Date(p.registrationDate).toLocaleDateString('bn-BD') : 'N/A';
+            var regDate = p.registrationDate ? new Date(p.registrationDate).toLocaleDateString('en-GB') : 'N/A';
             var idEsc = esc_(p.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
             var nameEsc = esc_(p.name).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 
@@ -4948,7 +4948,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
           html += '<td>'+esc_(s.patientName||'N/A')+'</td>';
           html += '<td>'+esc_(s.centerPin||'N/A')+'</td>';
           html += '<td>'+esc_((s.serviceType||'N/A').split('|').join(', '))+'</td>';
-          html += '<td>'+(s.serviceDate ? new Date(s.serviceDate).toLocaleDateString('bn-BD') : 'N/A')+'</td>';
+          html += '<td>'+(s.serviceDate ? new Date(s.serviceDate).toLocaleDateString('en-GB') : 'N/A')+'</td>';
           html += '<td>'+esc_(s.createdBy||'N/A')+'</td>';
           html += '<td>';
           html += '<button class="btn btn-outline btn-sm" onclick="viewService(\''+esc_(s.id)+'\')" title="দেখুন"><i class="fas fa-eye"></i></button>';
@@ -4990,7 +4990,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
 
         var html = '';
         pendingAssessments.forEach(function(p, i) {
-          var regDate = p.registrationDate ? new Date(p.registrationDate).toLocaleDateString('bn-BD') : 'N/A';
+          var regDate = p.registrationDate ? new Date(p.registrationDate).toLocaleDateString('en-GB') : 'N/A';
           var idEsc = esc_(p.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
           html += '<tr>';
           html += '<td>'+(i+1)+'</td>';
@@ -5312,7 +5312,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
         list.forEach(function(p, i) {
           var idEsc = esc_(p.patientId).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
           var reqIdEsc = esc_(p.requestId).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-          var dateStr = p.requestedAt ? new Date(p.requestedAt).toLocaleDateString('bn-BD') : 'N/A';
+          var dateStr = p.requestedAt ? new Date(p.requestedAt).toLocaleDateString('en-GB') : 'N/A';
           var nameEscFp = esc_(p.patientName);
 
           html += '<tr>';
@@ -5606,7 +5606,7 @@ function viewFollowupPatient(patientId, requestId) {
       prescs.forEach(function(p, idx) {
         var type = p._type || p.type || 'regular';
         var date = p._createdAt || p.prescribeDate || '';
-        var dateStr = date ? new Date(date).toLocaleDateString('bn-BD') : 'N/A';
+        var dateStr = date ? new Date(date).toLocaleDateString('en-GB') : 'N/A';
         msg += (idx+1) + '. **'+type.toUpperCase()+'** ('+dateStr+')\n';
         msg += '   Rx: ' + (p.rx || '').substring(0, 150) + (p.rx && p.rx.length > 150 ? '...' : '') + '\n\n';
       });
@@ -5725,7 +5725,7 @@ function viewFollowupPatient(patientId, requestId) {
 
         var html = '';
         savedAssessments.forEach(function(a, i) {
-          var assessDate = a.assessDate ? new Date(a.assessDate).toLocaleDateString('bn-BD') : 'N/A';
+          var assessDate = a.assessDate ? new Date(a.assessDate).toLocaleDateString('en-GB') : 'N/A';
           var idEsc = esc_(a.patientId).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
           html += '<tr>';
           html += '<td>'+(i+1)+'</td>';
@@ -5848,7 +5848,7 @@ function viewFollowupPatient(patientId, requestId) {
 
         var html = '';
         savedPrescriptions.forEach(function(p, i) {
-          var prescDate = p.prescribeDate ? new Date(p.prescribeDate).toLocaleDateString('bn-BD') : 'N/A';
+          var prescDate = p.prescribeDate ? new Date(p.prescribeDate).toLocaleDateString('en-GB') : 'N/A';
           var idEsc = esc_(p.patientId).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
           html += '<tr>';
           html += '<td>'+(i+1)+'</td>';
@@ -6842,7 +6842,7 @@ function initReceptionChatDragDrop_() {
           'মাতা: '+(p.mother||'N/A')+'\n'+
           'মোবাইল: '+(p.mobile||'N/A')+'\n'+
           'Centre PIN: '+(p.centerPin||'N/A')+'\n'+
-          'নিবন্ধন তারিখ: '+(p.registrationDate ? new Date(p.registrationDate).toLocaleDateString('bn-BD') : 'N/A')+'\n'+
+          'নিবন্ধন তারিখ: '+(p.registrationDate ? new Date(p.registrationDate).toLocaleDateString('en-GB') : 'N/A')+'\n'+
           'স্ট্যাটাস: '+(p.status||'Registered');
 
         if (p.assessmentData) {
@@ -7312,7 +7312,7 @@ function showPdfHistoryModal_(patientName, pdfType, history, patientId) {
   var html = '<div style="display:flex;flex-direction:column;gap:10px;">';
 
   history.forEach(function(h, i) {
-    var dateStr = h.createdAt ? new Date(h.createdAt).toLocaleString('bn-BD') : 'N/A';
+    var dateStr = h.createdAt ? new Date(h.createdAt).toLocaleString('en-GB') : 'N/A';
     var isLatest = i === 0;
     var bg = isLatest ? '#e8f0fe' : '#f8f9fa';
     var border = isLatest ? '2px solid #1A73E8' : '1px solid #dadce0';
@@ -7648,7 +7648,7 @@ function deletePdfPreviewFile() {
       'রোগী: '+service.patientName+'\n'+
       'Centre Registration No.: '+(service.centerPin||'N/A')+'\n'+
       'সেবার ধরন: '+(service.serviceType||'').split('|').join(', ')+'\n'+
-      'তারিখ: '+new Date(service.serviceDate).toLocaleDateString('bn-BD')+'\n'+
+      'তারিখ: '+new Date(service.serviceDate).toLocaleDateString('en-GB')+'\n'+
       'প্রদানকারী: '+(service.createdBy||'N/A');
     alert(msg);
   }
@@ -7904,7 +7904,7 @@ function richExec(command, value) {
       : (PD_USER_CENTER || 'নির্ধারিত নয়');
     var periodText = periodLabel_() + (range.from || range.to ? ' (' + (range.from || 'শুরু থেকে') + ' — ' + (range.to || 'বর্তমান') + ')' : '');
     var generatedBy = PD_USER_EMAIL || '';
-    var generatedAt = new Date().toLocaleString('bn-BD');
+    var generatedAt = new Date().toLocaleString('en-GB');
 
     var headers, rows, title, filenameBase;
 
@@ -7918,7 +7918,7 @@ function richExec(command, value) {
           s.patientName || '',
           s.centerPin || '',
           (s.serviceType || '').split('|').join(', '),
-          s.serviceDate ? new Date(s.serviceDate).toLocaleDateString('bn-BD') : '',
+          s.serviceDate ? new Date(s.serviceDate).toLocaleDateString('en-GB') : '',
           s.createdBy || ''
         ];
       });
@@ -7937,7 +7937,7 @@ function richExec(command, value) {
           p.centerPin || '',
           p.disabilityType || '',
           p.status || '',
-          p.registrationDate ? new Date(p.registrationDate).toLocaleDateString('bn-BD') : '',
+          p.registrationDate ? new Date(p.registrationDate).toLocaleDateString('en-GB') : '',
           p.createdByName || p.createdBy || ''
         ];
       });
@@ -9807,7 +9807,7 @@ document.addEventListener('keydown', function(e) {
 
       var html = '';
       prescriptions.forEach(function(p, i) {
-        var date = p.prescribedAt ? new Date(p.prescribedAt).toLocaleDateString('bn-BD') : 'N/A';
+        var date = p.prescribedAt ? new Date(p.prescribedAt).toLocaleDateString('en-GB') : 'N/A';
         html += '<tr>';
         html += '<td>'+(i+1)+'</td>';
         html += '<td>'+esc_(p.centerPin)+'</td>';
