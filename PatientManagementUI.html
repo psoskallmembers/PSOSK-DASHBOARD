@@ -2963,8 +2963,7 @@
       <!-- ===== HEADER WITH LOGO ===== -->
       <div class="header">
         <div class="logo">
-                <img src="data:image/png;base64,YOUR_BASE64_STRING_HERE"
-       alt="BD Government Logo">
+                <img class="pd-logo" src="" alt="BD Government Logo">
         </div>
         <div class="govt">Government of People's Republic of Bangladesh</div>
         <div class="org">Jatiyo Protibondhi Unnayan Foundation (JPUF)</div>
@@ -3529,8 +3528,7 @@
       <div class="header">
         <div class="header-left">
           <div class="logo">
-            <img src="data:image/png;base64,YOUR_BASE64_STRING_HERE"
-                 alt="BD Government Logo">
+            <img class="pd-logo" src="" alt="BD Government Logo">
           </div>
         </div>
         <div class="header-center">
@@ -8050,6 +8048,15 @@ function richExec(command, value) {
     console.log('🚀 Patient Management UI loaded');
     loadPatientDashboard();
 
+        // লোগো সার্ভার থেকে এনে দুই ফর্মের <img class="pd-logo">-তে বসানো
+    google.script.run
+      .withSuccessHandler(function(uri) {
+        if (!uri) return;
+        document.querySelectorAll('img.pd-logo').forEach(function(i){ i.src = uri; });
+      })
+      .withFailureHandler(function(){})
+      .getLogoDataUri();
+
     // ===== ভবিষ্যতের তারিখ ব্লক: registration ও prescription উভয় ফর্মের date input-এ =====
     (function blockFutureDatesOnForms() {
       var todayStr = new Date().toISOString().split('T')[0];
@@ -10679,198 +10686,121 @@ function generateFormPdfBase64(element, fileName) {
     if (!element) { reject(new Error('Element not found')); return; }
     if (typeof html2pdf === 'undefined') { reject(new Error('html2pdf library not loaded')); return; }
 
-    console.log('🎨 Generating A4 PDF for:', fileName);
-
-    // ===== Step 0: Bengali font সম্পূর্ণ লোড হওয়ার জন্য অপেক্ষা =====
-    var fontsReady = Promise.resolve();
-    if (document.fonts && document.fonts.ready) {
-      fontsReady = document.fonts.ready.then(function () {
-        return new Promise(function (r) { setTimeout(r, 200); });
-      }).catch(function () {});
-    }
+    var fontsReady = (document.fonts && document.fonts.ready)
+      ? document.fonts.ready.catch(function () {}) : Promise.resolve();
 
     fontsReady.then(function () {
-      // ===== Step 1: সব <img> base64-এ convert (CORS এড়াতে) =====
-      var imgs = element.querySelectorAll('img');
-      var imgPromises = [];
-      imgs.forEach(function (img) {
-        if (img.src && img.src.indexOf('data:') === 0) return;
-        if (!img.src) return;
-        var originalSrc = img.src;
-        var p = new Promise(function (res) {
-          var tempImg = new Image();
-          tempImg.crossOrigin = 'anonymous';
-          tempImg.onload = function () {
-            try {
-              var canvas = document.createElement('canvas');
-              canvas.width = tempImg.naturalWidth || 100;
-              canvas.height = tempImg.naturalHeight || 100;
-              canvas.getContext('2d').drawImage(tempImg, 0, 0);
-              img.src = canvas.toDataURL('image/png');
-            } catch (e) {}
-            res();
-          };
-          tempImg.onerror = function () { res(); };
-          tempImg.src = originalSrc;
-        });
-        imgPromises.push(p);
+      // holder = স্ক্রিনের বাইরে লুকানো; wrapper নিজে স্বাভাবিক position-এ (এটাই ফাঁকা PDF-এর সমাধান)
+      var holder = document.createElement('div');
+      holder.style.cssText = 'position:absolute;left:-99999px;top:0;';
+
+      var wrapper = document.createElement('div');
+      wrapper.style.cssText = 'background:#fff;width:194mm;box-sizing:border-box;' +
+        'font-family:"Noto Sans Bengali","Hind Siliguri","Nikosh",Arial,sans-serif;';
+
+      var clone = element.cloneNode(true);
+      clone.querySelectorAll(
+        '.no-print, .rx-toolbar, .rx-mode-toggle, .rx-mode-toggle-overlay, ' +
+        '.form-actions, .pd-modal-close, .sig-actions, .rx-quick-add, .med-input-row, ' +
+        '.rx-sec-add, .rx-sec-check, .rx-free-note-label, .bw-toggle-btn, .notepad-btn'
+      ).forEach(function (el) { el.remove(); });
+
+      // input/textarea/select/contenteditable/canvas → static content
+      var origEls = element.querySelectorAll('input, textarea, select, [contenteditable="true"], canvas');
+      var cloneEls = clone.querySelectorAll('input, textarea, select, [contenteditable="true"], canvas');
+      for (var i = 0; i < origEls.length && i < cloneEls.length; i++) {
+        var orig = origEls[i], cl = cloneEls[i], rep;
+        if (!cl.parentNode) continue;
+        if (orig.tagName === 'CANVAS') {
+          rep = document.createElement('img');
+          try { rep.src = orig.toDataURL('image/png'); } catch (e) { continue; }
+          rep.style.cssText = 'height:60px;max-width:100%;';
+        } else if (orig.type === 'checkbox' || orig.type === 'radio') {
+          rep = document.createElement('span');
+          rep.style.cssText = 'display:inline-block;width:13px;height:13px;border:1.2px solid #333;' +
+            'text-align:center;line-height:12px;font-size:11px;margin-right:4px;vertical-align:middle;';
+          rep.textContent = orig.checked ? '✓' : '';
+        } else if (orig.tagName === 'TEXTAREA') {
+          rep = document.createElement('div');
+          rep.style.cssText = 'white-space:pre-wrap;word-wrap:break-word;min-height:18px;padding:1px 3px;';
+          rep.textContent = orig.value || '';
+        } else if (orig.tagName === 'SELECT') {
+          rep = document.createElement('span');
+          rep.style.cssText = 'display:inline-block;min-width:40px;';
+          rep.textContent = (orig.selectedIndex >= 0 && orig.options[orig.selectedIndex])
+            ? orig.options[orig.selectedIndex].text : '';
+        } else if (orig.isContentEditable) {
+          rep = document.createElement('div');
+          rep.style.cssText = 'min-height:20px;';
+          rep.innerHTML = orig.innerHTML;
+        } else {
+          rep = document.createElement('span');
+          rep.style.cssText = 'display:inline-block;min-width:50px;border-bottom:1px solid #999;padding:1px 4px;';
+          rep.textContent = orig.value || '';
+        }
+        try { cl.parentNode.replaceChild(rep, cl); } catch (e) {}
+      }
+
+      // data: ছাড়া / ভাঙা ছবি বাদ (html2canvas আটকে যায়)
+      clone.querySelectorAll('img').forEach(function (img) {
+        var s = img.getAttribute('src') || '';
+        if (s.indexOf('data:') !== 0 || s.indexOf('YOUR_BASE64') !== -1) img.remove();
       });
 
-      Promise.all(imgPromises).then(function () {
-        // ===== Step 2: A4 wrapper বানাই =====
-        var wrapper = document.createElement('div');
-        wrapper.style.cssText = [
-          'position:fixed',
-          'left:-99999px',
-          'top:0',
-          'background:#ffffff',
-          'width:210mm',
-          'min-height:297mm',
-          'padding:8mm 8mm 8mm 8mm',
-          'box-sizing:border-box',
-          'font-family:"Noto Sans Bengali","Hind Siliguri","Nikosh",Arial,sans-serif'
-        ].join(';');
+      wrapper.appendChild(clone);
+      holder.appendChild(wrapper);
+      document.body.appendChild(holder);
 
-        var clone = element.cloneNode(true);
-
-        clone.querySelectorAll(
-          '.no-print, .rx-toolbar, .rx-mode-toggle, .rx-mode-toggle-overlay, ' +
-          '.form-actions, .pd-modal-close, .sig-actions, ' +
-          '.rx-quick-add, .med-input-row, .rx-sec-add, .rx-sec-check, ' +
-          '.rx-free-note-label, .bw-toggle-btn, .notepad-btn'
-        ).forEach(function (el) { el.remove(); });
-
-        // ---- Input/Textarea/Select → static text ----
-        var origInputs = element.querySelectorAll('input, textarea, select, [contenteditable="true"]');
-        var cloneInputs = clone.querySelectorAll('input, textarea, select, [contenteditable="true"]');
-
-        for (var i = 0; i < origInputs.length && i < cloneInputs.length; i++) {
-          var orig = origInputs[i];
-          var cl = cloneInputs[i];
-          if (!orig || !cl || !cl.parentNode) continue;
-
-          var replacement;
-          if (orig.type === 'checkbox' || orig.type === 'radio') {
-            replacement = document.createElement('span');
-            replacement.style.cssText = 'display:inline-block;width:13px;height:13px;' +
-              'border:1.2px solid #333;text-align:center;line-height:12px;font-size:11px;' +
-              'margin-right:4px;vertical-align:middle;';
-            replacement.textContent = orig.checked ? '✓' : '';
-          } else if (orig.tagName === 'TEXTAREA') {
-            replacement = document.createElement('div');
-            replacement.style.cssText = 'white-space:pre-wrap;word-wrap:break-word;' +
-              'min-height:18px;padding:1px 3px;';
-            replacement.textContent = orig.value || '';
-          } else if (orig.tagName === 'SELECT') {
-            replacement = document.createElement('span');
-            replacement.style.cssText = 'display:inline-block;min-width:40px;';
-            var selText = (orig.selectedIndex >= 0 && orig.options[orig.selectedIndex])
-              ? orig.options[orig.selectedIndex].text : '';
-            replacement.textContent = selText;
-          } else if (orig.isContentEditable) {
-            replacement = document.createElement('div');
-            replacement.style.cssText = 'min-height:20px;';
-            replacement.innerHTML = orig.innerHTML;
-          } else {
-            replacement = document.createElement('span');
-            replacement.style.cssText = 'display:inline-block;min-width:50px;' +
-              'border-bottom:1px solid #999;padding:1px 4px;';
-            replacement.textContent = orig.value || '';
-          }
-
-          try { cl.parentNode.replaceChild(replacement, cl); } catch (e) {}
-        }
-
-        wrapper.appendChild(clone);
-        document.body.appendChild(wrapper);
-
-        // ===== Step 3: Auto-fit =====
-        var A4_CONTENT_HEIGHT_PX = 1062;
-        var scale = 1;
-        var MAX_ITER = 15;
-        var MIN_SCALE = 0.55;
-
-        var allEls = clone.querySelectorAll('*');
-        allEls.forEach(function (el) {
-          var fs = parseFloat(window.getComputedStyle(el).fontSize);
-          if (fs && fs > 0) el.dataset._origFs = fs;
+      // ===== A4 এক পেজে auto-fit =====
+      var A4_H = 1062, scale = 1, MIN = 0.55, iter = 0;
+      var all = clone.querySelectorAll('*');
+      all.forEach(function (el) {
+        var fs = parseFloat(window.getComputedStyle(el).fontSize);
+        if (fs > 0) el.dataset._origFs = fs;
+      });
+      while (clone.scrollHeight > A4_H && scale > MIN && iter < 15) {
+        scale = Math.max(scale * 0.93, MIN); iter++;
+        all.forEach(function (el) {
+          var o = parseFloat(el.dataset._origFs);
+          if (o) el.style.fontSize = (o * scale) + 'px';
         });
-
-        var currentH = clone.scrollHeight;
-        var iter = 0;
-        while (currentH > A4_CONTENT_HEIGHT_PX && scale > MIN_SCALE && iter < MAX_ITER) {
-          scale = Math.max(scale * 0.93, MIN_SCALE);
-          iter++;
-          allEls.forEach(function (el) {
-            var origFs = parseFloat(el.dataset._origFs);
-            if (origFs) el.style.fontSize = (origFs * scale) + 'px';
+      }
+      if (scale < 1) {
+        clone.querySelectorAll('.section-box, .section, .row, .form-row, .frow').forEach(function (el) {
+          var cs = window.getComputedStyle(el);
+          ['paddingTop','paddingBottom','marginTop','marginBottom'].forEach(function (p) {
+            var v = parseFloat(cs[p]) || 0;
+            if (v) el.style[p] = (v * scale) + 'px';
           });
-          currentH = clone.scrollHeight;
-        }
+        });
+      }
 
-        if (scale < 1) {
-          clone.querySelectorAll('.section-box, .section, .row, .form-row, .frow').forEach(function (el) {
-            var pt = parseFloat(window.getComputedStyle(el).paddingTop) || 0;
-            var pb = parseFloat(window.getComputedStyle(el).paddingBottom) || 0;
-            var mt = parseFloat(window.getComputedStyle(el).marginTop) || 0;
-            var mb = parseFloat(window.getComputedStyle(el).marginBottom) || 0;
-            if (pt) el.style.paddingTop = (pt * scale) + 'px';
-            if (pb) el.style.paddingBottom = (pb * scale) + 'px';
-            if (mt) el.style.marginTop = (mt * scale) + 'px';
-            if (mb) el.style.marginBottom = (mb * scale) + 'px';
-          });
-        }
+      var opt = {
+        margin: [8, 8, 8, 8],
+        filename: fileName + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff',
+          logging: false, scrollX: 0, scrollY: 0, windowWidth: 733
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+        pagebreak: { mode: ['css', 'legacy'] }
+      };
 
-        console.log('📐 Final scale=' + scale.toFixed(3) + ', height=' + clone.scrollHeight + 'px');
+      function cleanup() { if (holder.parentNode) holder.parentNode.removeChild(holder); }
 
-        // ===== Step 4: html2pdf — A4 output =====
-        var opt = {
-          margin: [8, 8, 8, 8],
-          filename: fileName + '.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            logging: false,
-            imageTimeout: 15000,
-            removeContainer: true,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: 794
-          },
-          jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait',
-            compress: true,
-            precision: 16
-          },
-          pagebreak: { mode: ['css', 'legacy', 'avoid-all'] }
+      html2pdf().set(opt).from(wrapper).toPdf().get('pdf').then(function (pdf) {
+        var blob = pdf.output('blob');
+        cleanup();
+        // সাদা/ফাঁকা PDF হলে reject → server fallback চলবে
+        if (blob.size < 15000) { reject(new Error('PDF ফাঁকা মনে হচ্ছে (size ' + blob.size + ')')); return; }
+        var reader = new FileReader();
+        reader.onloadend = function () {
+          resolve({ base64: reader.result.split(',')[1], blob: blob, scale: scale });
         };
-
-        html2pdf().set(opt).from(wrapper).toPdf().get('pdf').then(function (pdf) {
-          var blob = pdf.output('blob');
-          if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
-
-          var reader = new FileReader();
-          reader.onloadend = function () {
-            var base64 = reader.result.split(',')[1];
-            console.log('✅ A4 PDF ready, size:', (base64.length / 1024).toFixed(1), 'KB');
-            resolve({ base64: base64, blob: blob, scale: scale });
-          };
-          reader.onerror = function () {
-            if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
-            reject(reader.error);
-          };
-          reader.readAsDataURL(blob);
-        }).catch(function (err) {
-          if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
-          console.error('❌ html2pdf failed:', err);
-          reject(err);
-        });
-      }).catch(reject);
+        reader.onerror = function () { reject(reader.error); };
+        reader.readAsDataURL(blob);
+      }).catch(function (err) { cleanup(); reject(err); });
     }).catch(reject);
   });
 }
