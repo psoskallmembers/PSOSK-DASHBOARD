@@ -97,6 +97,15 @@
     .pd-font-ctrl .btn-sm:hover{background:#e8eaed}
     .pd-font-ctrl span{font-size:12px;color:#5f6368;min-width:34px;text-align:center}
 
+    
+        /* ===== PRINT WIDTH / HEIGHT / ALIGN CONTROLS ===== */
+    .pd-print-ctrl{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:1px solid #dadce0;border-radius:6px;background:#f8f9fa;margin-right:6px;font-size:11px;flex-wrap:wrap}
+    .pd-print-ctrl label{font-size:11px;color:#5f6368;font-weight:700;margin:0}
+    .pd-print-ctrl input[type=range]{width:72px;height:16px;cursor:pointer}
+    .pd-print-ctrl select{padding:2px 4px;font-size:11px;border:1px solid #dadce0;border-radius:4px;background:#fff}
+    .pd-print-ctrl .pct-val{min-width:36px;font-weight:700;color:#1A73E8;text-align:center;font-size:11px}
+    .pd-print-ctrl .sep{color:#dadce0;font-weight:400;margin:0 2px}
+
     /* ===== TABLE ===== */
     .pd-table-wrap{background:#fff;border-radius:10px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
     .pd-table-wrap .table-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
@@ -3091,6 +3100,24 @@
           <button type="button" class="btn btn-outline" onclick="resetRegistrationForm()">
             <i class="fas fa-undo"></i> Reset
           </button>
+          <span class="pd-print-ctrl no-print" title="প্রিন্ট প্রস্থ ও উচ্চতা (আলাদা করে)">
+            <label>W:</label>
+            <input type="range" min="30" max="150" step="5" value="100"
+                   oninput="pdSetPrintWidth('registrationModal', this.value)">
+            <span class="pct-val" id="registrationModalWidthPct">100%</span>
+            <span class="sep">|</span>
+            <label>H:</label>
+            <input type="range" min="30" max="150" step="5" value="100"
+                   oninput="pdSetPrintHeight('registrationModal', this.value)">
+            <span class="pct-val" id="registrationModalHeightPct">100%</span>
+            <span class="sep">|</span>
+            <label>A:</label>
+            <select onchange="pdSetPrintAlign('registrationModal', this.value)">
+              <option value="top">Top</option>
+              <option value="middle" selected>Mid</option>
+              <option value="bottom">Bottom</option>
+            </select>
+          </span>
           <span class="pd-font-ctrl no-print" title="প্রিন্ট ফন্ট সাইজ">
             <button type="button" class="btn-sm" onclick="pdAdjustPrintFontSize('registrationModal',-1)"><i class="fas fa-minus"></i></button>
             <span id="registrationModalFontPct">100%</span>
@@ -3265,6 +3292,24 @@
       <div class="form-actions">
         <button class="btn btn-success" onclick="submitAssessment()"><i class="fas fa-save"></i> Save</button>
         <button class="btn btn-outline" onclick="resetAssessmentForm()"><i class="fas fa-undo-alt"></i> Reset</button>
+        <span class="pd-print-ctrl no-print" title="প্রিন্ট প্রস্থ ও উচ্চতা (আলাদা করে)">
+          <label>W:</label>
+          <input type="range" min="30" max="150" step="5" value="100"
+                 oninput="pdSetPrintWidth('assessmentModal', this.value)">
+          <span class="pct-val" id="assessmentModalWidthPct">100%</span>
+          <span class="sep">|</span>
+          <label>H:</label>
+          <input type="range" min="30" max="150" step="5" value="100"
+                 oninput="pdSetPrintHeight('assessmentModal', this.value)">
+          <span class="pct-val" id="assessmentModalHeightPct">100%</span>
+          <span class="sep">|</span>
+          <label>A:</label>
+          <select onchange="pdSetPrintAlign('assessmentModal', this.value)">
+            <option value="top">Top</option>
+            <option value="middle" selected>Mid</option>
+            <option value="bottom">Bottom</option>
+          </select>
+        </span>
         <span class="pd-font-ctrl no-print" title="প্রিন্ট ফন্ট সাইজ">
           <button type="button" class="btn-sm" onclick="pdAdjustPrintFontSize('assessmentModal',-1)"><i class="fas fa-minus"></i></button>
           <span id="assessmentModalFontPct">100%</span>
@@ -3383,6 +3428,24 @@
       <div class="form-actions no-print">
         <button type="button" class="btn btn-success" id="prescSubmitBtn" onclick="submitPrescriptionForm()"><i class="fas fa-save"></i> Submit</button>
         <button type="button" class="btn btn-outline" onclick="resetPrescriptionForm()"><i class="fas fa-undo"></i> Reset</button>
+        <span class="pd-print-ctrl no-print" title="প্রিন্ট প্রস্থ ও উচ্চতা (আলাদা করে)">
+          <label>W:</label>
+          <input type="range" min="30" max="150" step="5" value="100"
+                 oninput="pdSetPrintWidth('prescriptionModal', this.value)">
+          <span class="pct-val" id="prescriptionModalWidthPct">100%</span>
+          <span class="sep">|</span>
+          <label>H:</label>
+          <input type="range" min="30" max="150" step="5" value="100"
+                 oninput="pdSetPrintHeight('prescriptionModal', this.value)">
+          <span class="pct-val" id="prescriptionModalHeightPct">100%</span>
+          <span class="sep">|</span>
+          <label>A:</label>
+          <select onchange="pdSetPrintAlign('prescriptionModal', this.value)">
+            <option value="top">Top</option>
+            <option value="middle" selected>Mid</option>
+            <option value="bottom">Bottom</option>
+          </select>
+        </span>
         <span class="pd-font-ctrl no-print" title="প্রিন্ট ফন্ট সাইজ">
           <button type="button" class="btn-sm" onclick="pdAdjustPrintFontSize('prescriptionModal',-1)"><i class="fas fa-minus"></i></button>
           <span id="prescriptionModalFontPct">100%</span>
@@ -6054,6 +6117,41 @@ function initReceptionChatDragDrop_() {
     return null;
   }
 
+  // ================================================================
+  // ===== PRINT WIDTH / HEIGHT / ALIGN =============================
+  // ================================================================
+  // widthPct  (30–150): ডানে-বাঁয়ে কতটা জায়গা নেবে
+  // heightPct (30–150): উপরে-নিচে কতটা জায়গা নেবে
+  // align: 'top' | 'middle' | 'bottom' — কনটেন্ট কোথায় বসবে
+  // ================================================================
+  var PD_PRINT_SETTINGS = {
+    registrationModal: { widthPct: 100, heightPct: 100, align: 'middle' },
+    assessmentModal:   { widthPct: 100, heightPct: 100, align: 'middle' },
+    prescriptionModal: { widthPct: 100, heightPct: 100, align: 'middle' }
+  };
+
+  function pdSetPrintWidth(modalId, pct) {
+    var v = Math.max(30, Math.min(150, parseInt(pct, 10) || 100));
+    if (!PD_PRINT_SETTINGS[modalId]) PD_PRINT_SETTINGS[modalId] = { widthPct: 100, heightPct: 100, align: 'middle' };
+    PD_PRINT_SETTINGS[modalId].widthPct = v;
+    var el = document.getElementById(modalId + 'WidthPct');
+    if (el) el.textContent = v + '%';
+  }
+
+  function pdSetPrintHeight(modalId, pct) {
+    var v = Math.max(30, Math.min(150, parseInt(pct, 10) || 100));
+    if (!PD_PRINT_SETTINGS[modalId]) PD_PRINT_SETTINGS[modalId] = { widthPct: 100, heightPct: 100, align: 'middle' };
+    PD_PRINT_SETTINGS[modalId].heightPct = v;
+    var el = document.getElementById(modalId + 'HeightPct');
+    if (el) el.textContent = v + '%';
+  }
+
+  function pdSetPrintAlign(modalId, align) {
+    if (!PD_PRINT_SETTINGS[modalId]) PD_PRINT_SETTINGS[modalId] = { widthPct: 100, heightPct: 100, align: 'middle' };
+    PD_PRINT_SETTINGS[modalId].align = (align === 'top' || align === 'bottom') ? align : 'middle';
+  }
+
+
   function pdAdjustPrintFontSize(modalId, direction) {
     var cur = PD_MANUAL_SCALES[modalId] || 1;
     cur = Math.round((cur + direction * 0.05) * 100) / 100;
@@ -6069,12 +6167,17 @@ function initReceptionChatDragDrop_() {
     if (pctEl) pctEl.textContent = '100%';
   }
 
-  function printModalOnly(modalId) {
+    function printModalOnly(modalId) {
     var modal = document.getElementById(modalId);
     if (!modal) { window.print(); return; }
 
     var inner = pdGetPrintTarget_(modal);
     if (!inner) { window.print(); return; }
+
+    var settings = PD_PRINT_SETTINGS[modalId] || { widthPct: 100, heightPct: 100, align: 'middle' };
+    var widthPct = (settings.widthPct || 100) / 100;
+    var heightPct = (settings.heightPct || 100) / 100;
+    var align = settings.align || 'middle';
 
     var MM_TO_PX = 3.7795275591;
     var PAGE_W_MM = 210;
@@ -6110,18 +6213,34 @@ function initReceptionChatDragDrop_() {
     var naturalH_mm = naturalH_px / MM_TO_PX;
 
     var manualMul = PD_MANUAL_SCALES[modalId] || 1;
-    var scaleW = availW_mm / naturalW_mm;
-    var scaleH = availH_mm / naturalH_mm;
-    var scale = Math.min(scaleW, scaleH, 1) * manualMul;
-    if (scale < 0.4) scale = 0.4;
 
-    var scaledW_mm = naturalW_mm * scale;
-    var scaledH_mm = naturalH_mm * scale;
-    var x_mm = (PAGE_W_MM - scaledW_mm) / 2;
-    var y_mm = PAGE_MARGIN_MM;
+    // ===== W ও H আলাদা করে scale =====
+    var targetW_mm = availW_mm * widthPct;
+    var targetH_mm = availH_mm * heightPct;
+
+    var scaleX = (targetW_mm / naturalW_mm) * manualMul;
+    var scaleY = (targetH_mm / naturalH_mm) * manualMul;
+    if (scaleX < 0.15) scaleX = 0.15;
+    if (scaleY < 0.15) scaleY = 0.15;
+
+    var scaledW_mm = naturalW_mm * scaleX;
+    var scaledH_mm = naturalH_mm * scaleY;
+
+    var x_mm = PAGE_MARGIN_MM + (availW_mm - scaledW_mm) / 2;
+
+    var y_mm;
+    if (align === 'top') {
+      y_mm = PAGE_MARGIN_MM;
+    } else if (align === 'bottom') {
+      y_mm = PAGE_MARGIN_MM + (availH_mm - scaledH_mm);
+      if (y_mm < PAGE_MARGIN_MM) y_mm = PAGE_MARGIN_MM;
+    } else {
+      y_mm = PAGE_MARGIN_MM + (availH_mm - scaledH_mm) / 2;
+      if (y_mm < PAGE_MARGIN_MM) y_mm = PAGE_MARGIN_MM;
+    }
 
     inner.style.transformOrigin = 'top left';
-    inner.style.transform = 'scale(' + scale + ')';
+    inner.style.transform = 'scale(' + scaleX + ', ' + scaleY + ')';
     inner.style.position = 'absolute';
     inner.style.left = x_mm.toFixed(3) + 'mm';
     inner.style.top = y_mm.toFixed(3) + 'mm';
@@ -10440,14 +10559,21 @@ window.rxMngDeleteItem = rxMngDeleteItem;
 var _formPdfCurrentBlobUrl = '';
 var _formPdfCurrentFileName = '';
 
-// ================================================================
-// ===== CLIENT-SIDE A4 PDF (WYSIWYG · exact N-page fit) ==========
-// ================================================================
 function generateFormPdfBase64(element, fileName, maxPages) {
   maxPages = maxPages || 1;
+
+  // ── settings থেকে W/H/align নিই ──
+  var modalEl = element.closest('.pd-modal-overlay');
+  var modalId = modalEl ? modalEl.id : '';
+  var settings = (typeof PD_PRINT_SETTINGS !== 'undefined' && PD_PRINT_SETTINGS[modalId])
+                 ? PD_PRINT_SETTINGS[modalId]
+                 : { widthPct: 100, heightPct: 100, align: 'middle' };
+  var widthPct = (settings.widthPct || 100) / 100;
+  var heightPct = (settings.heightPct || 100) / 100;
+  var align = settings.align || 'middle';
+
   return new Promise(function (resolve, reject) {
     if (!element) return reject(new Error('Form element not found'));
-
     var h2c = window.html2canvas;
     var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
     if (typeof h2c === 'undefined') return reject(new Error('html2canvas not loaded'));
@@ -10457,32 +10583,24 @@ function generateFormPdfBase64(element, fileName, maxPages) {
       .catch(function () {})
       .then(function () {
 
-        // ---- Expand modal (scrollbar cutoff এড়াতে) ----
         var modalBox = element.closest('.pd-modal-box');
         var overlay  = element.closest('.pd-modal-overlay');
-
         var saved = {
-          ov:  overlay  ? overlay.style.overflow    : null,
+          ov: overlay ? overlay.style.overflow : null,
           mbH: modalBox ? modalBox.style.maxHeight : null,
-          mbO: modalBox ? modalBox.style.overflow  : null,
-          mbP: modalBox ? modalBox.style.padding   : null,
-          eW:  element.style.width,
-          eMW: element.style.maxWidth,
-          eNW: element.style.minWidth
+          mbO: modalBox ? modalBox.style.overflow : null,
+          mbP: modalBox ? modalBox.style.padding : null,
+          eW: element.style.width, eMW: element.style.maxWidth, eNW: element.style.minWidth
         };
-
         if (overlay)  overlay.style.overflow  = 'visible';
         if (modalBox) { modalBox.style.maxHeight = 'none'; modalBox.style.overflow = 'visible'; modalBox.style.padding = '0'; }
-        element.style.width    = '820px';    // ডেস্কটপ প্রস্থ — mobile media query এড়ায়
-        element.style.maxWidth = '820px';
-        element.style.minWidth = '820px';
+        element.style.width = '820px'; element.style.maxWidth = '820px'; element.style.minWidth = '820px';
 
-        // ---- no-print এলিমেন্ট লুকাই ----
         var hidden = [];
         element.querySelectorAll(
           '.no-print, .form-actions, .pd-modal-close, .sig-actions, ' +
           '.rx-toolbar, .rx-mode-toggle-overlay, .bw-toggle-btn, .notepad-btn, ' +
-          '.pd-font-ctrl, .rx-input-popup, .rx-quick-add, .med-input-row, ' +
+          '.pd-font-ctrl, .pd-print-ctrl, .rx-input-popup, .rx-quick-add, .med-input-row, ' +
           '.rx-sec-add, .rx-sec-check, .rx-free-note-label'
         ).forEach(function (el) {
           hidden.push({ el: el, d: el.style.display });
@@ -10509,34 +10627,28 @@ function generateFormPdfBase64(element, fileName, maxPages) {
           var h = element.scrollHeight || 1000;
 
           h2c(element, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            logging: false,
-            width:  w,
-            height: h,
-            windowWidth:  1400,       // ✅ ডেস্কটপ viewport
-            windowHeight: 1200,
-            scrollX: 0,
-            scrollY: -window.scrollY
+            scale: 2, useCORS: true, allowTaint: true,
+            backgroundColor: '#ffffff', logging: false,
+            width: w, height: h,
+            windowWidth: 1400, windowHeight: 1200,
+            scrollX: 0, scrollY: -window.scrollY
           }).then(function (canvas) {
             restoreAll();
 
             var pdf = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
 
             var pageW = 210, pageH = 297, margin = 5;
-            var availW = pageW - margin * 2;   // 200mm
-            var availH = pageH - margin * 2;   // 287mm
+            var availW = pageW - margin * 2;
+            var availH = pageH - margin * 2;
 
-            var imgAspect   = canvas.width / canvas.height;
-            var naturalW_mm = availW;
-            var naturalH_mm = naturalW_mm / imgAspect;
+            // ===== W ও H আলাদা target size =====
+            var targetW_mm = availW * widthPct;
+            var targetH_mm = availH * heightPct;
 
-            var drawW = naturalW_mm;
-            var drawH = naturalH_mm;
+            var drawW = targetW_mm;
+            var drawH = targetH_mm;
 
-            // ===== maxPages-এ fit করার জন্য scale =====
+            // maxPages-এ fit
             var maxTotalH = availH * maxPages;
             if (drawH > maxTotalH) {
               var s = maxTotalH / drawH;
@@ -10545,21 +10657,27 @@ function generateFormPdfBase64(element, fileName, maxPages) {
             }
 
             var totalPages = Math.max(1, Math.ceil(drawH / availH - 0.001));
-            var x = (pageW - drawW) / 2;
+            var x = margin + (availW - drawW) / 2;
 
             console.log('📄 PDF →',
-              'natural:', naturalW_mm.toFixed(1) + '×' + naturalH_mm.toFixed(1) + 'mm',
-              '| draw:', drawW.toFixed(1) + '×' + drawH.toFixed(1) + 'mm',
-              '| pages:', totalPages);
+              'draw:', drawW.toFixed(1) + '×' + drawH.toFixed(1) + 'mm',
+              '| pages:', totalPages,
+              '| W:', (widthPct * 100) + '%', '| H:', (heightPct * 100) + '%', '| align:', align);
 
             if (totalPages === 1) {
-              // ---- Single page: vertical center ----
-              var y = margin + (availH - drawH) / 2;
-              if (y < margin) y = margin;
+              var y;
+              if (align === 'top') {
+                y = margin;
+              } else if (align === 'bottom') {
+                y = margin + (availH - drawH);
+                if (y < margin) y = margin;
+              } else {
+                y = margin + (availH - drawH) / 2;
+                if (y < margin) y = margin;
+              }
               pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG',
                            x, y, drawW, drawH, undefined, 'FAST');
             } else {
-              // ---- Multi-page: canvas slice ----
               var slicePxH = canvas.height / totalPages;
               for (var p = 0; p < totalPages; p++) {
                 if (p > 0) pdf.addPage();
