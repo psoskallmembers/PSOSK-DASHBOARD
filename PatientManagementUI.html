@@ -12,6 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js">
   </script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     /* ===== RESET & BASE ===== */
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI','Nikosh','Bangla',Tahoma,sans-serif}
@@ -4875,66 +4876,106 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   // ================================================================
 
   function submitAssessment() {
-    var patientId = document.getElementById('assessPatientId').value;
-    var fromPending = document.getElementById('assessFromPending').value === 'true';
-    var disability = document.getElementById('assessDisability').value;
-    var diagnosisEl = document.getElementById('assessDiagnosis');
-    var ccEl = document.getElementById('assessCc');
-    var disabilityEl = document.getElementById('assessDisability');
+  var patientId = document.getElementById('assessPatientId').value;
+  var fromPending = document.getElementById('assessFromPending').value === 'true';
+  var disability = document.getElementById('assessDisability').value;
+  var diagnosisEl = document.getElementById('assessDiagnosis');
+  var ccEl = document.getElementById('assessCc');
+  var disabilityEl = document.getElementById('assessDisability');
 
-    // ===== হাইলাইট রিসেট =====
-    [diagnosisEl, ccEl, disabilityEl].forEach(function(el){ if (el) { el.style.outline=''; el.style.borderColor=''; } });
+  [diagnosisEl, ccEl, disabilityEl].forEach(function(el){ if (el) { el.style.outline=''; el.style.borderColor=''; } });
 
-    if (!patientId) {
-      showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
-      return;
-    }
-    if (!diagnosisEl.value.trim()) {
-      showPdToast('❌ Diagnosis আবশ্যক!', 'error');
-      diagnosisEl.style.outline = '2px solid #EA4335'; diagnosisEl.style.borderColor = '#EA4335';
-      diagnosisEl.focus();
-      return;
-    }
-    if (!ccEl.value.trim()) {
-      showPdToast('❌ C/C আবশ্যক!', 'error');
-      ccEl.style.outline = '2px solid #EA4335'; ccEl.style.borderColor = '#EA4335';
-      ccEl.focus();
-      return;
-    }
-    if (!disability) {
-      showPdToast('❌ প্রতিবন্ধিতার ধরণ (Disability Category) নির্বাচন করুন!', 'error');
-      disabilityEl.style.outline = '2px solid #EA4335'; disabilityEl.style.borderColor = '#EA4335';
-      disabilityEl.focus();
-      return;
-    }
+  if (!patientId) { showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error'); return; }
+  if (!diagnosisEl.value.trim()) {
+    showPdToast('❌ Diagnosis আবশ্যক!', 'error');
+    diagnosisEl.style.outline = '2px solid #EA4335'; diagnosisEl.style.borderColor = '#EA4335';
+    diagnosisEl.focus(); return;
+  }
+  if (!ccEl.value.trim()) {
+    showPdToast('❌ C/C আবশ্যক!', 'error');
+    ccEl.style.outline = '2px solid #EA4335'; ccEl.style.borderColor = '#EA4335';
+    ccEl.focus(); return;
+  }
+  if (!disability) {
+    showPdToast('❌ প্রতিবন্ধিতার ধরণ নির্বাচন করুন!', 'error');
+    disabilityEl.style.outline = '2px solid #EA4335'; disabilityEl.style.borderColor = '#EA4335';
+    disabilityEl.focus(); return;
+  }
 
-    var data = {
-      diagnosis: document.getElementById('assessDiagnosis').value.trim(),
-      cc: document.getElementById('assessCc').value.trim(),
-      generalHistory: document.getElementById('assessGeneralHistory').value.trim(),
-      pastMedical: document.getElementById('assessPastMedical').value.trim(),
-      sensory: document.getElementById('assessSensory').value.trim(),
-      reflexes: document.getElementById('assessReflexes').value.trim(),
-      muscleTone: document.getElementById('assessMuscleTone').value.trim(),
-      stiffness: document.getElementById('assessStiffness').value.trim(),
-      functionalAbility: document.getElementById('assessFunctionalAbility').value.trim(),
-      bowelBladder: document.getElementById('assessBowelBladder').value.trim(),
-      communication: document.getElementById('assessCommunication').value.trim(),
-      anyLimb: document.getElementById('assessAnyLimb').value.trim(),
-      balanceCoord: document.getElementById('assessBalanceCoord').value.trim(),
-      examOther: document.getElementById('assessExamOther').value.trim(),
-      problemList: document.getElementById('assessProblemList').value.trim(),
-      goalSmart: document.getElementById('assessGoalSmart').value.trim(),
-      treatmentPlan: document.getElementById('assessTreatmentPlan').value.trim(),
-      homeAdvice: document.getElementById('assessHomeAdvice').value.trim(),
-      refTo: document.getElementById('assessRefTo').value.trim(),
-      assistiveDevice: document.getElementById('assessAssistiveDevice').value.trim(),
-      disability: disability,
-      fromPending: fromPending
-    };
+  var data = {
+    diagnosis: document.getElementById('assessDiagnosis').value.trim(),
+    cc: document.getElementById('assessCc').value.trim(),
+    generalHistory: document.getElementById('assessGeneralHistory').value.trim(),
+    pastMedical: document.getElementById('assessPastMedical').value.trim(),
+    sensory: document.getElementById('assessSensory').value.trim(),
+    reflexes: document.getElementById('assessReflexes').value.trim(),
+    muscleTone: document.getElementById('assessMuscleTone').value.trim(),
+    stiffness: document.getElementById('assessStiffness').value.trim(),
+    functionalAbility: document.getElementById('assessFunctionalAbility').value.trim(),
+    bowelBladder: document.getElementById('assessBowelBladder').value.trim(),
+    communication: document.getElementById('assessCommunication').value.trim(),
+    anyLimb: document.getElementById('assessAnyLimb').value.trim(),
+    balanceCoord: document.getElementById('assessBalanceCoord').value.trim(),
+    examOther: document.getElementById('assessExamOther').value.trim(),
+    problemList: document.getElementById('assessProblemList').value.trim(),
+    goalSmart: document.getElementById('assessGoalSmart').value.trim(),
+    treatmentPlan: document.getElementById('assessTreatmentPlan').value.trim(),
+    homeAdvice: document.getElementById('assessHomeAdvice').value.trim(),
+    refTo: document.getElementById('assessRefTo').value.trim(),
+    assistiveDevice: document.getElementById('assessAssistiveDevice').value.trim(),
+    disability: disability,
+    fromPending: fromPending
+  };
+
+  var assessBtn = document.querySelector('#assessmentModal .btn-success');
+  if (assessBtn) {
+    assessBtn.disabled = true;
+    assessBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF তৈরি হচ্ছে...';
+  }
+
+  var formElement = document.querySelector('#assessmentModal .assessment-form-container');
+  var regNo = document.getElementById('assessRegNo').value.trim();
+  var clientName = document.getElementById('assessClientName').value.trim();
+  var fileNameBase = buildPdfFileName_('Assessment', regNo, clientName);
+
+  generateFormPdfBase64(formElement, fileNameBase).then(function(pdfResult) {
+    data.pdfBase64 = pdfResult.base64;
+    data.pdfFileName = fileNameBase;
+
+    showFormPdfPreview(pdfResult.base64, fileNameBase);
+    if (assessBtn) assessBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...';
 
     google.script.run
       .withSuccessHandler(function(result) {
+        if (assessBtn) { assessBtn.disabled = false; assessBtn.innerHTML = '<i class="fas fa-save"></i> Save'; }
+        if (result.success) {
+          showPdToast('✅ ' + result.message, 'success');
+          setTimeout(function() {
+            closeFormPdfPreview();
+            closeAssessmentForm();
+            loadPatients();
+            loadAllCentersStats();
+            loadMyCenterStats();
+            if (PD_CAN_ASSESS) { loadPendingAssessments(); loadSavedAssessments(); }
+          }, 2000);
+        } else {
+          showPdToast('❌ ' + ((result && result.error) || 'সেভ ব্যর্থ'), 'error');
+        }
+      })
+      .withFailureHandler(function(e) {
+        if (assessBtn) { assessBtn.disabled = false; assessBtn.innerHTML = '<i class="fas fa-save"></i> Save'; }
+        showPdToast('❌ Error: ' + e, 'error');
+      })
+      .savePatientAssessment(patientId, data, PD_USER_EMAIL);
+  }).catch(function(err) {
+    console.warn('Client PDF failed, server fallback:', err);
+    showPdToast('⚠️ Client PDF ব্যর্থ, server-side PDF ব্যবহার হবে', 'info');
+    data.pdfBase64 = null;
+    if (assessBtn) assessBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...';
+
+    google.script.run
+      .withSuccessHandler(function(result) {
+        if (assessBtn) { assessBtn.disabled = false; assessBtn.innerHTML = '<i class="fas fa-save"></i> Save'; }
         if (result.success) {
           showPdToast('✅ ' + result.message, 'success');
           setTimeout(function() {
@@ -4942,20 +4983,19 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
             loadPatients();
             loadAllCentersStats();
             loadMyCenterStats();
-            if (PD_CAN_ASSESS) {
-              loadPendingAssessments();
-              loadSavedAssessments();
-            }
+            if (PD_CAN_ASSESS) { loadPendingAssessments(); loadSavedAssessments(); }
           }, 1500);
         } else {
-          showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
+          showPdToast('❌ ' + ((result && result.error) || 'সেভ ব্যর্থ'), 'error');
         }
       })
       .withFailureHandler(function(e) {
+        if (assessBtn) { assessBtn.disabled = false; assessBtn.innerHTML = '<i class="fas fa-save"></i> Save'; }
         showPdToast('❌ Error: ' + e, 'error');
       })
       .savePatientAssessment(patientId, data, PD_USER_EMAIL);
-  }
+  });
+}
 
   // ================================================================
   // ===== PENDING PRESCRIPTIONS =====================================
@@ -5189,7 +5229,6 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   // ================================================================
 
   function submitPrescriptionForm() {
-  // ===== Manual mode guard =====
   var prescTypeGuard = document.getElementById('prescType').value || 'regular';
   if (prescTypeGuard === 'manual') {
     showPdToast('❌ ম্যানুয়াল মোডে সেভ করা যাবে না — শুধু Print করুন', 'error');
@@ -5197,30 +5236,19 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   }
 
   var patientId = document.getElementById('prescPatientId').value;
-  if (!patientId) {
-    showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
-    return;
-  }
+  if (!patientId) { showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error'); return; }
 
-  // ===== Determine active mode =====
   var mode = 'input';
   var activeBtn = document.querySelector('.rx-mode-btn.active');
   if (activeBtn) mode = activeBtn.getAttribute('data-mode');
 
-  // ===== Type mode =====
-  var rxHtml = '';
-  var rxText = '';
+  var rxHtml = '', rxText = '';
   if (mode === 'type') {
     var rxBox = document.getElementById('prescRx');
-    if (rxBox) {
-      rxHtml = rxBox.innerHTML.trim();
-      rxText = rxBox.textContent.trim();
-    }
+    if (rxBox) { rxHtml = rxBox.innerHTML.trim(); rxText = rxBox.textContent.trim(); }
   }
 
-  // ===== Input mode =====
-  var physioItems = [];
-  var hmItems = [];
+  var physioItems = [], hmItems = [];
   if (mode === 'input') {
     physioItems = getSelectedPhysioItems();
     hmItems = getSelectedHmItems();
@@ -5228,7 +5256,6 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   var medicineItems = PD_RX_MEDICINES.slice();
   var medicineNote = (document.getElementById('rxFreeNote') || {}).value || '';
 
-  // ===== Validation: at least one item OR legacy note =====
   var hasStructured = physioItems.length || hmItems.length || medicineItems.length;
   var hasLegacy = rxText;
   if (!hasStructured && !hasLegacy && !medicineNote.trim()) {
@@ -5245,9 +5272,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
     investigation: document.getElementById('prescInvestigation').value.trim(),
     advice: document.getElementById('prescAdvice').value.trim(),
     diagnosis: document.getElementById('prescDiagnosis').value.trim(),
-    // ===== Type mode (legacy) =====
     rx: rxHtml,
-    // ===== Input mode (structured) =====
     physiotherapyItems: physioItems,
     homeManagement: hmItems,
     medicineItems: medicineItems,
@@ -5255,49 +5280,90 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   };
 
   var prescType = document.getElementById('prescType').value || 'regular';
-
-  // ===== FOLLOWUP =====
-  if (prescType === 'followup') {
-    google.script.run
-      .withSuccessHandler(function(result) {
-        if (result && result.success) {
-          showPdToast('✅ ' + result.message, 'success');
-          setTimeout(function() {
-            closePrescriptionForm();
-            if (typeof loadFollowupPrescriptions === 'function') loadFollowupPrescriptions();
-            if (PD_CAN_PRESCRIBE) { loadPendingPrescriptions(); loadFollowupPending(); }
-            loadPatients();
-          }, 1500);
-        } else {
-          showPdToast('❌ ' + ((result && result.error) || 'সেভ করতে ব্যর্থ'), 'error');
-        }
-      })
-      .withFailureHandler(function(e) { showPdToast('❌ Error: ' + e, 'error'); })
-      .addFollowupPrescription(patientId, data, PD_USER_EMAIL);
-    return;
+  var prescBtn = document.getElementById('prescSubmitBtn');
+  if (prescBtn) {
+    prescBtn.disabled = true;
+    prescBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF তৈরি হচ্ছে...';
   }
 
-  // ===== REGULAR =====
-  google.script.run
-    .withSuccessHandler(function(result) {
-      if (result.success) {
+  var formElement = document.querySelector('#prescriptionModal .prescription-wrapper');
+  var regNo = document.getElementById('prescRegNo').value.trim();
+  var clientName = document.getElementById('prescClientName').value.trim();
+  var typeLabel = prescType === 'followup' ? 'Followup' : 'Prescription';
+  var fileNameBase = buildPdfFileName_(typeLabel, regNo, clientName);
+
+  generateFormPdfBase64(formElement, fileNameBase).then(function(pdfResult) {
+    data.pdfBase64 = pdfResult.base64;
+    data.pdfFileName = fileNameBase;
+
+    showFormPdfPreview(pdfResult.base64, fileNameBase);
+    if (prescBtn) prescBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...';
+
+    var finalHandler = function(result) {
+      if (prescBtn) { prescBtn.disabled = false; prescBtn.innerHTML = '<i class="fas fa-save"></i> Submit'; }
+      if (result && result.success) {
+        showPdToast('✅ ' + result.message, 'success');
+        setTimeout(function() {
+          closeFormPdfPreview();
+          closePrescriptionForm();
+          loadPatients();
+          loadAllCentersStats();
+          loadMyCenterStats();
+          if (PD_CAN_PRESCRIBE) { loadPendingPrescriptions(); loadSavedPrescriptions(); }
+          if (prescType === 'followup' && typeof loadFollowupPrescriptions === 'function') loadFollowupPrescriptions();
+          if (PD_CAN_PRESCRIBE) loadFollowupPending();
+        }, 2000);
+      } else {
+        showPdToast('❌ ' + ((result && result.error) || 'সেভ ব্যর্থ'), 'error');
+      }
+    };
+    var failHandler = function(e) {
+      if (prescBtn) { prescBtn.disabled = false; prescBtn.innerHTML = '<i class="fas fa-save"></i> Submit'; }
+      showPdToast('❌ Error: ' + e, 'error');
+    };
+
+    if (prescType === 'followup') {
+      google.script.run.withSuccessHandler(finalHandler).withFailureHandler(failHandler)
+        .addFollowupPrescription(patientId, data, PD_USER_EMAIL);
+    } else {
+      google.script.run.withSuccessHandler(finalHandler).withFailureHandler(failHandler)
+        .savePatientPrescription(patientId, data, PD_USER_EMAIL);
+    }
+  }).catch(function(err) {
+    console.warn('Client PDF failed, server fallback:', err);
+    showPdToast('⚠️ Client PDF ব্যর্থ, server-side PDF ব্যবহার হবে', 'info');
+    data.pdfBase64 = null;
+    if (prescBtn) prescBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...';
+
+    var finalHandlerFb = function(result) {
+      if (prescBtn) { prescBtn.disabled = false; prescBtn.innerHTML = '<i class="fas fa-save"></i> Submit'; }
+      if (result && result.success) {
         showPdToast('✅ ' + result.message, 'success');
         setTimeout(function() {
           closePrescriptionForm();
           loadPatients();
           loadAllCentersStats();
           loadMyCenterStats();
-          if (PD_CAN_PRESCRIBE) {
-            loadPendingPrescriptions();
-            loadSavedPrescriptions();
-          }
+          if (PD_CAN_PRESCRIBE) { loadPendingPrescriptions(); loadSavedPrescriptions(); loadFollowupPending(); }
+          if (prescType === 'followup' && typeof loadFollowupPrescriptions === 'function') loadFollowupPrescriptions();
         }, 1500);
       } else {
-        showPdToast('❌ ' + ((result && result.error) || 'সার্ভার থেকে রেসপন্স নেই'), 'error');
+        showPdToast('❌ ' + ((result && result.error) || 'সেভ ব্যর্থ'), 'error');
       }
-    })
-    .withFailureHandler(function(e) { showPdToast('❌ Error: ' + e, 'error'); })
-    .savePatientPrescription(patientId, data, PD_USER_EMAIL);
+    };
+    var failHandlerFb = function(e) {
+      if (prescBtn) { prescBtn.disabled = false; prescBtn.innerHTML = '<i class="fas fa-save"></i> Submit'; }
+      showPdToast('❌ Error: ' + e, 'error');
+    };
+
+    if (prescType === 'followup') {
+      google.script.run.withSuccessHandler(finalHandlerFb).withFailureHandler(failHandlerFb)
+        .addFollowupPrescription(patientId, data, PD_USER_EMAIL);
+    } else {
+      google.script.run.withSuccessHandler(finalHandlerFb).withFailureHandler(failHandlerFb)
+        .savePatientPrescription(patientId, data, PD_USER_EMAIL);
+    }
+  });
 }
 
 
@@ -6327,128 +6393,114 @@ function initReceptionChatDragDrop_() {
   // ================================================================
 
   function submitRegistrationForm(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    function getCheckedValues(containerId) {
-      var values = [];
-      var container = document.getElementById(containerId);
-      if (!container) return values;
-      var checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
-      checkboxes.forEach(function(cb) {
-        if (cb.value !== 'Others') {
-          values.push(cb.value);
-        }
-      });
-      return values;
-    }
-
-    function getRadioValue(name) {
-      var el = document.querySelector('input[name="'+name+'"]:checked');
-      return el ? el.value : '';
-    }
-
-    var nid = document.getElementById('regNid').value.trim();
-    var birthCert = document.getElementById('regBirthCert').value.trim();
-    var tikaCard = document.getElementById('regTikaCard').value.trim();
-
-    // ===== ফিল্ড হাইলাইট রিসেট =====
-    ['regCenterPinNumber','regNid','regBirthCert','regTikaCard'].forEach(function(fid){
-      var el = document.getElementById(fid);
-      if (el) el.style.outline = '';
-      if (el) el.style.borderColor = '';
+  function getCheckedValues(containerId) {
+    var values = [];
+    var container = document.getElementById(containerId);
+    if (!container) return values;
+    container.querySelectorAll('input[type="checkbox"]:checked').forEach(function(cb) {
+      if (cb.value !== 'Others') values.push(cb.value);
     });
+    return values;
+  }
+  function getRadioValue(name) {
+    var el = document.querySelector('input[name="'+name+'"]:checked');
+    return el ? el.value : '';
+  }
 
-    if (!nid && !birthCert && !tikaCard) {
-      showPdToast('❌ কমপক্ষে একটি পরিচয়পত্র (Identification Document) দিন — NID / Birth Certificate / Tika Card', 'error');
-      ['regNid','regBirthCert','regTikaCard'].forEach(function(fid){
-        var el = document.getElementById(fid);
-        if (el) { el.style.outline = '2px solid #EA4335'; el.style.borderColor = '#EA4335'; }
-      });
-      document.getElementById('regNid').focus();
-      return;
-    }
+  var nid = document.getElementById('regNid').value.trim();
+  var birthCert = document.getElementById('regBirthCert').value.trim();
+  var tikaCard = document.getElementById('regTikaCard').value.trim();
 
-    syncCenterPin();
-    var centerPinVal = document.getElementById('regCenterPin').value.trim();
-    if (!centerPinVal) {
-      showPdToast('❌ Centre Registration no আবশ্যক! শুধু নম্বরটি লিখুন।', 'error');
-      var cpEl = document.getElementById('regCenterPinNumber');
-      cpEl.style.outline = '2px solid #EA4335'; cpEl.style.borderColor = '#EA4335';
-      cpEl.focus();
-      return;
-    }
+  ['regCenterPinNumber','regNid','regBirthCert','regTikaCard'].forEach(function(fid){
+    var el = document.getElementById(fid);
+    if (el) { el.style.outline = ''; el.style.borderColor = ''; }
+  });
 
-    var signature = getSignatureData();
+  if (!nid && !birthCert && !tikaCard) {
+    showPdToast('❌ কমপক্ষে একটি পরিচয়পত্র দিন — NID / Birth Certificate / Tika Card', 'error');
+    ['regNid','regBirthCert','regTikaCard'].forEach(function(fid){
+      var el = document.getElementById(fid);
+      if (el) { el.style.outline = '2px solid #EA4335'; el.style.borderColor = '#EA4335'; }
+    });
+    document.getElementById('regNid').focus();
+    return;
+  }
 
-    var formData = {
-      patientId: document.getElementById('regPatientId').value,
-      centerPin: document.getElementById('regCenterPin').value.trim(),
-      serialNo: document.getElementById('regSerialNo').value,
-      registrationDate: document.getElementById('regDate').value,
-      name: document.getElementById('regName').value.trim(),
-      age: document.getElementById('regAge').value,
-      gender: document.getElementById('regGender').value,
-      guardian: document.getElementById('regGuardian').value.trim(),
-      mother: document.getElementById('regMother').value.trim(),
-      mobile: document.getElementById('regMobile').value.trim(),
-      nid: nid,
-      birthCert: birthCert,
-      tikaCard: tikaCard,
-      houseNo: document.getElementById('regHouseNo').value,
-      village: document.getElementById('regVillage').value,
-      ward: document.getElementById('regWard').value,
-      thana: document.getElementById('regThana').value,
-      district: document.getElementById('regDistrict').value,
-      education: getCheckedValues('eduGrid'),
-      educationOther: document.getElementById('eduOtherText').value,
-      profession: getCheckedValues('profGrid'),
-      professionOther: document.getElementById('profOtherText').value,
-      familyMembers: document.getElementById('regFamilyMembers').value,
-      earningMembers: document.getElementById('regEarningMembers').value,
-      houseType: getRadioValue('houseType'),
-      houseOther: document.getElementById('houseOtherText').value,
-      income: getRadioValue('income'),
-      mainProblem: document.getElementById('regMainProblem').value,
-      disability: getCheckedValues('disabilityGrid'),
-      disabilityOther: document.getElementById('disOtherText').value,
-      dssRegistered: document.getElementById('regDss').value,
-      dssRegNo: document.getElementById('regDssNo').value,
-      dssIssueDate: document.getElementById('regDssIssueDate').value,
-      source: getCheckedValues('sourceGrid'),
-      sourceOther: document.getElementById('sourceOtherText').value,
-      expectation: document.getElementById('regExpectation').value,
-      signature: signature
-    };
+  syncCenterPin();
+  var centerPinVal = document.getElementById('regCenterPin').value.trim();
+  if (!centerPinVal) {
+    showPdToast('❌ Centre Registration no আবশ্যক!', 'error');
+    var cpEl = document.getElementById('regCenterPinNumber');
+    cpEl.style.outline = '2px solid #EA4335'; cpEl.style.borderColor = '#EA4335';
+    cpEl.focus();
+    return;
+  }
 
-    if (!formData.name) {
-      showPdToast('❌ Please enter Client Name!', 'error');
-      return;
-    }
-    if (!formData.age) {
-      showPdToast('❌ Please enter Age!', 'error');
-      return;
-    }
-    if (!formData.gender) {
-      showPdToast('❌ Please select Gender!', 'error');
-      return;
-    }
-    if (!formData.guardian) {
-      showPdToast('❌ Please enter Guardian Name!', 'error');
-      return;
-    }
-    if (!formData.centerPin) {
-      showPdToast('❌ Please enter Centre Registration No (PIN)!', 'error');
-      return;
-    }
-    if (formData.registrationDate && formData.registrationDate > today_()) {
-      showPdToast('❌ ভবিষ্যতের তারিখে নিবন্ধন করা যাবে না! আজ বা তার আগের তারিখ দিন।', 'error');
-      document.getElementById('regDate').focus();
-      return;
-    }
+  var signature = getSignatureData();
+  var formData = {
+    patientId: document.getElementById('regPatientId').value,
+    centerPin: document.getElementById('regCenterPin').value.trim(),
+    serialNo: document.getElementById('regSerialNo').value,
+    registrationDate: document.getElementById('regDate').value,
+    name: document.getElementById('regName').value.trim(),
+    age: document.getElementById('regAge').value,
+    gender: document.getElementById('regGender').value,
+    guardian: document.getElementById('regGuardian').value.trim(),
+    mother: document.getElementById('regMother').value.trim(),
+    mobile: document.getElementById('regMobile').value.trim(),
+    nid: nid, birthCert: birthCert, tikaCard: tikaCard,
+    houseNo: document.getElementById('regHouseNo').value,
+    village: document.getElementById('regVillage').value,
+    ward: document.getElementById('regWard').value,
+    thana: document.getElementById('regThana').value,
+    district: document.getElementById('regDistrict').value,
+    education: getCheckedValues('eduGrid'),
+    educationOther: document.getElementById('eduOtherText').value,
+    profession: getCheckedValues('profGrid'),
+    professionOther: document.getElementById('profOtherText').value,
+    familyMembers: document.getElementById('regFamilyMembers').value,
+    earningMembers: document.getElementById('regEarningMembers').value,
+    houseType: getRadioValue('houseType'),
+    houseOther: document.getElementById('houseOtherText').value,
+    income: getRadioValue('income'),
+    mainProblem: document.getElementById('regMainProblem').value,
+    disability: getCheckedValues('disabilityGrid'),
+    disabilityOther: document.getElementById('disOtherText').value,
+    dssRegistered: document.getElementById('regDss').value,
+    dssRegNo: document.getElementById('regDssNo').value,
+    dssIssueDate: document.getElementById('regDssIssueDate').value,
+    source: getCheckedValues('sourceGrid'),
+    sourceOther: document.getElementById('sourceOtherText').value,
+    expectation: document.getElementById('regExpectation').value,
+    signature: signature
+  };
 
-    var btn = document.getElementById('regSubmitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+  if (!formData.name) { showPdToast('❌ Please enter Client Name!', 'error'); return; }
+  if (!formData.age) { showPdToast('❌ Please enter Age!', 'error'); return; }
+  if (!formData.gender) { showPdToast('❌ Please select Gender!', 'error'); return; }
+  if (!formData.guardian) { showPdToast('❌ Please enter Guardian Name!', 'error'); return; }
+  if (!formData.centerPin) { showPdToast('❌ Please enter Centre Registration No (PIN)!', 'error'); return; }
+  if (formData.registrationDate && formData.registrationDate > today_()) {
+    showPdToast('❌ ভবিষ্যতের তারিখে নিবন্ধন করা যাবে না!', 'error');
+    document.getElementById('regDate').focus();
+    return;
+  }
+
+  var btn = document.getElementById('regSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF তৈরি হচ্ছে...';
+
+  var formElement = document.querySelector('#registrationModal .reg-form-container');
+  var fileNameBase = buildPdfFileName_('Registration', formData.centerPin, formData.name);
+
+  generateFormPdfBase64(formElement, fileNameBase).then(function(pdfResult) {
+    formData.pdfBase64 = pdfResult.base64;
+    formData.pdfFileName = fileNameBase;
+
+    showFormPdfPreview(pdfResult.base64, fileNameBase);
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...';
 
     google.script.run
       .withSuccessHandler(function(result) {
@@ -6456,20 +6508,17 @@ function initReceptionChatDragDrop_() {
         btn.innerHTML = '<i class="fas fa-save"></i> Submit';
         if (result.success) {
           if (result.serialNo) document.getElementById('regSerialNo').value = result.serialNo;
-          showPdToast('✅ '+result.message, 'success');
+          showPdToast('✅ ' + result.message, 'success');
           setTimeout(function() {
+            closeFormPdfPreview();
             closeRegistrationForm();
             loadPatients();
             loadAllCentersStats();
             loadMyCenterStats();
-            var isClinician = PD_CAN_ASSESS;
-            if (isClinician) {
-              loadPendingAssessments();
-            }
-          }, 1500);
+            if (PD_CAN_ASSESS) loadPendingAssessments();
+          }, 2000);
         } else {
-          showPdToast('❌ '+((result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি'), 'error');
-          // ===== ডুপ্লিকেট হলে সেই ফিল্ডটাতে ফোকাস/হাইলাইট করুন =====
+          showPdToast('❌ ' + ((result && result.error) || 'সেভ ব্যর্থ'), 'error');
           var dupFieldMap = { centerPin: 'regCenterPinNumber', nid: 'regNid', birthCert: 'regBirthCert', tikaCard: 'regTikaCard' };
           if (result && result.duplicateField && dupFieldMap[result.duplicateField]) {
             var dupEl = document.getElementById(dupFieldMap[result.duplicateField]);
@@ -6485,10 +6534,40 @@ function initReceptionChatDragDrop_() {
       .withFailureHandler(function(e) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-save"></i> Submit';
-        showPdToast('❌ Error: '+e, 'error');
+        showPdToast('❌ Error: ' + e, 'error');
       })
       .addPatient(formData, PD_USER_EMAIL);
-  }
+  }).catch(function(err) {
+    console.warn('Client PDF generation failed, using server fallback:', err);
+    showPdToast('⚠️ Client PDF ব্যর্থ, server-side PDF ব্যবহার হবে', 'info');
+    formData.pdfBase64 = null;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...';
+
+    google.script.run
+      .withSuccessHandler(function(result) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Submit';
+        if (result.success) {
+          if (result.serialNo) document.getElementById('regSerialNo').value = result.serialNo;
+          showPdToast('✅ ' + result.message, 'success');
+          setTimeout(function() {
+            closeRegistrationForm();
+            loadPatients();
+            loadAllCentersStats();
+            loadMyCenterStats();
+          }, 1500);
+        } else {
+          showPdToast('❌ ' + ((result && result.error) || 'সেভ ব্যর্থ'), 'error');
+        }
+      })
+      .withFailureHandler(function(e) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Submit';
+        showPdToast('❌ Error: ' + e, 'error');
+      })
+      .addPatient(formData, PD_USER_EMAIL);
+  });
+}
 
   // ================================================================
   // ===== VIEW / EDIT PATIENT =======================================
@@ -10575,6 +10654,121 @@ window.rxRemoveMedicine = rxRemoveMedicine;
 
 window.rxMngDeleteItem = rxMngDeleteItem;
 
+// ================================================================
+// ===== CLIENT-SIDE FORM PDF GENERATION (WYSIWYG) =================
+// ================================================================
+
+var _formPdfCurrentBlobUrl = '';
+var _formPdfCurrentFileName = '';
+
+function generateFormPdfBase64(element, fileName) {
+  return new Promise(function(resolve, reject) {
+    if (!element) { reject(new Error('Element not found')); return; }
+    if (typeof html2pdf === 'undefined') { reject(new Error('html2pdf library not loaded')); return; }
+
+    var opt = {
+      margin: [4, 4, 4, 4],
+      filename: fileName + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+      var blob = pdf.output('blob');
+      var reader = new FileReader();
+      reader.onloadend = function() {
+        var dataUri = reader.result;
+        var base64 = dataUri.split(',')[1];
+        resolve({ base64: base64, blob: blob });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    }).catch(reject);
+  });
+}
+
+function showFormPdfPreview(base64, fileName) {
+  try {
+    var byteChars = atob(base64);
+    var byteNumbers = new Array(byteChars.length);
+    for (var i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+    var byteArray = new Uint8Array(byteNumbers);
+    var blob = new Blob([byteArray], { type: 'application/pdf' });
+
+    if (_formPdfCurrentBlobUrl) URL.revokeObjectURL(_formPdfCurrentBlobUrl);
+    var url = URL.createObjectURL(blob);
+    _formPdfCurrentBlobUrl = url;
+    _formPdfCurrentFileName = fileName;
+
+    document.getElementById('formPdfPreviewTitle').textContent = fileName + '.pdf';
+    document.getElementById('formPdfPreviewFrame').src = url;
+    document.getElementById('formPdfDownloadLink').href = url;
+    document.getElementById('formPdfDownloadLink').download = fileName + '.pdf';
+    document.getElementById('formPdfOpenLink').href = url;
+
+    var modal = document.getElementById('formPdfPreviewModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+  } catch (e) {
+    showPdToast('❌ PDF preview ব্যর্থ: ' + e.message, 'error');
+  }
+}
+
+function closeFormPdfPreview() {
+  var modal = document.getElementById('formPdfPreviewModal');
+  if (modal) { modal.classList.remove('show'); modal.style.display = 'none'; }
+  document.getElementById('formPdfPreviewFrame').src = '';
+  if (_formPdfCurrentBlobUrl) {
+    URL.revokeObjectURL(_formPdfCurrentBlobUrl);
+    _formPdfCurrentBlobUrl = '';
+  }
+}
+
+function buildPdfFileName_(type, centerPin, patientName) {
+  var now = new Date();
+  var stamp = now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2)
+            + '_' + ('0'+now.getHours()).slice(-2) + ('0'+now.getMinutes()).slice(-2);
+  var safe = (patientName || 'patient').replace(/[^a-zA-Z0-9\u0980-\u09FF]+/g, '_').substring(0, 30);
+  var pin = (centerPin || '').replace(/[^A-Za-z0-9\-]+/g, '');
+  return type + '_' + pin + '_' + safe + '_' + stamp;
+}
+
+window.showFormPdfPreview = showFormPdfPreview;
+window.closeFormPdfPreview = closeFormPdfPreview;
+window.generateFormPdfBase64 = generateFormPdfBase64;
+window.buildPdfFileName_ = buildPdfFileName_;
+
 </script>
+
+<!-- ================================================================ -->
+<!-- ===== FORM PDF PREVIEW MODAL (client-side generated) =========== -->
+<!-- ================================================================ -->
+<div class="pd-modal-overlay" id="formPdfPreviewModal">
+  <div class="pd-modal-box" style="max-width:900px;width:94%;height:90vh;display:flex;flex-direction:column;padding:0;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #dadce0;">
+      <h3 style="margin:0;font-size:15px;">
+        <i class="fas fa-file-pdf" style="color:#EA4335;"></i>
+        <span id="formPdfPreviewTitle">PDF প্রিভিউ</span>
+      </h3>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a id="formPdfDownloadLink" href="#" download title="ডাউনলোড করুন"><i class="fas fa-download"></i></a>
+        <a id="formPdfOpenLink" href="#" target="_blank" title="নতুন ট্যাবে খুলুন"><i class="fas fa-external-link-alt"></i></a>
+        <span class="pd-modal-close" style="position:static;" onclick="closeFormPdfPreview()"><i class="fas fa-times"></i></span>
+      </div>
+    </div>
+    <iframe id="formPdfPreviewFrame" src="" style="flex:1;width:100%;border:none;"></iframe>
+  </div>
+</div>
+
 </body>
 </html>
