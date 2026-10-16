@@ -10666,33 +10666,79 @@ function generateFormPdfBase64(element, fileName) {
     if (!element) { reject(new Error('Element not found')); return; }
     if (typeof html2pdf === 'undefined') { reject(new Error('html2pdf library not loaded')); return; }
 
-    var opt = {
-      margin: [4, 4, 4, 4],
-      filename: fileName + '.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'] }
-    };
+    console.log('🎨 Generating PDF for:', fileName);
 
-    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
-      var blob = pdf.output('blob');
-      var reader = new FileReader();
-      reader.onloadend = function() {
-        var dataUri = reader.result;
-        var base64 = dataUri.split(',')[1];
-        resolve({ base64: base64, blob: blob });
+    // ===== Step 1: Logo গুলো base64 এ convert করে inline করা (CORS fix) =====
+    var imgs = element.querySelectorAll('img');
+    var imgPromises = [];
+    imgs.forEach(function(img) {
+      if (img.src && img.src.indexOf('data:') === 0) return; // already base64
+      if (!img.src) return;
+      var originalSrc = img.src;
+      var p = new Promise(function(res) {
+        var tempImg = new Image();
+        tempImg.crossOrigin = 'anonymous';
+        tempImg.onload = function() {
+          try {
+            var canvas = document.createElement('canvas');
+            canvas.width = tempImg.naturalWidth || 100;
+            canvas.height = tempImg.naturalHeight || 100;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(tempImg, 0, 0);
+            var dataUrl = canvas.toDataURL('image/png');
+            img.src = dataUrl;  // inline base64 - no CORS issue
+            console.log('✅ Logo converted to base64');
+          } catch (e) {
+            console.warn('⚠️ Logo conversion failed (CORS?), leaving original:', e.message);
+          }
+          res();
+        };
+        tempImg.onerror = function() {
+          console.warn('⚠️ Logo load failed:', originalSrc);
+          res();
+        };
+        tempImg.src = originalSrc;
+      });
+      imgPromises.push(p);
+    });
+
+    Promise.all(imgPromises).then(function() {
+      console.log('📸 All logos processed, generating PDF...');
+
+      var opt = {
+        margin: [4, 4, 4, 4],
+        filename: fileName + '.pdf',
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          imageTimeout: 15000,
+          removeContainer: true,
+          windowWidth: element.scrollWidth,
+          windowHeight: element.scrollHeight
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
       };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
+
+      html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+        var blob = pdf.output('blob');
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          var dataUri = reader.result;
+          var base64 = dataUri.split(',')[1];
+          console.log('✅ PDF generated successfully, size:', (base64.length/1024).toFixed(1), 'KB');
+          resolve({ base64: base64, blob: blob });
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      }).catch(function(err) {
+        console.error('❌ html2pdf failed:', err);
+        reject(err);
+      });
     }).catch(reject);
   });
 }
