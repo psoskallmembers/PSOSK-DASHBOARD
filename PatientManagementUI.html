@@ -3814,6 +3814,17 @@
   </div>
 </div>
 
+<!-- ===== PDF History Modal ===== -->
+<div class="pd-modal-overlay" id="pdfHistoryModal">
+  <div class="pd-modal-box" style="max-width:640px;">
+    <span class="pd-modal-close" onclick="closePdfHistoryModal()"><i class="fas fa-times"></i></span>
+    <h3 id="pdfHistoryTitle"><i class="fas fa-history"></i> PDF ভার্সন হিস্ট্রি</h3>
+    <div id="pdfHistoryBody" style="max-height:65vh;overflow-y:auto;margin-top:12px;">
+      <div class="pd-empty">লোড হচ্ছে...</div>
+    </div>
+  </div>
+</div>
+
 <!-- ================================================================ -->
 <!-- ===== PDF PREVIEW MODAL ===== -->
 <!-- ================================================================ -->
@@ -4597,10 +4608,10 @@
             var canAssess = PD_CAN_ASSESS;
             var canPrescribe = PD_CAN_PRESCRIBE;
 
-// ---- NEW COLUMN RENDERING ----
+// ---- NEW COLUMN RENDERING (with PDF History) ----
 var regActions = '';
 if (p.registrationPdfLink) {
-  regActions += '<a href="javascript:void(0)" onclick="openPdfPreview(\''+encodeURIComponent(p.registrationPdfLink)+'\',\''+nameEsc+' - নিবন্ধন\',\'registration\',\''+idEsc+'\')" title="PDF দেখুন"><i class="fas fa-file-pdf" style="color:#EA4335;"></i></a> ';
+  regActions += '<a href="javascript:void(0)" onclick="openPdfHistory(\''+idEsc+'\',\'registration\',\''+nameEsc+'\')" title="PDF দেখুন (সব ভার্সন)"><i class="fas fa-file-pdf" style="color:#EA4335;"></i> <i class="fas fa-history" style="color:#9C27B0;font-size:9px;"></i></a> ';
 }
 if (p.registrationPdfLink && canEdit) {
   regActions += '<a href="javascript:void(0)" onclick="editPatient(\''+idEsc+'\')" title="রেজিস্ট্রেশন ফর্ম সম্পাদনা"><i class="fas fa-edit" style="color:#1A73E8;"></i></a> ';
@@ -4609,7 +4620,7 @@ if (!regActions) regActions = 'N/A';
 
 var assessActions = '';
 if (p.assessmentPdfLink) {
-  assessActions += '<a href="javascript:void(0)" onclick="openPdfPreview(\''+encodeURIComponent(p.assessmentPdfLink)+'\',\''+nameEsc+' - মূল্যায়ন\',\'assessment\',\''+idEsc+'\')" title="PDF দেখুন"><i class="fas fa-file-pdf" style="color:#EA4335;"></i></a> ';
+  assessActions += '<a href="javascript:void(0)" onclick="openPdfHistory(\''+idEsc+'\',\'assessment\',\''+nameEsc+'\')" title="PDF দেখুন (সব ভার্সন)"><i class="fas fa-file-pdf" style="color:#EA4335;"></i> <i class="fas fa-history" style="color:#9C27B0;font-size:9px;"></i></a> ';
 }
 if (p.assessmentPdfLink && canAssess) {
   assessActions += '<a href="javascript:void(0)" onclick="viewSavedAssessment(\''+idEsc+'\')" title="মূল্যায়ন ফর্ম সম্পাদনা"><i class="fas fa-edit" style="color:#1A73E8;"></i></a> ';
@@ -4618,7 +4629,7 @@ if (!assessActions) assessActions = 'N/A';
 
 var prescActions = '';
 if (p.prescriptionPdfLink) {
-  prescActions += '<a href="javascript:void(0)" onclick="openPdfPreview(\''+encodeURIComponent(p.prescriptionPdfLink)+'\',\''+nameEsc+' - প্রেসক্রিপশন\',\'prescription\',\''+idEsc+'\')" title="PDF দেখুন"><i class="fas fa-file-pdf" style="color:#EA4335;"></i></a> ';
+  prescActions += '<a href="javascript:void(0)" onclick="openPdfHistory(\''+idEsc+'\',\'prescription\',\''+nameEsc+'\')" title="PDF দেখুন (সব ভার্সন)"><i class="fas fa-file-pdf" style="color:#EA4335;"></i> <i class="fas fa-history" style="color:#9C27B0;font-size:9px;"></i></a> ';
 }
 if (p.prescriptionPdfLink && canPrescribe) {
   prescActions += '<a href="javascript:void(0)" onclick="viewSavedPrescription(\''+idEsc+'\')" title="প্রেসক্রিপশন ফর্ম সম্পাদনা"><i class="fas fa-edit" style="color:#1A73E8;"></i></a> ';
@@ -4627,14 +4638,12 @@ if (!prescActions) prescActions = 'N/A';
 
 var followupPrescActions = '';
 if (p.followupPrescriptionPdfLink) {
-  followupPrescActions += '<a href="javascript:void(0)" onclick="openPdfPreview(\''+encodeURIComponent(p.followupPrescriptionPdfLink)+'\',\''+nameEsc+' - ফলোআপ প্রেসক্রিপশন\',\'followup\',\''+idEsc+'\')" title="PDF দেখুন"><i class="fas fa-file-pdf" style="color:#EA4335;"></i></a> ';
+  followupPrescActions += '<a href="javascript:void(0)" onclick="openPdfHistory(\''+idEsc+'\',\'followup\',\''+nameEsc+'\')" title="PDF দেখুন (সব ভার্সন)"><i class="fas fa-file-pdf" style="color:#EA4335;"></i> <i class="fas fa-history" style="color:#9C27B0;font-size:9px;"></i></a> ';
 }
 if (p.followupPrescriptionPdfLink && canPrescribe) {
   followupPrescActions += '<a href="javascript:void(0)" onclick="editFollowupPrescription(\''+idEsc+'\')" title="ফলোআপ প্রেসক্রিপশন সম্পাদনা"><i class="fas fa-edit" style="color:#1A73E8;"></i></a> ';
 }
 if (!followupPrescActions) followupPrescActions = 'N/A';
-
-var createdBy = esc_(p.createdByName || p.createdBy || 'N/A');
 // ---- END NEW COLUMN RENDERING ----
 
             html += '<tr>';
@@ -6842,6 +6851,8 @@ function closePrescriptionForm() {
     return url;
   }
 
+
+
   // ================================================================
 // PDF Preview + Delete
 // ================================================================
@@ -6902,6 +6913,104 @@ function closePdfPreview() {
   pdPdfPreviewCurrentUrl_ = '';                          // URL reset
 }
 
+
+// ================================================================
+// PDF History — সব ভার্সন দেখা
+// ================================================================
+function openPdfHistory(patientId, pdfType, patientName) {
+  if (!patientId) { showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error'); return; }
+
+  var typeLabel = pdfType === 'registration' ? 'নিবন্ধন' :
+                  pdfType === 'assessment' ? 'মূল্যায়ন' :
+                  pdfType === 'followup' ? 'ফলোআপ প্রেসক্রিপশন' : 'প্রেসক্রিপশন';
+
+  showPdToast('⏳ PDF হিস্ট্রি লোড হচ্ছে...', 'info');
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (!result || !result.success) {
+        showPdToast('❌ ' + ((result && result.error) || 'লোড করা যায়নি'), 'error');
+        return;
+      }
+      var history = result.history || [];
+      if (!history.length) {
+        showPdToast('ℹ️ এই রোগীর কোনো PDF পাওয়া যায়নি', 'info');
+        return;
+      }
+      // মাত্র ১টি ভার্সন → সরাসরি PDF খুলুন
+      if (history.length === 1) {
+        openPdfPreview(encodeURIComponent(history[0].pdfUrl), patientName + ' - ' + typeLabel, pdfType, patientId);
+        return;
+      }
+      // একাধিক ভার্সন → মোডালে সব দেখান
+      showPdfHistoryModal_(patientName, pdfType, history, patientId);
+    })
+    .withFailureHandler(function(e) {
+      showPdToast('❌ Error: ' + e, 'error');
+    })
+    .getPatientPdfHistory(patientId, pdfType, PD_USER_EMAIL);
+}
+
+function showPdfHistoryModal_(patientName, pdfType, history, patientId) {
+  var typeLabel = pdfType === 'registration' ? 'নিবন্ধন ফর্ম' :
+                  pdfType === 'assessment' ? 'মূল্যায়ন ফর্ম' :
+                  pdfType === 'followup' ? 'ফলোআপ প্রেসক্রিপশন' : 'প্রেসক্রিপশন';
+
+  document.getElementById('pdfHistoryTitle').innerHTML =
+    '<i class="fas fa-history"></i> ' + esc_(patientName) + ' — ' + typeLabel + ' (মোট ' + history.length + ' টি ভার্সন)';
+
+  var html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  history.forEach(function(h, i) {
+    var dateStr = h.createdAt ? new Date(h.createdAt).toLocaleString('bn-BD') : 'N/A';
+    var isLatest = i === 0;
+    var bg = isLatest ? '#e8f0fe' : '#f8f9fa';
+    var border = isLatest ? '2px solid #1A73E8' : '1px solid #dadce0';
+    html += '<div style="background:' + bg + ';border:' + border + ';border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">';
+    html += '<div style="flex:1;min-width:180px;">';
+    html += '<div style="font-weight:700;color:#1A73E8;font-size:14px;">v' + h.version;
+    if (isLatest) html += ' <span style="background:#34A853;color:#fff;font-size:10px;padding:2px 9px;border-radius:10px;margin-left:6px;">সর্বশেষ</span>';
+    html += '</div>';
+    html += '<div style="font-size:12px;color:#5f6368;margin-top:4px;"><i class="fas fa-calendar"></i> ' + esc_(dateStr) + '</div>';
+    if (h.createdBy) {
+      html += '<div style="font-size:11px;color:#9e9e9e;margin-top:2px;"><i class="fas fa-user"></i> ' + esc_(h.createdBy) + '</div>';
+    }
+    html += '</div>';
+    var safeName = esc_(patientName).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    var safePid = esc_(patientId).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    html += '<a href="javascript:void(0)" onclick="openPdfFromHistory(\'' + encodeURIComponent(h.pdfUrl) + '\',\'' + safeName + '\',\'' + pdfType + '\',\'' + safePid + '\',' + h.version + ')" ';
+    html += 'style="background:#EA4335;color:#fff;padding:8px 16px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">';
+    html += '<i class="fas fa-file-pdf"></i> দেখুন';
+    html += '</a>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  document.getElementById('pdfHistoryBody').innerHTML = html;
+  var modal = document.getElementById('pdfHistoryModal');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+}
+
+function openPdfFromHistory(encodedUrl, patientName, pdfType, patientId, version) {
+  closePdfHistoryModal();
+  var typeLabel = pdfType === 'registration' ? 'নিবন্ধন' :
+                  pdfType === 'assessment' ? 'মূল্যায়ন' :
+                  pdfType === 'followup' ? 'ফলোআপ প্রেসক্রিপশন' : 'প্রেসক্রিপশন';
+  var url = decodeURIComponent(encodedUrl);
+  openPdfPreview(encodeURIComponent(url), patientName + ' - ' + typeLabel + ' (v' + version + ')', pdfType, patientId);
+}
+
+function closePdfHistoryModal() {
+  var modal = document.getElementById('pdfHistoryModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+  }
+}
+
+window.openPdfHistory = openPdfHistory;
+window.openPdfFromHistory = openPdfFromHistory;
+window.closePdfHistoryModal = closePdfHistoryModal;
 
 // ================================================================
 // PDF Preview Modal এর Edit Button
