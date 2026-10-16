@@ -4721,7 +4721,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   var clientName = document.getElementById('assessClientName').value.trim();
   var fileNameBase = buildPdfFileName_('Assessment', regNo, clientName);
 
-  generateFormPdfBase64(formElement, fileNameBase).then(function(pdfResult) {
+  generateFormPdfBase64(formElement, fileNameBase, 1).then(function(pdfResult) {
     data.pdfBase64 = pdfResult.base64;
     data.pdfFileName = fileNameBase;
 
@@ -6265,7 +6265,7 @@ function initReceptionChatDragDrop_() {
   var formElement = document.querySelector('#registrationModal .reg-form-container');
   var fileNameBase = buildPdfFileName_('Registration', formData.centerPin, formData.name);
 
-  generateFormPdfBase64(formElement, fileNameBase).then(function(pdfResult) {
+  generateFormPdfBase64(formElement, fileNameBase, 2).then(function(pdfResult) {
     formData.pdfBase64 = pdfResult.base64;
     formData.pdfFileName = fileNameBase;
 
@@ -10441,171 +10441,160 @@ var _formPdfCurrentBlobUrl = '';
 var _formPdfCurrentFileName = '';
 
 // ================================================================
-// ===== CLIENT-SIDE A4 PDF GENERATION (WYSIWYG, ONE PAGE) ========
+// ===== CLIENT-SIDE A4 PDF (WYSIWYG · exact N-page fit) ==========
 // ================================================================
-// html2canvas দিয়ে ফর্মের snapshot → jsPDF দিয়ে A4 পেজে fit।
-// ফলে: ১ পেজ guaranteed, WYSIWYG, স্ক্রিন = প্রিন্ট = PDF।
-// ================================================================
-function generateFormPdfBase64(element, fileName) {
+function generateFormPdfBase64(element, fileName, maxPages) {
+  maxPages = maxPages || 1;
   return new Promise(function (resolve, reject) {
-    if (!element) { reject(new Error('Form element not found')); return; }
+    if (!element) return reject(new Error('Form element not found'));
 
     var h2c = window.html2canvas;
     var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+    if (typeof h2c === 'undefined') return reject(new Error('html2canvas not loaded'));
+    if (!jsPDFCtor) return reject(new Error('jsPDF not loaded'));
 
-    if (typeof h2c === 'undefined') {
-      reject(new Error('html2canvas library not loaded')); return;
-    }
-    if (!jsPDFCtor) {
-      reject(new Error('jsPDF library not loaded')); return;
-    }
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve())
+      .catch(function () {})
+      .then(function () {
 
-    var fontsReady = (document.fonts && document.fonts.ready)
-      ? document.fonts.ready.catch(function () {}) : Promise.resolve();
+        // ---- Expand modal (scrollbar cutoff এড়াতে) ----
+        var modalBox = element.closest('.pd-modal-box');
+        var overlay  = element.closest('.pd-modal-overlay');
 
-    fontsReady.then(function () {
-      var holder = document.createElement('div');
-      holder.style.cssText =
-        'position:fixed;left:-100000px;top:0;background:#ffffff;' +
-        'width:210mm;padding:0;margin:0;z-index:-1;pointer-events:none;';
-
-      var wrapper = document.createElement('div');
-      wrapper.style.cssText =
-        'background:#ffffff;width:194mm;box-sizing:border-box;' +
-        'padding:0;margin:0 auto;color:#202124;' +
-        'font-family:"Noto Sans Bengali","Hind Siliguri","Nikosh",Arial,sans-serif;';
-
-      var clone = element.cloneNode(true);
-
-      clone.querySelectorAll(
-        '.no-print, .rx-toolbar, .rx-mode-toggle, .rx-mode-toggle-overlay, ' +
-        '.form-actions, .pd-modal-close, .sig-actions, .rx-quick-add, .med-input-row, ' +
-        '.rx-sec-add, .rx-sec-check, .rx-free-note-label, .bw-toggle-btn, .notepad-btn, ' +
-        '.pd-font-ctrl, .rx-input-popup'
-      ).forEach(function (el) { el.remove(); });
-      clone.querySelectorAll('input[type="hidden"]').forEach(function (el) { el.remove(); });
-
-      var origEls = element.querySelectorAll(
-        'input, textarea, select, [contenteditable="true"], canvas'
-      );
-      var cloneEls = clone.querySelectorAll(
-        'input, textarea, select, [contenteditable="true"], canvas'
-      );
-      var limit = Math.min(origEls.length, cloneEls.length);
-      for (var i = 0; i < limit; i++) {
-        var orig = origEls[i], cl = cloneEls[i];
-        if (!cl.parentNode) continue;
-        var rep;
-        try {
-          if (orig.tagName === 'CANVAS') {
-            rep = document.createElement('img');
-            rep.src = orig.toDataURL('image/png');
-            rep.style.cssText = 'height:70px;max-width:100%;display:block;';
-          } else if (orig.type === 'checkbox' || orig.type === 'radio') {
-            rep = document.createElement('span');
-            rep.style.cssText =
-              'display:inline-block;width:13px;height:13px;' +
-              'border:1.2px solid #333;text-align:center;line-height:12px;' +
-              'font-size:11px;margin-right:4px;vertical-align:middle;box-sizing:border-box;';
-            rep.textContent = orig.checked ? '✓' : '';
-          } else if (orig.tagName === 'TEXTAREA') {
-            rep = document.createElement('div');
-            rep.style.cssText =
-              'white-space:pre-wrap;word-wrap:break-word;' +
-              'overflow-wrap:break-word;min-height:16px;padding:1px 3px;';
-            rep.textContent = orig.value || '';
-          } else if (orig.tagName === 'SELECT') {
-            rep = document.createElement('span');
-            rep.style.cssText = 'display:inline-block;min-width:40px;';
-            var selText = (orig.selectedIndex >= 0 && orig.options[orig.selectedIndex])
-              ? orig.options[orig.selectedIndex].text : '';
-            rep.textContent = selText;
-          } else if (orig.isContentEditable) {
-            rep = document.createElement('div');
-            rep.style.cssText = 'min-height:20px;';
-            rep.innerHTML = orig.innerHTML;
-          } else {
-            rep = document.createElement('span');
-            rep.style.cssText =
-              'display:inline-block;min-width:50px;' +
-              'border-bottom:1px solid #999;padding:1px 4px;';
-            rep.textContent = orig.value || '';
-          }
-          cl.parentNode.replaceChild(rep, cl);
-        } catch (e) {}
-      }
-
-      clone.querySelectorAll('img').forEach(function (img) {
-        var s = img.getAttribute('src') || '';
-        if (s.indexOf('data:') !== 0) img.remove();
-      });
-
-      wrapper.appendChild(clone);
-      holder.appendChild(wrapper);
-      document.body.appendChild(holder);
-
-      setTimeout(function () {
-        var naturalW = wrapper.scrollWidth || 733;
-        var naturalH = wrapper.scrollHeight || 1000;
-
-        var canvasOpts = {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: naturalW,
-          windowHeight: naturalH,
-          width: naturalW,
-          height: naturalH
+        var saved = {
+          ov:  overlay  ? overlay.style.overflow    : null,
+          mbH: modalBox ? modalBox.style.maxHeight : null,
+          mbO: modalBox ? modalBox.style.overflow  : null,
+          mbP: modalBox ? modalBox.style.padding   : null,
+          eW:  element.style.width,
+          eMW: element.style.maxWidth,
+          eNW: element.style.minWidth
         };
 
-        h2c(wrapper, canvasOpts).then(function (canvas) {
-          try { if (holder.parentNode) holder.parentNode.removeChild(holder); } catch (e) {}
+        if (overlay)  overlay.style.overflow  = 'visible';
+        if (modalBox) { modalBox.style.maxHeight = 'none'; modalBox.style.overflow = 'visible'; modalBox.style.padding = '0'; }
+        element.style.width    = '820px';    // ডেস্কটপ প্রস্থ — mobile media query এড়ায়
+        element.style.maxWidth = '820px';
+        element.style.minWidth = '820px';
 
-          var imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-          var pdf = new jsPDFCtor({
-            unit: 'mm', format: 'a4', orientation: 'portrait', compress: true
-          });
-
-          var pageW = 210, pageH = 297;
-          var margin = 5;
-          var availW = pageW - margin * 2;
-          var availH = pageH - margin * 2;
-
-          var imgAspect = canvas.width / canvas.height;
-          var drawW = availW;
-          var drawH = drawW / imgAspect;
-          if (drawH > availH) {
-            drawH = availH;
-            drawW = drawH * imgAspect;
-          }
-          var x = (pageW - drawW) / 2;
-          var y = margin;
-
-          pdf.addImage(imgData, 'JPEG', x, y, drawW, drawH, undefined, 'FAST');
-
-          var blob = pdf.output('blob');
-          if (!blob || blob.size < 8000) {
-            reject(new Error('PDF ফাঁকা (size ' + (blob ? blob.size : 0) + ')'));
-            return;
-          }
-
-          var reader = new FileReader();
-          reader.onloadend = function () {
-            resolve({ base64: reader.result.split(',')[1], blob: blob });
-          };
-          reader.onerror = function () { reject(reader.error); };
-          reader.readAsDataURL(blob);
-        }).catch(function (err) {
-          try { if (holder.parentNode) holder.parentNode.removeChild(holder); } catch (e) {}
-          reject(err);
+        // ---- no-print এলিমেন্ট লুকাই ----
+        var hidden = [];
+        element.querySelectorAll(
+          '.no-print, .form-actions, .pd-modal-close, .sig-actions, ' +
+          '.rx-toolbar, .rx-mode-toggle-overlay, .bw-toggle-btn, .notepad-btn, ' +
+          '.pd-font-ctrl, .rx-input-popup, .rx-quick-add, .med-input-row, ' +
+          '.rx-sec-add, .rx-sec-check, .rx-free-note-label'
+        ).forEach(function (el) {
+          hidden.push({ el: el, d: el.style.display });
+          el.style.display = 'none';
         });
-      }, 400);
-    }).catch(reject);
+
+        void element.offsetWidth;
+
+        function restoreAll() {
+          hidden.forEach(function (h) { h.el.style.display = h.d || ''; });
+          if (overlay && saved.ov !== null) overlay.style.overflow = saved.ov;
+          if (modalBox) {
+            if (saved.mbH !== null) modalBox.style.maxHeight = saved.mbH;
+            if (saved.mbO !== null) modalBox.style.overflow  = saved.mbO;
+            if (saved.mbP !== null) modalBox.style.padding   = saved.mbP;
+          }
+          element.style.width    = saved.eW  || '';
+          element.style.maxWidth = saved.eMW || '';
+          element.style.minWidth = saved.eNW || '';
+        }
+
+        setTimeout(function () {
+          var w = element.offsetWidth  || 820;
+          var h = element.scrollHeight || 1000;
+
+          h2c(element, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            width:  w,
+            height: h,
+            windowWidth:  1400,       // ✅ ডেস্কটপ viewport
+            windowHeight: 1200,
+            scrollX: 0,
+            scrollY: -window.scrollY
+          }).then(function (canvas) {
+            restoreAll();
+
+            var pdf = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+
+            var pageW = 210, pageH = 297, margin = 5;
+            var availW = pageW - margin * 2;   // 200mm
+            var availH = pageH - margin * 2;   // 287mm
+
+            var imgAspect   = canvas.width / canvas.height;
+            var naturalW_mm = availW;
+            var naturalH_mm = naturalW_mm / imgAspect;
+
+            var drawW = naturalW_mm;
+            var drawH = naturalH_mm;
+
+            // ===== maxPages-এ fit করার জন্য scale =====
+            var maxTotalH = availH * maxPages;
+            if (drawH > maxTotalH) {
+              var s = maxTotalH / drawH;
+              drawW *= s;
+              drawH *= s;
+            }
+
+            var totalPages = Math.max(1, Math.ceil(drawH / availH - 0.001));
+            var x = (pageW - drawW) / 2;
+
+            console.log('📄 PDF →',
+              'natural:', naturalW_mm.toFixed(1) + '×' + naturalH_mm.toFixed(1) + 'mm',
+              '| draw:', drawW.toFixed(1) + '×' + drawH.toFixed(1) + 'mm',
+              '| pages:', totalPages);
+
+            if (totalPages === 1) {
+              // ---- Single page: vertical center ----
+              var y = margin + (availH - drawH) / 2;
+              if (y < margin) y = margin;
+              pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG',
+                           x, y, drawW, drawH, undefined, 'FAST');
+            } else {
+              // ---- Multi-page: canvas slice ----
+              var slicePxH = canvas.height / totalPages;
+              for (var p = 0; p < totalPages; p++) {
+                if (p > 0) pdf.addPage();
+                var yPx = Math.floor(p * slicePxH);
+                var hPx = Math.min(Math.ceil(slicePxH), canvas.height - yPx);
+                if (hPx <= 0) continue;
+
+                var slice = document.createElement('canvas');
+                slice.width  = canvas.width;
+                slice.height = hPx;
+                var ctx = slice.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, slice.width, slice.height);
+                ctx.drawImage(canvas, 0, yPx, canvas.width, hPx, 0, 0, canvas.width, hPx);
+
+                var sliceMM = (hPx / canvas.height) * drawH;
+                pdf.addImage(slice.toDataURL('image/jpeg', 0.95), 'JPEG',
+                             x, margin, drawW, sliceMM, undefined, 'FAST');
+              }
+            }
+
+            var blob = pdf.output('blob');
+            if (!blob || blob.size < 8000) {
+              reject(new Error('PDF ফাঁকা (' + (blob ? blob.size : 0) + ' bytes)'));
+              return;
+            }
+            var r = new FileReader();
+            r.onloadend = function () {
+              resolve({ base64: r.result.split(',')[1], blob: blob, pages: totalPages });
+            };
+            r.onerror = function () { reject(r.error); };
+            r.readAsDataURL(blob);
+          }).catch(function (e) { restoreAll(); reject(e); });
+        }, 350);
+      });
   });
 }
 
