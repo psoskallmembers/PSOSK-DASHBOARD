@@ -6503,7 +6503,7 @@ function closePrescriptionForm() {
     showPdToast('📄 ম্যানুয়াল মোড — কোনো ডেটা সেভ হবে না, শুধু প্রিন্ট করা যাবে', 'info');
   }
 
-  function resetPrescriptionForm() {
+    function resetPrescriptionForm() {
     if (!confirm('Reset all fields?')) return;
 
     document.querySelectorAll('#prescriptionModal input, #prescriptionModal select, #prescriptionModal textarea').forEach(function(el) {
