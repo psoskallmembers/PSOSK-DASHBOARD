@@ -10663,84 +10663,214 @@ window.rxMngDeleteItem = rxMngDeleteItem;
 var _formPdfCurrentBlobUrl = '';
 var _formPdfCurrentFileName = '';
 
+// ================================================================
+// ===== CLIENT-SIDE A4 PDF GENERATION (WYSIWYG, one-page fit) =====
+// ================================================================
+// এই ফাংশনটি ৩টি ফর্ম (Registration / Assessment / Prescription) কে
+// exact A4 সাইজে (210mm × 297mm) এক পেজে fit করে PDF বানায়।
+// কৌশল:
+//   1. Form-টা invisible wrapper-এ clone করা হয় (A4 content width = 194mm)
+//   2. Input/textarea-গুলো static text/span-এ convert করা হয়
+//   3. Content A4 height-এর চেয়ে বড় হলে ধাপে ধাপে font-size কমিয়ে fit করা হয়
+//   4. html2pdf কে unit:'mm', format:'a4' দিয়ে call করা হয়
+// ================================================================
 function generateFormPdfBase64(element, fileName) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     if (!element) { reject(new Error('Element not found')); return; }
     if (typeof html2pdf === 'undefined') { reject(new Error('html2pdf library not loaded')); return; }
 
-    console.log('🎨 Generating PDF for:', fileName);
+    console.log('🎨 Generating A4 PDF for:', fileName);
 
-    // ===== Step 1: Logo গুলো base64 এ convert করে inline করা (CORS fix) =====
-    var imgs = element.querySelectorAll('img');
-    var imgPromises = [];
-    imgs.forEach(function(img) {
-      if (img.src && img.src.indexOf('data:') === 0) return; // already base64
-      if (!img.src) return;
-      var originalSrc = img.src;
-      var p = new Promise(function(res) {
-        var tempImg = new Image();
-        tempImg.crossOrigin = 'anonymous';
-        tempImg.onload = function() {
-          try {
-            var canvas = document.createElement('canvas');
-            canvas.width = tempImg.naturalWidth || 100;
-            canvas.height = tempImg.naturalHeight || 100;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(tempImg, 0, 0);
-            var dataUrl = canvas.toDataURL('image/png');
-            img.src = dataUrl;  // inline base64 - no CORS issue
-            console.log('✅ Logo converted to base64');
-          } catch (e) {
-            console.warn('⚠️ Logo conversion failed (CORS?), leaving original:', e.message);
+    // ===== Step 0: Bengali font সম্পূর্ণ লোড হওয়ার জন্য অপেক্ষা =====
+    var fontsReady = Promise.resolve();
+    if (document.fonts && document.fonts.ready) {
+      fontsReady = document.fonts.ready.then(function () {
+        return new Promise(function (r) { setTimeout(r, 200); });
+      }).catch(function () {});
+    }
+
+    fontsReady.then(function () {
+      // ===== Step 1: সব <img> base64-এ convert (CORS এড়াতে) =====
+      var imgs = element.querySelectorAll('img');
+      var imgPromises = [];
+      imgs.forEach(function (img) {
+        if (img.src && img.src.indexOf('data:') === 0) return;
+        if (!img.src) return;
+        var originalSrc = img.src;
+        var p = new Promise(function (res) {
+          var tempImg = new Image();
+          tempImg.crossOrigin = 'anonymous';
+          tempImg.onload = function () {
+            try {
+              var canvas = document.createElement('canvas');
+              canvas.width = tempImg.naturalWidth || 100;
+              canvas.height = tempImg.naturalHeight || 100;
+              canvas.getContext('2d').drawImage(tempImg, 0, 0);
+              img.src = canvas.toDataURL('image/png');
+            } catch (e) {}
+            res();
+          };
+          tempImg.onerror = function () { res(); };
+          tempImg.src = originalSrc;
+        });
+        imgPromises.push(p);
+      });
+
+      Promise.all(imgPromises).then(function () {
+        // ===== Step 2: A4 wrapper বানাই =====
+        var wrapper = document.createElement('div');
+        wrapper.style.cssText = [
+          'position:fixed',
+          'left:-99999px',
+          'top:0',
+          'background:#ffffff',
+          'width:210mm',
+          'min-height:297mm',
+          'padding:8mm 8mm 8mm 8mm',
+          'box-sizing:border-box',
+          'font-family:"Noto Sans Bengali","Hind Siliguri","Nikosh",Arial,sans-serif'
+        ].join(';');
+
+        var clone = element.cloneNode(true);
+
+        clone.querySelectorAll(
+          '.no-print, .rx-toolbar, .rx-mode-toggle, .rx-mode-toggle-overlay, ' +
+          '.form-actions, .pd-modal-close, .sig-actions, ' +
+          '.rx-quick-add, .med-input-row, .rx-sec-add, .rx-sec-check, ' +
+          '.rx-free-note-label, .bw-toggle-btn, .notepad-btn'
+        ).forEach(function (el) { el.remove(); });
+
+        // ---- Input/Textarea/Select → static text ----
+        var origInputs = element.querySelectorAll('input, textarea, select, [contenteditable="true"]');
+        var cloneInputs = clone.querySelectorAll('input, textarea, select, [contenteditable="true"]');
+
+        for (var i = 0; i < origInputs.length && i < cloneInputs.length; i++) {
+          var orig = origInputs[i];
+          var cl = cloneInputs[i];
+          if (!orig || !cl || !cl.parentNode) continue;
+
+          var replacement;
+          if (orig.type === 'checkbox' || orig.type === 'radio') {
+            replacement = document.createElement('span');
+            replacement.style.cssText = 'display:inline-block;width:13px;height:13px;' +
+              'border:1.2px solid #333;text-align:center;line-height:12px;font-size:11px;' +
+              'margin-right:4px;vertical-align:middle;';
+            replacement.textContent = orig.checked ? '✓' : '';
+          } else if (orig.tagName === 'TEXTAREA') {
+            replacement = document.createElement('div');
+            replacement.style.cssText = 'white-space:pre-wrap;word-wrap:break-word;' +
+              'min-height:18px;padding:1px 3px;';
+            replacement.textContent = orig.value || '';
+          } else if (orig.tagName === 'SELECT') {
+            replacement = document.createElement('span');
+            replacement.style.cssText = 'display:inline-block;min-width:40px;';
+            var selText = (orig.selectedIndex >= 0 && orig.options[orig.selectedIndex])
+              ? orig.options[orig.selectedIndex].text : '';
+            replacement.textContent = selText;
+          } else if (orig.isContentEditable) {
+            replacement = document.createElement('div');
+            replacement.style.cssText = 'min-height:20px;';
+            replacement.innerHTML = orig.innerHTML;
+          } else {
+            replacement = document.createElement('span');
+            replacement.style.cssText = 'display:inline-block;min-width:50px;' +
+              'border-bottom:1px solid #999;padding:1px 4px;';
+            replacement.textContent = orig.value || '';
           }
-          res();
-        };
-        tempImg.onerror = function() {
-          console.warn('⚠️ Logo load failed:', originalSrc);
-          res();
-        };
-        tempImg.src = originalSrc;
-      });
-      imgPromises.push(p);
-    });
 
-    Promise.all(imgPromises).then(function() {
-      console.log('📸 All logos processed, generating PDF...');
+          try { cl.parentNode.replaceChild(replacement, cl); } catch (e) {}
+        }
 
-      var opt = {
-        margin: [4, 4, 4, 4],
-        filename: fileName + '.pdf',
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          imageTimeout: 15000,
-          removeContainer: true,
-          windowWidth: element.scrollWidth,
-          windowHeight: element.scrollHeight
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] }
-      };
+        wrapper.appendChild(clone);
+        document.body.appendChild(wrapper);
 
-      html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
-        var blob = pdf.output('blob');
-        var reader = new FileReader();
-        reader.onloadend = function() {
-          var dataUri = reader.result;
-          var base64 = dataUri.split(',')[1];
-          console.log('✅ PDF generated successfully, size:', (base64.length/1024).toFixed(1), 'KB');
-          resolve({ base64: base64, blob: blob });
+        // ===== Step 3: Auto-fit =====
+        var A4_CONTENT_HEIGHT_PX = 1062;
+        var scale = 1;
+        var MAX_ITER = 15;
+        var MIN_SCALE = 0.55;
+
+        var allEls = clone.querySelectorAll('*');
+        allEls.forEach(function (el) {
+          var fs = parseFloat(window.getComputedStyle(el).fontSize);
+          if (fs && fs > 0) el.dataset._origFs = fs;
+        });
+
+        var currentH = clone.scrollHeight;
+        var iter = 0;
+        while (currentH > A4_CONTENT_HEIGHT_PX && scale > MIN_SCALE && iter < MAX_ITER) {
+          scale = Math.max(scale * 0.93, MIN_SCALE);
+          iter++;
+          allEls.forEach(function (el) {
+            var origFs = parseFloat(el.dataset._origFs);
+            if (origFs) el.style.fontSize = (origFs * scale) + 'px';
+          });
+          currentH = clone.scrollHeight;
+        }
+
+        if (scale < 1) {
+          clone.querySelectorAll('.section-box, .section, .row, .form-row, .frow').forEach(function (el) {
+            var pt = parseFloat(window.getComputedStyle(el).paddingTop) || 0;
+            var pb = parseFloat(window.getComputedStyle(el).paddingBottom) || 0;
+            var mt = parseFloat(window.getComputedStyle(el).marginTop) || 0;
+            var mb = parseFloat(window.getComputedStyle(el).marginBottom) || 0;
+            if (pt) el.style.paddingTop = (pt * scale) + 'px';
+            if (pb) el.style.paddingBottom = (pb * scale) + 'px';
+            if (mt) el.style.marginTop = (mt * scale) + 'px';
+            if (mb) el.style.marginBottom = (mb * scale) + 'px';
+          });
+        }
+
+        console.log('📐 Final scale=' + scale.toFixed(3) + ', height=' + clone.scrollHeight + 'px');
+
+        // ===== Step 4: html2pdf — A4 output =====
+        var opt = {
+          margin: [8, 8, 8, 8],
+          filename: fileName + '.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            imageTimeout: 15000,
+            removeContainer: true,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 794
+          },
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait',
+            compress: true,
+            precision: 16
+          },
+          pagebreak: { mode: ['css', 'legacy', 'avoid-all'] }
         };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      }).catch(function(err) {
-        console.error('❌ html2pdf failed:', err);
-        reject(err);
-      });
+
+        html2pdf().set(opt).from(wrapper).toPdf().get('pdf').then(function (pdf) {
+          var blob = pdf.output('blob');
+          if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+
+          var reader = new FileReader();
+          reader.onloadend = function () {
+            var base64 = reader.result.split(',')[1];
+            console.log('✅ A4 PDF ready, size:', (base64.length / 1024).toFixed(1), 'KB');
+            resolve({ base64: base64, blob: blob, scale: scale });
+          };
+          reader.onerror = function () {
+            if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+            reject(reader.error);
+          };
+          reader.readAsDataURL(blob);
+        }).catch(function (err) {
+          if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+          console.error('❌ html2pdf failed:', err);
+          reject(err);
+        });
+      }).catch(reject);
     }).catch(reject);
   });
 }
