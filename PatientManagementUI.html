@@ -17,6 +17,8 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     /* ===== RESET & BASE ===== */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans Bengali','Hind Siliguri','Nikosh','Bangla','Segoe UI',Tahoma,sans-serif}
@@ -824,299 +826,80 @@
       resize: none;
     }
 
-    /* ================================================================ */
-    /* ===== PRINT: SHOW ONLY THE ACTIVE FORM ===== */
+        /* ================================================================ */
+    /* ===== PRINT: EXACT WYSIWYG — ONE A4 PAGE ======================== */
     /* ================================================================ */
     @media print {
       @page {
-        size: A4;
-        margin: 8mm;
+        size: A4 portrait;
+        margin: 0;
       }
-      body.pd-printing * {
-        visibility: hidden !important;
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
       }
-      body.pd-printing .pd-print-target,
-      body.pd-printing .pd-print-target * {
-        visibility: visible !important;
+
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        overflow: hidden !important;
       }
-      body.pd-printing .pd-print-target {
+
+      /* hide everything except the active form modal */
+      body.pd-printing > * {
+        display: none !important;
+      }
+      body.pd-printing > .pd-print-target {
         display: block !important;
         position: absolute !important;
         left: 0 !important;
         top: 0 !important;
-        width: 100% !important;
-        background: #fff !important;
-        padding: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
+        overflow: hidden !important;
+        background: #ffffff !important;
         margin: 0 !important;
-        max-height: none !important;
-        overflow: visible !important;
-        box-shadow: none !important;
-        border: none !important;
-      }
-      body.pd-printing .pd-print-target .pd-modal-box {
-        max-width: 100% !important;
-        padding: 10px 15px !important;
+        padding: 0 !important;
         box-shadow: none !important;
         border: none !important;
         border-radius: 0 !important;
-        overflow: visible !important;
-        max-height: none !important;
       }
+
+      body.pd-printing > .pd-print-target .pd-modal-box {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+      }
+
+      /* hide in-modal controls */
       body.pd-printing .pd-print-target .no-print,
       body.pd-printing .pd-print-target .pd-modal-close,
-      body.pd-printing .pd-print-target .btn,
-      body.pd-printing .pd-print-target .form-actions .btn,
-      body.pd-printing .pd-print-target .sig-actions .btn-sm {
+      body.pd-printing .pd-print-target .form-actions,
+      body.pd-printing .pd-print-target .sig-actions,
+      body.pd-printing .pd-print-target .rx-toolbar,
+      body.pd-printing .pd-print-target .rx-mode-toggle-overlay,
+      body.pd-printing .pd-print-target .pd-font-ctrl,
+      body.pd-printing .pd-print-target .bw-toggle-btn,
+      body.pd-printing .pd-print-target .notepad-btn {
         display: none !important;
         visibility: hidden !important;
-      }
-
-      .reg-form-container {
-        max-width: 100%;
-        width: 100%;
-        box-shadow: none;
-        border-radius: 0;
-        padding: 8px 10px;
-        margin: 0;
-        background: #fff;
-      }
-
-      .reg-form-container .form-row input,
-      .reg-form-container .form-row select,
-      .reg-form-container .form-row textarea,
-      .reg-form-container .contact-grid input,
-      .reg-form-container .reg-row input,
-      .reg-form-container .id-grid input,
-      .reg-form-container #signatureName {
-        border: none !important;
-        border-bottom: 1px solid #999 !important;
-        background: transparent !important;
-        padding: 4px 4px !important;
-        font-size: 13px !important;
-        color: #000 !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-      }
-      .reg-form-container .form-row select {
-        border: 1px solid #999 !important;
-        background: #fff !important;
-        -webkit-appearance: none;
-        appearance: none;
-        padding: 4px 8px !important;
-      }
-      .reg-form-container .reg-row input[readonly] {
-        background: transparent !important;
-        border-bottom: 1px solid #999 !important;
-        color: #000 !important;
-        font-weight: 600 !important;
-      }
-      .reg-form-container .section-box {
-        border: 1px solid #ccc !important;
-        background: #fff !important;
-        padding: 10px 12px !important;
-        margin-bottom: 10px !important;
-        border-radius: 0 !important;
-      }
-      .reg-form-container .header {
-        border-bottom: 2px solid #1A73E8 !important;
-        padding-bottom: 10px !important;
-        margin-bottom: 12px !important;
-      }
-      .reg-form-container .header .title {
-        background: #1A73E8 !important;
-        color: #fff !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        padding: 4px 16px !important;
-        font-size: 16px !important;
-      }
-      .reg-form-container .header .logo img {
-        max-width: 60px !important;
-        max-height: 60px !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      .reg-form-container .reg-row {
-        background: #f8f9fa !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        border-left: 3px solid #1A73E8 !important;
-        padding: 8px 14px !important;
-        margin-bottom: 12px !important;
-        border-radius: 0 !important;
-      }
-      .reg-form-container .signature-pad-wrapper {
-        border: 1px solid #999 !important;
-        background: #fff !important;
-        padding: 8px !important;
-        min-height: 80px !important;
-      }
-      .reg-form-container .signature-pad-wrapper canvas {
-        border: none !important;
-        background: #fff !important;
-        height: 80px !important;
-      }
-      .reg-form-container .check-grid input[type="checkbox"],
-      .reg-form-container .check-grid input[type="radio"] {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        accent-color: #1A73E8 !important;
-        width: 14px !important;
-        height: 14px !important;
-      }
-      .reg-form-container .signature-row .sig-item .sig-line {
-        border-bottom: 1px solid #000 !important;
-        height: 25px !important;
-      }
-      .reg-form-container .footer-text {
-        font-size: 10px !important;
-        color: #666 !important;
-        margin-top: 10px !important;
-        padding-top: 8px !important;
-        border-top: 1px solid #e8eaed !important;
-      }
-      .reg-form-container .section-box {
-        page-break-inside: avoid;
-      }
-      .reg-form-container .form-row {
-        margin-bottom: 6px !important;
-        gap: 6px 12px !important;
-      }
-      .reg-form-container .form-row .label {
-        font-size: 12px !important;
-        min-width: 140px !important;
-      }
-      .reg-form-container .form-row .value input,
-      .reg-form-container .form-row .value select {
-        font-size: 12px !important;
-        padding: 2px 6px !important;
-      }
-      .reg-form-container .section-box .section-title {
-        font-size: 13px !important;
-        margin-bottom: 6px !important;
-      }
-      .reg-form-container .check-grid label {
-        font-size: 11px !important;
-      }
-      .reg-form-container .contact-grid .cg-item label {
-        font-size: 11px !important;
-        min-width: 60px !important;
-      }
-      .reg-form-container .contact-grid .cg-item input {
-        font-size: 12px !important;
-        padding: 2px 6px !important;
-      }
-      .reg-form-container .id-grid .id-item label {
-        font-size: 12px !important;
-      }
-      .reg-form-container .id-grid .id-item input {
-        font-size: 12px !important;
-        padding: 2px 6px !important;
-      }
-      .reg-form-container .reg-row .field label {
-        font-size: 12px !important;
-      }
-      .reg-form-container .reg-row .field input {
-        font-size: 12px !important;
-        padding: 2px 6px !important;
-      }
-
-      /* ===== অ্যাসেসমেন্ট ও প্রেসক্রিপশন ফর্ম প্রিন্ট (A4 ১ পেজ অটো-ফিট) ===== */
-      .assessment-form-container,
-      .prescription-wrapper {
-        max-width: 100% !important;
-        width: 100% !important;
-        padding: 6px 10px !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        background: #fff !important;
-      }
-      .assessment-form-container textarea,
-      .prescription-wrapper textarea,
-      .assessment-form-container input,
-      .prescription-wrapper input,
-      .prescription-wrapper [contenteditable] {
-        border: none !important;
-        border-bottom: 1px solid #999 !important;
-        background: transparent !important;
-        color: #000 !important;
-        box-shadow: none !important;
-        font-size: 12px !important;
-        padding: 2px 4px !important;
-      }
-      .assessment-form-container .section-box,
-      .prescription-wrapper .section-box {
-        border: 1px solid #ccc !important;
-        background: #fff !important;
-        padding: 6px 10px !important;
-        margin-bottom: 6px !important;
-        page-break-inside: avoid;
-      }
-      .assessment-form-container .header,
-      .prescription-wrapper .header {
-        border-bottom: 2px solid #1A73E8 !important;
-        padding-bottom: 6px !important;
-        margin-bottom: 8px !important;
-      }
-      .assessment-form-container .no-print,
-      .prescription-wrapper .no-print,
-      .assessment-form-container .btn,
-      .prescription-wrapper .btn,
-      .prescription-wrapper .rx-toolbar {
-        display: none !important;
-      }
-
-      /* ===== ফন্ট সাইজ ও Auto-Resize (প্রিন্ট ফিক্স) =====
-         আগে এখানে ফিক্সড 11px বসানো ছিল, আর zoom দিয়ে পুরো ফর্ম ছোট করা হতো।
-         সমস্যা: 'zoom' প্রপার্টি Firefox সাপোর্ট করে না (শুধু Chrome/Edge/Safari-তে
-         কাজ করে) — ফলে Firefox থেকে প্রিন্ট করলে auto-fit একদমই কাজ করত না, ফর্ম
-         কেটে ২য় পেজে চলে যেত। এখন তার বদলে --pd-print-scale নামের একটা CSS
-         ভ্যারিয়েবল ব্যবহার করা হচ্ছে যেটা real font-size/padding/margin বদলায় —
-         এটা সব ব্রাউজারেই layout ও page-break হিসাবে সঠিকভাবে প্রতিফলিত হয়। */
-      .reg-form-container,
-      .reg-form-container input,
-      .reg-form-container select,
-      .reg-form-container textarea,
-      .reg-form-container label,
-      .assessment-form-container,
-      .assessment-form-container input,
-      .assessment-form-container select,
-      .assessment-form-container textarea,
-      .assessment-form-container label,
-      .prescription-wrapper,
-      .prescription-wrapper input,
-      .prescription-wrapper select,
-      .prescription-wrapper textarea,
-      .prescription-wrapper label,
-      .prescription-wrapper .rx-body {
-        font-size: calc(11px * var(--pd-print-scale, 1)) !important;
-      }
-      .reg-form-container textarea,
-      .assessment-form-container textarea,
-      .prescription-wrapper textarea {
-        height: auto !important;
-        overflow: hidden !important;
-      }
-      /* কনটেন্ট বেশি বড় হলে শুধু ফন্ট ছোট করাই যথেষ্ট না — স্পেসিংও একই অনুপাতে
-         কমানো হচ্ছে, নইলে অনেক ছোট ফন্টেও ফাঁকা জায়গার কারণে ২য় পেজে চলে যেতে পারে। */
-      .reg-form-container .section-box,
-      .assessment-form-container .section,
-      .assessment-form-container .section-box,
-      .prescription-wrapper .section-box {
-        padding: calc(10px * var(--pd-print-scale, 1)) calc(12px * var(--pd-print-scale, 1)) !important;
-        margin-bottom: calc(8px * var(--pd-print-scale, 1)) !important;
-      }
-      .reg-form-container .form-row,
-      .assessment-form-container .row {
-        margin-bottom: calc(5px * var(--pd-print-scale, 1)) !important;
-        gap: calc(5px * var(--pd-print-scale, 1)) calc(10px * var(--pd-print-scale, 1)) !important;
-      }
-      .reg-form-container .header,
-      .assessment-form-container .header,
-      .prescription-wrapper .header {
-        padding-bottom: calc(6px * var(--pd-print-scale, 1)) !important;
-        margin-bottom: calc(8px * var(--pd-print-scale, 1)) !important;
       }
     }
 
@@ -6246,25 +6029,24 @@ function initReceptionChatDragDrop_() {
   }
 
   // ================================================================
-  // ===== PRINT: SHOW ONLY ONE FORM AT A TIME =======================
+  // ===== PRINT: EXACT WYSIWYG — ONE A4 PAGE =======================
+  // ================================================================
+  // কৌশল: ফর্মের natural size মেপে নিয়ে transform: scale() দিয়ে
+  // ঠিক A4 পেজে fit করা হয়। এতে:
+  //   • Firefox সহ সব ব্রাউজারে কাজ করে
+  //   • page-break কখনো হয় না — পুরো ফর্ম ১ পেজে
+  //   • স্ক্রিনে যা দেখা যায়, প্রিন্টেও হুবহু তাই
+  //   • Drive-এ যে PDF যাবে (html2canvas → jsPDF) — সেটাও একই
   // ================================================================
 
-  // A4 পেজে অটো-ফিট: content বড় হলে --pd-print-scale ভ্যারিয়েবল দিয়ে ফন্ট+স্পেসিং
-  // ছোট করে ১ পেজে বসানো হয়।
-  // (আগে 'zoom' প্রপার্টি ব্যবহার হতো, কিন্তু zoom Firefox সাপোর্ট করে না — ফলে
-  //  Firefox থেকে প্রিন্ট করলে auto-fit কাজ করত না। transform:scale-ও ব্যবহার করা
-  //  হয় না, কারণ সেটা প্রিন্ট পেজ-ব্রেক ক্যালকুলেশনে ধরা পড়ে না। তাই real font-size ও
-  //  padding/margin বদলানো হচ্ছে CSS calc()-এর মাধ্যমে — এটা সব ব্রাউজারে সমানভাবে
-  //  layout ও page-break হিসাবে প্রতিফলিত হয়।)
-  // যেহেতু font-size ছোট করলে height ঠিক আনুপাতিক হারে কমে না (বর্ডার, লাইন-হাইট
-  // ইত্যাদির কারণে), তাই একবারে হিসাব না করে ধাপে ধাপে মেপে scale ঠিক করা হয়।
-  // content অনেক বেশি বড় হলে জোর করে ছোট করা হয় না (MIN_SCALE-এর নিচে না) — তখন এটা
-  // স্বাভাবিকভাবে একাধিক পেজে পুরো সাইজেই প্রিন্ট হবে, যাতে অস্পষ্ট না হয়ে যায়।
-  var PD_MIN_SCALE = 0.55;
-  var PD_MAX_SCALE = 1.3; // ম্যানুয়াল "বড় করুন" এর সর্বোচ্চ সীমা
+  var PD_MANUAL_SCALES = {}; // modalId → multiplier (1.0 = perfect auto-fit)
 
   function pdGetPrintTarget_(modal) {
-    var innerSelectors = ['.reg-form-container', '.assessment-form-container', '.prescription-wrapper'];
+    var innerSelectors = [
+      '.reg-form-container',
+      '.assessment-form-container',
+      '.prescription-wrapper'
+    ];
     for (var i = 0; i < innerSelectors.length; i++) {
       var inner = modal.querySelector(innerSelectors[i]);
       if (inner) return inner;
@@ -6272,77 +6054,17 @@ function initReceptionChatDragDrop_() {
     return null;
   }
 
-  function pdAutoFitToA4_(modal) {
-    var inner = pdGetPrintTarget_(modal);
-    if (!inner) return null;
-
-    inner.style.removeProperty('--pd-print-scale');
-
-    // লক্ষ্য রাখতে হবে: --pd-print-scale শুধু @media print-এর ভেতরের নিয়মে ব্যবহৃত
-    // হয়, তাই স্ক্রিনে এটা সেট করলে on-screen height বদলায় না (ইচ্ছাকৃতভাবে —
-    // নরমাল এডিটিং ভিউয়ের ফন্ট সাইজ এতে প্রভাবিত হওয়া উচিত না)। ফলে বর্তমান
-    // on-screen height-কেই print height-এর একটা যুক্তিসঙ্গত আনুমানিক হিসেবে ধরে
-    // একবারেই অনুপাত থেকে স্কেল বের করা হচ্ছে (আসল ফলাফল ব্রাউজারের প্রিন্ট
-    // প্রিভিউতে দেখা যাবে; দরকার হলে A-/A+ দিয়ে ম্যানুয়ালি আরও ঠিক করা যায়)।
-    var MM_TO_PX = 3.7795275591;
-    var PAGE_MARGIN_MM = 8;
-    var availableHeightPx = (297 - PAGE_MARGIN_MM * 2) * MM_TO_PX;
-    var contentHeight = inner.scrollHeight;
-
-    var scale = 1;
-    if (contentHeight > availableHeightPx) {
-      scale = Math.max(availableHeightPx / contentHeight, PD_MIN_SCALE);
-    }
-    inner.style.setProperty('--pd-print-scale', scale.toFixed(4));
-
-    inner.dataset.pdAutoScale = scale.toFixed(4);
-    inner.dataset.pdManualScale = '1';
-    return inner;
-  }
-
-  function pdResetAutoFit_(inner) {
-    if (!inner) return;
-    inner.style.removeProperty('--pd-print-scale');
-    delete inner.dataset.pdAutoScale;
-    delete inner.dataset.pdManualScale;
-  }
-
-  // ===== ম্যানুয়াল ফন্ট সাইজ কন্ট্রোল (A- / A+ বাটন) =====
-  // অটো-ফিট স্কেলের উপরেই ইউজার চাইলে আরও ছোট/বড় করে দেখে নিতে পারবেন প্রিন্টের আগে।
   function pdAdjustPrintFontSize(modalId, direction) {
-    var modal = document.getElementById(modalId);
-    if (!modal) return;
-    var inner = pdGetPrintTarget_(modal);
-    if (!inner) return;
-
-    // প্রথমবার বাটনে চাপ দিলে (প্রিভিউ মোডে না থাকলে) আগে অটো-ফিট স্কেল হিসাব করে নেওয়া হয়
-    // (মডালটা এমনিতেই স্ক্রিনে খোলা আছে বলে print ক্লাস ছাড়াই height মাপা যায়)
-    if (!inner.dataset.pdAutoScale) {
-      pdAutoFitToA4_(modal);
-    }
-
-    var autoScale = parseFloat(inner.dataset.pdAutoScale || '1');
-    var manualScale = parseFloat(inner.dataset.pdManualScale || '1');
-    manualScale = Math.round((manualScale + direction * 0.1) * 100) / 100;
-
-    var minManual = PD_MIN_SCALE / autoScale;
-    var maxManual = PD_MAX_SCALE / autoScale;
-    manualScale = Math.min(Math.max(manualScale, Math.max(minManual, 0.5)), maxManual);
-
-    var finalScale = autoScale * manualScale;
-    inner.style.setProperty('--pd-print-scale', finalScale.toFixed(4));
-    inner.dataset.pdManualScale = manualScale.toFixed(2);
-
+    var cur = PD_MANUAL_SCALES[modalId] || 1;
+    cur = Math.round((cur + direction * 0.05) * 100) / 100;
+    cur = Math.max(0.5, Math.min(1.5, cur));
+    PD_MANUAL_SCALES[modalId] = cur;
     var pctEl = document.getElementById(modalId + 'FontPct');
-    if (pctEl) pctEl.textContent = Math.round(manualScale * 100) + '%';
+    if (pctEl) pctEl.textContent = Math.round(cur * 100) + '%';
   }
 
-  // মডাল বন্ধ করার সময় ফন্ট-সাইজ স্টেট রিসেট, যাতে পরের বার নতুন করে খুললে ১০০%
-  // থেকে শুরু হয় (আগের এন্ট্রির জন্য করা সমন্বয় নতুন এন্ট্রিতে যেন না থেকে যায়)
   function pdResetFontControl_(modalId) {
-    var modal = document.getElementById(modalId);
-    var inner = modal ? pdGetPrintTarget_(modal) : null;
-    pdResetAutoFit_(inner);
+    PD_MANUAL_SCALES[modalId] = 1;
     var pctEl = document.getElementById(modalId + 'FontPct');
     if (pctEl) pctEl.textContent = '100%';
   }
@@ -6352,36 +6074,84 @@ function initReceptionChatDragDrop_() {
     if (!modal) { window.print(); return; }
 
     var inner = pdGetPrintTarget_(modal);
-    // ইউজার আগে A-/A+ দিয়ে ম্যানুয়ালি ফন্ট সাইজ ঠিক করে থাকলে সেই প্রেফারেন্স রাখা হচ্ছে —
-    // প্রিন্টে চাপার সাথে সাথে আবার নতুন করে অটো-ফিট করে সেটা মুছে ফেলা হয় না।
-    var hasManualAdjustment = inner && inner.dataset.pdManualScale && inner.dataset.pdManualScale !== '1';
+    if (!inner) { window.print(); return; }
 
-    var scaledInner = null;
-    function cleanup() {
-      document.body.classList.remove('pd-printing');
-      modal.classList.remove('pd-print-target');
-      pdResetAutoFit_(scaledInner);
-      window.removeEventListener('afterprint', cleanup);
-    }
+    var MM_TO_PX = 3.7795275591;
+    var PAGE_W_MM = 210;
+    var PAGE_H_MM = 297;
+    var PAGE_MARGIN_MM = 5;
+    var availW_mm = PAGE_W_MM - PAGE_MARGIN_MM * 2;
+    var availH_mm = PAGE_H_MM - PAGE_MARGIN_MM * 2;
+
+    var prev = {
+      transform: inner.style.transform,
+      transformOrigin: inner.style.transformOrigin,
+      position: inner.style.position,
+      left: inner.style.left,
+      top: inner.style.top,
+      width: inner.style.width,
+      margin: inner.style.margin,
+      boxSizing: inner.style.boxSizing
+    };
+
+    inner.style.transform = 'none';
+    inner.style.transformOrigin = '';
+    inner.style.position = 'static';
+    inner.style.left = '';
+    inner.style.top = '';
+    inner.style.margin = '0';
+    inner.style.width = '194mm';
+    inner.style.boxSizing = 'border-box';
+    void inner.offsetWidth;
+
+    var naturalW_px = inner.scrollWidth || 1;
+    var naturalH_px = inner.scrollHeight || 1;
+    var naturalW_mm = naturalW_px / MM_TO_PX;
+    var naturalH_mm = naturalH_px / MM_TO_PX;
+
+    var manualMul = PD_MANUAL_SCALES[modalId] || 1;
+    var scaleW = availW_mm / naturalW_mm;
+    var scaleH = availH_mm / naturalH_mm;
+    var scale = Math.min(scaleW, scaleH, 1) * manualMul;
+    if (scale < 0.4) scale = 0.4;
+
+    var scaledW_mm = naturalW_mm * scale;
+    var scaledH_mm = naturalH_mm * scale;
+    var x_mm = (PAGE_W_MM - scaledW_mm) / 2;
+    var y_mm = PAGE_MARGIN_MM;
+
+    inner.style.transformOrigin = 'top left';
+    inner.style.transform = 'scale(' + scale + ')';
+    inner.style.position = 'absolute';
+    inner.style.left = x_mm.toFixed(3) + 'mm';
+    inner.style.top = y_mm.toFixed(3) + 'mm';
+    inner.style.width = naturalW_mm.toFixed(3) + 'mm';
+    inner.style.margin = '0';
+    inner.style.boxSizing = 'border-box';
 
     document.body.classList.add('pd-printing');
     modal.classList.add('pd-print-target');
 
-    if (hasManualAdjustment) {
-      scaledInner = inner; // স্কেল ইতিমধ্যে সেট করা আছে, নতুন করে মাপার দরকার নেই
-      window.addEventListener('afterprint', cleanup);
-      window.print();
-      setTimeout(cleanup, 2000);
-      return;
+    function cleanup() {
+      document.body.classList.remove('pd-printing');
+      modal.classList.remove('pd-print-target');
+      inner.style.transform = prev.transform || '';
+      inner.style.transformOrigin = prev.transformOrigin || '';
+      inner.style.position = prev.position || '';
+      inner.style.left = prev.left || '';
+      inner.style.top = prev.top || '';
+      inner.style.width = prev.width || '';
+      inner.style.margin = prev.margin || '';
+      inner.style.boxSizing = prev.boxSizing || '';
+      window.removeEventListener('afterprint', cleanup);
     }
 
-    // ব্রাউজারকে display/visibility রিফ্লো করার সুযোগ দিয়ে তারপর height মাপা হচ্ছে
-    setTimeout(function() {
-      scaledInner = pdAutoFitToA4_(modal);
-      window.addEventListener('afterprint', cleanup);
+    window.addEventListener('afterprint', cleanup);
+
+    setTimeout(function () {
       window.print();
-      setTimeout(cleanup, 2000);
-    }, 30);
+      setTimeout(cleanup, 3000);
+    }, 60);
   }
 
   function printRegistrationForm() {
@@ -10671,136 +10441,170 @@ var _formPdfCurrentBlobUrl = '';
 var _formPdfCurrentFileName = '';
 
 // ================================================================
-// ===== CLIENT-SIDE A4 PDF GENERATION (WYSIWYG, one-page fit) =====
+// ===== CLIENT-SIDE A4 PDF GENERATION (WYSIWYG, ONE PAGE) ========
 // ================================================================
-// এই ফাংশনটি ৩টি ফর্ম (Registration / Assessment / Prescription) কে
-// exact A4 সাইজে (210mm × 297mm) এক পেজে fit করে PDF বানায়।
-// কৌশল:
-//   1. Form-টা invisible wrapper-এ clone করা হয় (A4 content width = 194mm)
-//   2. Input/textarea-গুলো static text/span-এ convert করা হয়
-//   3. Content A4 height-এর চেয়ে বড় হলে ধাপে ধাপে font-size কমিয়ে fit করা হয়
-//   4. html2pdf কে unit:'mm', format:'a4' দিয়ে call করা হয়
+// html2canvas দিয়ে ফর্মের snapshot → jsPDF দিয়ে A4 পেজে fit।
+// ফলে: ১ পেজ guaranteed, WYSIWYG, স্ক্রিন = প্রিন্ট = PDF।
 // ================================================================
 function generateFormPdfBase64(element, fileName) {
   return new Promise(function (resolve, reject) {
-    if (!element) { reject(new Error('Element not found')); return; }
-    if (typeof html2pdf === 'undefined') { reject(new Error('html2pdf library not loaded')); return; }
+    if (!element) { reject(new Error('Form element not found')); return; }
+
+    var h2c = window.html2canvas;
+    var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+
+    if (typeof h2c === 'undefined') {
+      reject(new Error('html2canvas library not loaded')); return;
+    }
+    if (!jsPDFCtor) {
+      reject(new Error('jsPDF library not loaded')); return;
+    }
 
     var fontsReady = (document.fonts && document.fonts.ready)
       ? document.fonts.ready.catch(function () {}) : Promise.resolve();
 
     fontsReady.then(function () {
-      // holder = স্ক্রিনের বাইরে লুকানো; wrapper নিজে স্বাভাবিক position-এ (এটাই ফাঁকা PDF-এর সমাধান)
       var holder = document.createElement('div');
-      holder.style.cssText = 'position:absolute;left:-99999px;top:0;';
+      holder.style.cssText =
+        'position:fixed;left:-100000px;top:0;background:#ffffff;' +
+        'width:210mm;padding:0;margin:0;z-index:-1;pointer-events:none;';
 
       var wrapper = document.createElement('div');
-      wrapper.style.cssText = 'background:#fff;width:194mm;box-sizing:border-box;' +
+      wrapper.style.cssText =
+        'background:#ffffff;width:194mm;box-sizing:border-box;' +
+        'padding:0;margin:0 auto;color:#202124;' +
         'font-family:"Noto Sans Bengali","Hind Siliguri","Nikosh",Arial,sans-serif;';
 
       var clone = element.cloneNode(true);
+
       clone.querySelectorAll(
         '.no-print, .rx-toolbar, .rx-mode-toggle, .rx-mode-toggle-overlay, ' +
         '.form-actions, .pd-modal-close, .sig-actions, .rx-quick-add, .med-input-row, ' +
-        '.rx-sec-add, .rx-sec-check, .rx-free-note-label, .bw-toggle-btn, .notepad-btn'
+        '.rx-sec-add, .rx-sec-check, .rx-free-note-label, .bw-toggle-btn, .notepad-btn, ' +
+        '.pd-font-ctrl, .rx-input-popup'
       ).forEach(function (el) { el.remove(); });
+      clone.querySelectorAll('input[type="hidden"]').forEach(function (el) { el.remove(); });
 
-      // input/textarea/select/contenteditable/canvas → static content
-      var origEls = element.querySelectorAll('input, textarea, select, [contenteditable="true"], canvas');
-      var cloneEls = clone.querySelectorAll('input, textarea, select, [contenteditable="true"], canvas');
-      for (var i = 0; i < origEls.length && i < cloneEls.length; i++) {
-        var orig = origEls[i], cl = cloneEls[i], rep;
+      var origEls = element.querySelectorAll(
+        'input, textarea, select, [contenteditable="true"], canvas'
+      );
+      var cloneEls = clone.querySelectorAll(
+        'input, textarea, select, [contenteditable="true"], canvas'
+      );
+      var limit = Math.min(origEls.length, cloneEls.length);
+      for (var i = 0; i < limit; i++) {
+        var orig = origEls[i], cl = cloneEls[i];
         if (!cl.parentNode) continue;
-        if (orig.tagName === 'CANVAS') {
-          rep = document.createElement('img');
-          try { rep.src = orig.toDataURL('image/png'); } catch (e) { continue; }
-          rep.style.cssText = 'height:60px;max-width:100%;';
-        } else if (orig.type === 'checkbox' || orig.type === 'radio') {
-          rep = document.createElement('span');
-          rep.style.cssText = 'display:inline-block;width:13px;height:13px;border:1.2px solid #333;' +
-            'text-align:center;line-height:12px;font-size:11px;margin-right:4px;vertical-align:middle;';
-          rep.textContent = orig.checked ? '✓' : '';
-        } else if (orig.tagName === 'TEXTAREA') {
-          rep = document.createElement('div');
-          rep.style.cssText = 'white-space:pre-wrap;word-wrap:break-word;min-height:18px;padding:1px 3px;';
-          rep.textContent = orig.value || '';
-        } else if (orig.tagName === 'SELECT') {
-          rep = document.createElement('span');
-          rep.style.cssText = 'display:inline-block;min-width:40px;';
-          rep.textContent = (orig.selectedIndex >= 0 && orig.options[orig.selectedIndex])
-            ? orig.options[orig.selectedIndex].text : '';
-        } else if (orig.isContentEditable) {
-          rep = document.createElement('div');
-          rep.style.cssText = 'min-height:20px;';
-          rep.innerHTML = orig.innerHTML;
-        } else {
-          rep = document.createElement('span');
-          rep.style.cssText = 'display:inline-block;min-width:50px;border-bottom:1px solid #999;padding:1px 4px;';
-          rep.textContent = orig.value || '';
-        }
-        try { cl.parentNode.replaceChild(rep, cl); } catch (e) {}
+        var rep;
+        try {
+          if (orig.tagName === 'CANVAS') {
+            rep = document.createElement('img');
+            rep.src = orig.toDataURL('image/png');
+            rep.style.cssText = 'height:70px;max-width:100%;display:block;';
+          } else if (orig.type === 'checkbox' || orig.type === 'radio') {
+            rep = document.createElement('span');
+            rep.style.cssText =
+              'display:inline-block;width:13px;height:13px;' +
+              'border:1.2px solid #333;text-align:center;line-height:12px;' +
+              'font-size:11px;margin-right:4px;vertical-align:middle;box-sizing:border-box;';
+            rep.textContent = orig.checked ? '✓' : '';
+          } else if (orig.tagName === 'TEXTAREA') {
+            rep = document.createElement('div');
+            rep.style.cssText =
+              'white-space:pre-wrap;word-wrap:break-word;' +
+              'overflow-wrap:break-word;min-height:16px;padding:1px 3px;';
+            rep.textContent = orig.value || '';
+          } else if (orig.tagName === 'SELECT') {
+            rep = document.createElement('span');
+            rep.style.cssText = 'display:inline-block;min-width:40px;';
+            var selText = (orig.selectedIndex >= 0 && orig.options[orig.selectedIndex])
+              ? orig.options[orig.selectedIndex].text : '';
+            rep.textContent = selText;
+          } else if (orig.isContentEditable) {
+            rep = document.createElement('div');
+            rep.style.cssText = 'min-height:20px;';
+            rep.innerHTML = orig.innerHTML;
+          } else {
+            rep = document.createElement('span');
+            rep.style.cssText =
+              'display:inline-block;min-width:50px;' +
+              'border-bottom:1px solid #999;padding:1px 4px;';
+            rep.textContent = orig.value || '';
+          }
+          cl.parentNode.replaceChild(rep, cl);
+        } catch (e) {}
       }
 
-      // data: ছাড়া / ভাঙা ছবি বাদ (html2canvas আটকে যায়)
       clone.querySelectorAll('img').forEach(function (img) {
         var s = img.getAttribute('src') || '';
-        if (s.indexOf('data:') !== 0 || s.indexOf('YOUR_BASE64') !== -1) img.remove();
+        if (s.indexOf('data:') !== 0) img.remove();
       });
 
       wrapper.appendChild(clone);
       holder.appendChild(wrapper);
       document.body.appendChild(holder);
 
-      // ===== A4 এক পেজে auto-fit =====
-      var A4_H = 1062, scale = 1, MIN = 0.55, iter = 0;
-      var all = clone.querySelectorAll('*');
-      all.forEach(function (el) {
-        var fs = parseFloat(window.getComputedStyle(el).fontSize);
-        if (fs > 0) el.dataset._origFs = fs;
-      });
-      while (clone.scrollHeight > A4_H && scale > MIN && iter < 15) {
-        scale = Math.max(scale * 0.93, MIN); iter++;
-        all.forEach(function (el) {
-          var o = parseFloat(el.dataset._origFs);
-          if (o) el.style.fontSize = (o * scale) + 'px';
-        });
-      }
-      if (scale < 1) {
-        clone.querySelectorAll('.section-box, .section, .row, .form-row, .frow').forEach(function (el) {
-          var cs = window.getComputedStyle(el);
-          ['paddingTop','paddingBottom','marginTop','marginBottom'].forEach(function (p) {
-            var v = parseFloat(cs[p]) || 0;
-            if (v) el.style[p] = (v * scale) + 'px';
-          });
-        });
-      }
+      setTimeout(function () {
+        var naturalW = wrapper.scrollWidth || 733;
+        var naturalH = wrapper.scrollHeight || 1000;
 
-      var opt = {
-        margin: [8, 8, 8, 8],
-        filename: fileName + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff',
-          logging: false, scrollX: 0, scrollY: 0, windowWidth: 733
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-        pagebreak: { mode: ['css', 'legacy'] }
-      };
-
-      function cleanup() { if (holder.parentNode) holder.parentNode.removeChild(holder); }
-
-      html2pdf().set(opt).from(wrapper).toPdf().get('pdf').then(function (pdf) {
-        var blob = pdf.output('blob');
-        cleanup();
-        // সাদা/ফাঁকা PDF হলে reject → server fallback চলবে
-        if (blob.size < 15000) { reject(new Error('PDF ফাঁকা মনে হচ্ছে (size ' + blob.size + ')')); return; }
-        var reader = new FileReader();
-        reader.onloadend = function () {
-          resolve({ base64: reader.result.split(',')[1], blob: blob, scale: scale });
+        var canvasOpts = {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: naturalW,
+          windowHeight: naturalH,
+          width: naturalW,
+          height: naturalH
         };
-        reader.onerror = function () { reject(reader.error); };
-        reader.readAsDataURL(blob);
-      }).catch(function (err) { cleanup(); reject(err); });
+
+        h2c(wrapper, canvasOpts).then(function (canvas) {
+          try { if (holder.parentNode) holder.parentNode.removeChild(holder); } catch (e) {}
+
+          var imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+          var pdf = new jsPDFCtor({
+            unit: 'mm', format: 'a4', orientation: 'portrait', compress: true
+          });
+
+          var pageW = 210, pageH = 297;
+          var margin = 5;
+          var availW = pageW - margin * 2;
+          var availH = pageH - margin * 2;
+
+          var imgAspect = canvas.width / canvas.height;
+          var drawW = availW;
+          var drawH = drawW / imgAspect;
+          if (drawH > availH) {
+            drawH = availH;
+            drawW = drawH * imgAspect;
+          }
+          var x = (pageW - drawW) / 2;
+          var y = margin;
+
+          pdf.addImage(imgData, 'JPEG', x, y, drawW, drawH, undefined, 'FAST');
+
+          var blob = pdf.output('blob');
+          if (!blob || blob.size < 8000) {
+            reject(new Error('PDF ফাঁকা (size ' + (blob ? blob.size : 0) + ')'));
+            return;
+          }
+
+          var reader = new FileReader();
+          reader.onloadend = function () {
+            resolve({ base64: reader.result.split(',')[1], blob: blob });
+          };
+          reader.onerror = function () { reject(reader.error); };
+          reader.readAsDataURL(blob);
+        }).catch(function (err) {
+          try { if (holder.parentNode) holder.parentNode.removeChild(holder); } catch (e) {}
+          reject(err);
+        });
+      }, 400);
     }).catch(reject);
   });
 }
