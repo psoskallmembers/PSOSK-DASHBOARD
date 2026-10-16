@@ -7500,6 +7500,9 @@ function editPdfPreviewFile() {
 // ================================================================
 // Delete Button Click Handler — role-based type-aware
 // ================================================================
+// ================================================================
+// Delete Button Click Handler — role-based type-aware
+// ================================================================
 function deletePdfPreviewFile() {
   if (!pdPdfPreviewCurrentUrl_) {
     showPdToast('❌ কোনো PDF সিলেক্ট করা নেই', 'error');
@@ -7508,18 +7511,40 @@ function deletePdfPreviewFile() {
   var fileId = extractDriveFileId_(pdPdfPreviewCurrentUrl_);
   if (!fileId) { showPdToast('❌ File ID পাওয়া যায়নি', 'error'); return; }
 
-  if (!confirm('⚠️ এই PDF ফাইলটি Drive থেকে স্থায়ীভাবে মুছে ফেলা হবে!\n\nডেটা সেভ থাকবে, কিন্তু PDF আর খোলা যাবে না।\n\nনিশ্চিত?')) return;
+  // ✅ স্পষ্ট confirm message — ব্যবহারকারী যাতে বুঝতে পারে ঠিক কী মুছবে
+  var typeLabelMap = {
+    'registration': 'নিবন্ধন ফর্ম',
+    'assessment':   'মূল্যায়ন ফর্ম',
+    'prescription': 'প্রেসক্রিপশন',
+    'followup':     'ফলোআপ প্রেসক্রিপশন'
+  };
+  var typeLabel = typeLabelMap[(pdPdfPreviewCurrentType_ || '').toLowerCase()] || 'PDF';
+
+  var confirmMsg =
+    '⚠️ এই ' + typeLabel + ' PDF স্থায়ীভাবে মুছে ফেলা হবে!\n\n' +
+    'যা যা মুছে যাবে:\n' +
+    '  • Drive থেকে PDF ফাইল\n' +
+    '  • PATIENT_PDF_HISTORY শীটের সব ভার্সন এন্ট্রি\n' +
+    '  • PATIENTS শীটের সংশ্লিষ্ট PDF লিংক (শেষ ভার্সন হলে)\n\n' +
+    'ডেটা (রোগীর তথ্য) সেভ থাকবে, কিন্তু PDF আর খোলা যাবে না।\n\n' +
+    'নিশ্চিত?';
+
+  if (!confirm(confirmMsg)) return;
 
   var btn = document.getElementById('pdfPreviewDeleteBtn');
   var oldHtml = btn ? btn.innerHTML : '';
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ডিলিট হচ্ছে...'; }
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ডিলিট হচ্ছে...';
+  }
 
   google.script.run
     .withSuccessHandler(function(result) {
       if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
       if (result && result.success) {
-        showPdToast('✅ PDF ফাইল ডিলিট হয়েছে', 'success');
+        showPdToast('✅ ' + (result.message || 'PDF ফাইল ডিলিট হয়েছে'), 'success');
         closePdfPreview();
+        // রোগীর টেবিল refresh করুন যাতে PATIENTS শীটের লিংক আপডেট হওয়া দেখা যায়
         if (typeof refreshPatients === 'function') refreshPatients();
       } else {
         showPdToast('❌ ' + ((result && result.error) || 'ডিলিট করা যায়নি'), 'error');
