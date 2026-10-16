@@ -2345,7 +2345,373 @@
 }
 
 
-  </style>
+<style>
+  ... (আপনার বর্তমান সব CSS আগের মতোই থাকবে) ...
+
+/* ================================================================ */
+/* ===== MOBILE RESPONSIVE — SCREEN ONLY (Print/PDF preserved) ===== */
+/* ================================================================ */
+/* এই ব্লকের সব নিয়ম শুধুমাত্র mobile screen-এ কাজ করবে।
+   @media screen ব্যবহার করা হয়েছে — print-এ fire করবে না।
+   @container ব্যবহার করা হয়েছে — form-এর নিজস্ব width দেখে fire করে,
+   তাই PDF generation (820px) বা print (194mm ≈ 733px)-এ fire করে না।
+   ফলাফল: print/PDF আউটপুট অপরিবর্তিত ✅ */
+
+.reg-form-container,
+.assessment-form-container,
+.prescription-wrapper {
+  container-type: inline-size;
+  container-name: pdform;
+}
+
+/* ================= Dashboard / Tabs / Modals / Chat ================ */
+@media screen and (max-width: 768px) {
+  .patient-container { padding: 6px 6px 16px 6px; }
+
+  .pd-header { padding: 12px 14px; gap: 8px; text-align: center; }
+  .pd-header h2 { font-size: 16px; justify-content: center; }
+  .pd-header .center-info { font-size: 12px; justify-content: center; text-align: center; }
+  .pd-admin-backup-btn { width: 100%; justify-content: center; padding: 8px 12px; }
+
+  .pd-section-title { font-size: 13px; padding: 6px 10px; }
+  .pd-section-title .sub { display: none; }
+
+  .pd-both-sections { grid-template-columns: 1fr; gap: 12px; }
+  .pd-stats-grid { grid-template-columns: 1fr; }
+  .pd-stats-left { grid-template-columns: repeat(2, 1fr); }
+  .pd-stats-right { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+
+  .pd-stat-card { padding: 10px 8px; }
+  .pd-stat-card .stat-number { font-size: 18px; }
+  .pd-stat-card .stat-label { font-size: 9.5px; }
+
+  .pd-disability-card { min-height: 40px; padding: 6px 4px; }
+  .pd-disability-card .d-count { font-size: 14px; }
+  .pd-disability-card .d-name { font-size: 8.5px; }
+
+  .pd-center-banner { padding: 10px 12px; gap: 8px; }
+  .pd-center-banner .cname { font-size: 13px; }
+  .pd-center-banner .ccount { font-size: 11px; }
+
+  .pd-tabs { gap: 6px; }
+  .pd-tab-btn {
+    flex: 1 1 calc(50% - 6px);
+    padding: 8px 10px; font-size: 12px;
+    min-width: 0; justify-content: center;
+  }
+
+  .pd-filters { flex-direction: column; align-items: stretch; padding: 10px; gap: 8px; }
+  .pd-filters select,
+  .pd-filters input { width: 100%; min-width: 0; font-size: 14px; padding: 8px 10px; }
+  .pd-filters .btn { justify-content: center; width: 100%; }
+  .pd-export-group { margin-left: 0; width: 100%; flex-direction: column; }
+  .pd-export-group .btn { width: 100%; justify-content: center; }
+
+  .pd-table-wrap { padding: 10px; }
+  .pd-table-wrap .table-header { flex-direction: column; align-items: stretch; gap: 8px; }
+  .pd-table-wrap .table-header h3 { font-size: 14px; justify-content: center; }
+  table { font-size: 11px; }
+  th, td { padding: 6px; }
+  .action-btns .btn { padding: 3px 6px; font-size: 10px; }
+
+  .pd-modal-overlay { padding: 0; align-items: flex-start; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .pd-modal-box {
+    max-width: 100%; width: 100%;
+    min-height: 100vh; max-height: none; height: auto;
+    border-radius: 0; padding: 16px 12px; margin: 0;
+  }
+  .pd-modal-box h3 { font-size: 15px; }
+  .pd-modal-close { font-size: 20px; padding: 4px; }
+
+  .pd-form-grid { grid-template-columns: 1fr; }
+  .pd-form-actions { flex-direction: column; gap: 8px; }
+  .pd-form-actions .btn { width: 100%; justify-content: center; padding: 10px 16px; }
+  .pd-font-ctrl, .pd-print-ctrl { width: 100%; justify-content: center; flex-wrap: wrap; }
+
+  .pd-report-box { max-width: 100%; }
+  .pd-period-chips { flex-wrap: wrap; }
+  .pd-period-chip { flex: 1 1 auto; text-align: center; padding: 6px 12px; font-size: 11px; }
+  .pd-custom-range { flex-direction: column; }
+  .pd-format-options { flex-direction: column; }
+  .pd-format-card { min-width: 100%; }
+  .pd-report-scope { font-size: 11px; padding: 8px 10px; }
+
+  #pdfPreviewModal .pd-modal-box,
+  #formPdfPreviewModal .pd-modal-box { height: 100vh; max-height: 100vh; min-height: 0; }
+
+  .pd-toast { min-width: 0; width: 90%; padding: 12px 16px; font-size: 13px; }
+
+  /* Chat */
+  .chat-wrapper { height: auto; min-height: 0; }
+  .chat-messages { height: 60vh; min-height: 320px; }
+  .chat-sidebar { width: 100%; max-height: 160px; }
+  .chat-input-row { padding: 10px; gap: 8px; }
+  .chat-input-row textarea { font-size: 14px; padding: 9px 12px; }
+  .chat-header { padding: 10px 14px; }
+  .chat-header .chat-title { font-size: 13.5px; }
+}
+
+@media screen and (max-width: 480px) {
+  .pd-stats-left,
+  .pd-stats-right { grid-template-columns: repeat(2, 1fr); }
+  .pd-tab-btn { flex: 1 1 100%; font-size: 11.5px; padding: 7px 8px; }
+  .pd-stat-card .stat-number { font-size: 16px; }
+  .pd-disability-card .d-count { font-size: 12px; }
+  .pd-disability-card .d-name { font-size: 8px; }
+  .pd-modal-box { padding: 12px 8px; }
+  .pd-filters select,
+  .pd-filters input { font-size: 13px; padding: 7px 8px; }
+}
+
+/* =============== Rx Input Popup / Manage Modal (mobile) ================ */
+@media screen and (max-width: 768px) {
+  .rx-input-popup {
+    position: fixed !important;
+    top: auto !important; bottom: 0 !important;
+    left: 0 !important; right: 0 !important;
+    width: 100% !important; max-width: 100% !important;
+    max-height: 75vh;
+    border-radius: 16px 16px 0 0;
+  }
+  .rx-input-popup-head h4 { font-size: 13px; }
+
+  .rx-manage-modal { padding: 0; }
+  .rx-manage-box { max-width: 100%; width: 100%; height: 100vh; border-radius: 0; }
+  .rx-manage-header h3 { font-size: 14px; }
+  .rx-manage-tabs { overflow-x: auto; padding: 0 10px; }
+  .rx-manage-tab { padding: 10px 12px; font-size: 12px; white-space: nowrap; }
+  .rx-manage-body { padding: 12px 10px; }
+  .rx-manage-toolbar { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px; }
+  .rx-manage-toolbar input,
+  .rx-manage-toolbar select,
+  .rx-manage-toolbar .btn-add-cat,
+  .rx-manage-toolbar .btn-add-item { width: 100%; font-size: 13px; }
+  .rx-manage-cat-head { flex-wrap: wrap; gap: 6px; padding: 8px 10px; }
+  .rx-manage-cat-head .cat-title { font-size: 12.5px; flex-basis: 100%; }
+  .rx-manage-cat-head button { padding: 4px 8px; font-size: 10px; }
+  .rx-manage-item-row { grid-template-columns: 1fr auto; gap: 4px 8px; padding: 8px 10px; }
+  .rx-manage-item-row .m-name { grid-column: 1 / -1; }
+  .med-input-row { grid-template-columns: 55px 1fr 1fr 28px; gap: 4px; }
+  .med-input-row #medDurInp { grid-column: 1 / -1; }
+  .med-input-row input { font-size: 12px; }
+}
+
+/* ================================================================ */
+/* ===== FORM-SPECIFIC CONTAINER QUERIES (Print/PDF preserved) ==== */
+/* ================================================================ */
+/* 640px এ breakpoint রাখা হয়েছে যাতে print (≈677px) বা PDF gen
+   (≈764px) কোনো ক্ষেত্রেই fire না করে — কিন্তু ফোনে (≈300–400px)
+   ঠিকমতো fire করে। */
+
+@container pdform (max-width: 640px) {
+
+  /* ---------------- REGISTRATION FORM ---------------- */
+  .reg-form-container .header { padding-bottom: 12px; margin-bottom: 14px; }
+  .reg-form-container .header .logo { width: 56px; height: 56px; margin-bottom: 6px; }
+  .reg-form-container .header .logo img { max-width: 56px; max-height: 56px; }
+  .reg-form-container .header .govt,
+  .reg-form-container .header .ministry { font-size: 11px; }
+  .reg-form-container .header .org { font-size: 15px; line-height: 1.2; }
+  .reg-form-container .header .title { font-size: 13px; padding: 5px 12px; }
+  .reg-form-container .header .kendro-name { font-size: 12px; }
+
+  .reg-form-container .reg-row { flex-direction: column; gap: 8px; padding: 10px 12px; }
+  .reg-form-container .reg-row .field {
+    flex-direction: column; align-items: stretch; min-width: 0; gap: 4px; width: 100%;
+  }
+  .reg-form-container .reg-row .field label { white-space: normal; font-size: 12px; }
+  .reg-form-container .reg-row .field input { min-width: 0; width: 100%; }
+
+  .reg-form-container .form-row { flex-direction: column; align-items: stretch; gap: 6px; }
+  .reg-form-container .form-row .label,
+  .reg-form-container .form-row .label-sm { min-width: 0; font-size: 12px; padding-top: 0; }
+  .reg-form-container .form-row .value,
+  .reg-form-container .form-row .value-inline {
+    min-width: 0 !important; max-width: 100% !important; width: 100% !important;
+  }
+  .reg-form-container .form-row .value-inline { flex-wrap: wrap; gap: 8px; }
+  .reg-form-container .form-row .value input,
+  .reg-form-container .form-row .value select {
+    width: 100% !important; max-width: 100% !important;
+  }
+
+  .reg-form-container .contact-grid { grid-template-columns: 1fr; padding-left: 12px; gap: 8px; }
+  .reg-form-container .contact-grid .cg-item { flex-direction: column; align-items: stretch; gap: 3px; }
+  .reg-form-container .contact-grid .cg-item label { min-width: 0; font-size: 12px; }
+  .reg-form-container .contact-grid .cg-item input { width: 100%; min-width: 0; }
+
+  .reg-form-container .id-grid { grid-template-columns: 1fr; gap: 10px; }
+  .reg-form-container .id-grid .id-item label { font-size: 12px; }
+
+  .reg-form-container .check-grid { grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+  .reg-form-container .check-grid label { font-size: 12px; padding: 3px 2px; }
+
+  .reg-form-container .section-box { padding: 10px 12px; margin-bottom: 12px; }
+  .reg-form-container .section-box .section-title { font-size: 12.5px; flex-wrap: wrap; }
+
+  .reg-form-container .signature-row { flex-direction: column; gap: 12px; }
+  .reg-form-container .signature-row .sig-item { min-width: 0; width: 100%; }
+  .reg-form-container .signature-row .sig-item .sig-line { min-width: 0; width: 100%; }
+
+  .reg-form-container .sig-type-selector { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+  /* iOS auto-zoom বন্ধ করতে 16px */
+  .reg-form-container input,
+  .reg-form-container select,
+  .reg-form-container textarea { font-size: 16px !important; }
+  .reg-form-container label,
+  .reg-form-container .label,
+  .reg-form-container .section-title { font-size: 12.5px !important; }
+
+  /* ---------------- ASSESSMENT FORM ---------------- */
+  .assessment-form-container .header { flex-direction: column; align-items: stretch; gap: 10px; }
+  .assessment-form-container .header-left { justify-content: flex-start; }
+  .assessment-form-container .org-name { font-size: 14px; }
+  .assessment-form-container .org-sub { font-size: 10px; }
+
+  .assessment-form-container .header-right {
+    flex-direction: column; align-items: stretch;
+    border-radius: 10px; padding: 10px 12px; gap: 8px;
+  }
+  .assessment-form-container .header-right .field {
+    flex-direction: column; align-items: stretch; gap: 3px;
+    width: 100%; min-width: 0 !important; flex: 1 1 auto !important;
+  }
+  .assessment-form-container .header-right .field label { font-size: 12px; }
+  .assessment-form-container .header-right .field input,
+  .assessment-form-container .header-right .field select,
+  .assessment-form-container .header-right .field textarea {
+    max-width: 100% !important; width: 100% !important; font-size: 16px !important;
+  }
+  .assessment-form-container .header-right .field textarea { min-height: 34px; height: auto !important; }
+
+  .assessment-reg-data { grid-template-columns: 1fr; gap: 6px; padding: 10px 12px; font-size: 12px; }
+  .assessment-reg-data .rd-item { flex-direction: column; gap: 2px; }
+  .assessment-reg-data .rd-item .rd-label { min-width: 0; }
+
+  .assessment-form-container .section { padding: 10px 12px; }
+  .assessment-form-container .section-title { font-size: 12.5px; }
+
+  .assessment-form-container .row {
+    flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 8px;
+  }
+  .assessment-form-container .row .label,
+  .assessment-form-container .row .label-sm {
+    min-width: 0 !important; padding-top: 0; font-size: 12px;
+  }
+  .assessment-form-container .row .value {
+    min-width: 0 !important; width: 100%; max-width: 100% !important;
+  }
+  .assessment-form-container .row .value input,
+  .assessment-form-container .row .value select,
+  .assessment-form-container .row .value textarea {
+    font-size: 16px !important; width: 100% !important;
+  }
+  .assessment-form-container .row .value textarea { height: auto !important; min-height: 36px; }
+
+  .assessment-form-container .inline-group { flex-direction: column; align-items: stretch; gap: 6px; }
+  .assessment-form-container .inline-group .inline-item { width: 100%; }
+  .assessment-form-container .inline-group .inline-item input[type="text"],
+  .assessment-form-container .inline-group .inline-item select {
+    flex: 1; min-width: 0; font-size: 16px !important;
+  }
+
+  .assessment-form-container .sub-grid { grid-template-columns: 1fr; }
+  .assessment-form-container .sub-grid .item label { min-width: 80px; font-size: 12px; }
+
+  /* চওড়া টেবিল — horizontal scroll */
+  .assessment-form-container .assessment-table {
+    display: block; overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap; font-size: 11px; max-width: 100%;
+  }
+  .assessment-form-container .assessment-table thead,
+  .assessment-form-container .assessment-table tbody {
+    display: table; width: 100%; min-width: 720px;
+  }
+  .assessment-form-container .assessment-table th,
+  .assessment-form-container .assessment-table td { min-width: 55px; }
+  .assessment-form-container .assessment-table .table-label {
+    min-width: 44px; position: sticky; left: 0;
+    background: #f8f9fa; z-index: 1;
+  }
+
+  /* ---------------- PRESCRIPTION FORM ---------------- */
+  .prescription-wrapper .header {
+    grid-template-columns: 1fr; gap: 8px; text-align: center;
+    padding-bottom: 8px; margin-bottom: 10px;
+  }
+  .prescription-wrapper .header-left,
+  .prescription-wrapper .header-center,
+  .prescription-wrapper .header-right { justify-self: center; text-align: center; }
+  .prescription-wrapper .header-left .logo { width: 56px; height: 56px; margin: 0 auto; }
+  .prescription-wrapper .header-center .govt { font-size: 11px; }
+  .prescription-wrapper .header-center .org { font-size: 14px; }
+  .prescription-wrapper .header-center .ministry { font-size: 11px; }
+  .prescription-wrapper .header-center .kendro { font-size: 12px; }
+  .prescription-wrapper .header-center .form-title { font-size: 14px; }
+  .prescription-wrapper .header-right { align-items: center; padding-top: 0; }
+  .prescription-wrapper .header-right .reg-label { font-size: 11px; margin-bottom: 2px; }
+  .prescription-wrapper .header-right .reg-input { text-align: center; width: 100%; max-width: 240px; }
+
+  .prescription-wrapper .client-info {
+    grid-template-columns: 1fr; gap: 6px; padding: 10px 12px; margin-bottom: 10px;
+  }
+  .prescription-wrapper .client-info .info-row {
+    flex-direction: column; align-items: stretch; gap: 2px; padding: 3px 0;
+  }
+  .prescription-wrapper .client-info .info-row .label { font-size: 11px; white-space: normal; }
+  .prescription-wrapper .client-info .info-row .value input,
+  .prescription-wrapper .client-info .info-row .value select {
+    font-size: 16px !important; width: 100%;
+  }
+
+  .prescription-wrapper .prescription-table { grid-template-columns: 1fr; min-height: 0; }
+  .prescription-wrapper .left-col { border-right: none; border-bottom: 1.5px solid #222; }
+  .prescription-wrapper .left-col .field-row .field-label { font-size: 12.5px; }
+  .prescription-wrapper .left-col .field-row .field-value textarea { font-size: 16px !important; }
+
+  .prescription-wrapper .right-col .rx-header { font-size: 13px; }
+  .prescription-wrapper .right-col .rx-toolbar { flex-wrap: wrap; padding: 6px; gap: 4px; }
+  .prescription-wrapper .right-col .rx-body {
+    font-size: 16px !important; min-height: 200px; padding: 8px 6px;
+  }
+
+  .rx-mode-toggle-overlay {
+    position: static !important;
+    transform: none !important;
+    top: auto !important; right: auto !important;
+    margin: 0 auto 10px auto;
+    justify-content: center; display: flex; width: fit-content;
+  }
+  .rx-mode-toggle-overlay .rx-mode-btn { padding: 6px 14px; font-size: 12px; }
+
+  .prescription-wrapper > .no-print[style*="padding-right"] {
+    padding-right: 0 !important; justify-content: center !important;
+  }
+
+  .prescription-wrapper .signature-row {
+    flex-direction: column; align-items: stretch; gap: 12px;
+    margin-top: 10px; padding-top: 8px;
+  }
+  .prescription-wrapper .signature-row .sig-left .sig-text { font-size: 11.5px; }
+  .prescription-wrapper .signature-row .sig-right { align-items: flex-end; }
+  .prescription-wrapper .signature-row .sig-right .sig-line { width: 100%; max-width: 240px; }
+  .prescription-wrapper .signature-row .sig-right .sig-label { font-size: 13px; }
+  .prescription-wrapper .signature-row .sig-right .sig-sub { font-size: 11px; }
+  .prescription-wrapper .footer { font-size: 11px; margin-top: 10px; padding-top: 6px; }
+}
+
+@container pdform (max-width: 420px) {
+  .reg-form-container .check-grid { grid-template-columns: 1fr; }
+  .reg-form-container .contact-grid {
+    padding-left: 0; margin-left: 0;
+    border-left: none; border-top: 2px solid #1A73E8;
+    padding-top: 10px; margin-top: 6px;
+  }
+}
+
+</style>
 </head>
 <body>
 <div class="chat-lightbox" id="chatLightbox" onclick="closeLightbox()">
@@ -7700,6 +8066,9 @@ function richExec(command, value) {
     if (!win) { showPdToast('❌ পপ-আপ ব্লক করা আছে, অনুগ্রহ করে পপ-আপ অনুমতি দিন', 'error'); return; }
     var html =
       '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc_(payload.title) + '</title>' +
+
+
+
       '<style>' +
       '*{box-sizing:border-box}' +
       'body{font-family:"Segoe UI","Nikosh",Tahoma,sans-serif;padding:24px;color:#202124;}' +
