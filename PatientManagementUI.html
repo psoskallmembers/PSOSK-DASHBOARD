@@ -5771,6 +5771,9 @@ function viewFollowupPatient(patientId, requestId) {
   // ================================================================
 // Followup প্রেসক্রিপশন এডিট — Prescription modal followup mode-এ খুলবে
 // ================================================================
+// ================================================================
+// Followup প্রেসক্রিপশন এডিট — Prescription modal followup mode-এ
+// ================================================================
 function editFollowupPrescription(patientId) {
   if (!patientId) { showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error'); return; }
 
@@ -5807,6 +5810,86 @@ function editFollowupPrescription(patientId) {
     })
     .withFailureHandler(function(e) { showPdToast('❌ Error: ' + e, 'error'); })
     .getPatientById(patientId, PD_USER_EMAIL);
+}
+
+// হেল্পার — Followup prescription ডেটা দিয়ে prescription modal populate
+function openFollowupPrescriptionEdit_(p, presc) {
+  var modal = document.getElementById('prescriptionModal');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+
+  document.getElementById('prescPatientId').value = p.id || '';
+  document.getElementById('prescFromPending').value = 'false';
+  document.getElementById('prescType').value = 'followup';
+  document.getElementById('prescRegNo').value = p.centerPin || '';
+  autoSizeRegInput(document.getElementById('prescRegNo'));
+
+  var dateVal = presc.prescribeDate ? new Date(presc.prescribeDate) : new Date();
+  document.getElementById('prescDate').value = !isNaN(dateVal.getTime()) ? dateVal.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+
+  document.getElementById('prescClientName').value = p.name || '';
+  document.getElementById('prescAge').value = p.age || '';
+  document.getElementById('prescGuardianName').value = p.father || '';
+  document.getElementById('prescMotherName').value = p.mother || '';
+  document.getElementById('prescAddress').value = p.address || '';
+  document.getElementById('prescGender').value = p.gender || '';
+  document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
+
+  document.getElementById('prescCc').value = presc.cc || '';
+  document.getElementById('prescHpc').value = presc.hpc || '';
+  document.getElementById('prescPmh').value = presc.pmh || '';
+  document.getElementById('prescDh').value = presc.dh || '';
+  document.getElementById('prescOe').value = presc.oe || '';
+  document.getElementById('prescInvestigation').value = presc.investigation || '';
+  document.getElementById('prescAdvice').value = presc.advice || '';
+  document.getElementById('prescDiagnosis').value = presc.diagnosis || '';
+  document.getElementById('prescRx').innerHTML = presc.rx || '';
+  document.getElementById('prescSignatureDesignation').textContent = presc.prescribedByDesignation || PD_USER_ROLE || 'Consultant (Physiotherapist)';
+
+  PD_RX_MEDICINES = Array.isArray(presc.medicineItems) ? presc.medicineItems.slice() : [];
+  if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+  var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = presc.medicineNote || '';
+  var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = (PD_RX_MEDICINES.length > 0 || (presc.medicineNote || '').trim());
+
+  document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
+    if (typeof autoGrow === 'function') autoGrow(ta);
+  });
+
+  setTimeout(function() {
+    if (typeof initRxMode === 'function') initRxMode();
+    if (typeof loadRxInputSections === 'function') loadRxInputSections();
+    if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+    setTimeout(function() {
+      var physioSaved = presc.physiotherapyItems || [];
+      var hmSaved = presc.homeManagement || [];
+      var medSaved = presc.medicineItems || [];
+      document.querySelectorAll('#physioCatAcc .phy-rx-check').forEach(function(cb) {
+        var key = cb.getAttribute('data-cat') + '||' + cb.value;
+        cb.checked = physioSaved.indexOf(key) !== -1;
+      });
+      document.querySelectorAll('#hmCatAcc .hm-rx-check').forEach(function(cb) {
+        var key = cb.getAttribute('data-cat') + '||' + cb.value;
+        cb.checked = hmSaved.indexOf(key) !== -1;
+      });
+      document.querySelectorAll('#rxCatAcc .med-rx-check').forEach(function(cb) {
+        var catName = cb.getAttribute('data-cat');
+        var medName = cb.value;
+        cb.checked = medSaved.some(function(m) {
+          return (m.category || '') === catName && (m.medicineName || '') === medName;
+        });
+      });
+      document.querySelectorAll('.rx-cat-acc .accordion-item').forEach(function(w) {
+        var badge = w.querySelector('.cat-count-badge');
+        if (badge) {
+          var checked = w.querySelectorAll('input[type=checkbox]:checked').length;
+          badge.innerText = checked;
+          badge.className = 'badge cat-count-badge ' + (checked > 0 ? 'bg-success' : 'bg-secondary');
+        }
+      });
+    }, 500);
+  }, 150);
+
+  showPdToast('📋 Followup প্রেসক্রিপশন লোড হয়েছে — এডিট করে সেভ করুন', 'info');
 }
 
 // Followup prescription ডেটা দিয়ে prescription modal populate করে
@@ -6771,19 +6854,36 @@ function openPdfPreview(encodedUrl, title, type, patientId) {
   if (!url) { showPdToast('❌ PDF লিংক পাওয়া যায়নি!', 'error'); return; }
 
   pdPdfPreviewCurrentUrl_ = url;
-  pdPdfPreviewCurrentType_ = (type || '').toString();         // 🆕
-  pdPdfPreviewCurrentPatientId_ = (patientId || '').toString(); // 🆕
+  pdPdfPreviewCurrentType_ = (type || '').toString();
+  pdPdfPreviewCurrentPatientId_ = (patientId || '').toString();
 
   document.getElementById('pdfPreviewTitle').querySelector('span').textContent = title || 'PDF প্রিভিউ';
   document.getElementById('pdfPreviewFrame').src = toEmbeddablePdfUrl_(url);
   document.getElementById('pdfPreviewOpenLink').href = url;
   document.getElementById('pdfPreviewDownloadLink').href = url;
 
-  // Admin বা Registration role হলে Edit + Delete দুটোই দেখাব
-  var canManage = PD_IS_ADMIN
-             || (PD_USER_ROLE && PD_REGISTRATION_ROLES.indexOf(PD_USER_ROLE) !== -1)
-             || PD_CAN_ASSESS
-             || PD_CAN_PRESCRIBE;
+  // ================================================================
+  // 🆕 Role-based permission — যে role যে ফর্মের জন্য দায়ী,
+  //    সেটা সেই role-ই edit করতে পারবে
+  // ================================================================
+  var t = (type || '').toString().toLowerCase();
+  var canManage = false;
+
+  if (PD_IS_ADMIN) {
+    canManage = true;  // Admin সব কিছু করতে পারে
+  } else if (t === 'registration') {
+    canManage = PD_USER_ROLE && PD_REGISTRATION_ROLES.indexOf(PD_USER_ROLE) !== -1;
+  } else if (t === 'assessment') {
+    canManage = !!PD_CAN_ASSESS;
+  } else if (t === 'prescription' || t === 'followup') {
+    canManage = !!PD_CAN_PRESCRIBE;
+  } else {
+    // type না পাঠালে fallback — সব role-based access দেখাও
+    canManage = !!(PD_USER_ROLE && PD_REGISTRATION_ROLES.indexOf(PD_USER_ROLE) !== -1)
+             || !!PD_CAN_ASSESS
+             || !!PD_CAN_PRESCRIBE;
+  }
+
   var editBtn = document.getElementById('pdfPreviewEditBtn');
   var deleteBtn = document.getElementById('pdfPreviewDeleteBtn');
   if (editBtn)   editBtn.style.display   = canManage ? 'inline-flex' : 'none';
@@ -6850,6 +6950,9 @@ function editPdfPreviewFile() {
 // ================================================================
 // Delete Button Click Handler
 // ================================================================
+// ================================================================
+// Delete Button Click Handler — role-based type-aware
+// ================================================================
 function deletePdfPreviewFile() {
   if (!pdPdfPreviewCurrentUrl_) {
     showPdToast('❌ কোনো PDF সিলেক্ট করা নেই', 'error');
@@ -6879,7 +6982,7 @@ function deletePdfPreviewFile() {
       if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
       showPdToast('❌ Error: ' + ((err && err.message) || err), 'error');
     })
-    .deletePatientPdfFile(PD_USER_EMAIL, fileId);
+    .deletePatientPdfFile(PD_USER_EMAIL, fileId, pdPdfPreviewCurrentType_);
 }
 
   function closeServiceModal() {
