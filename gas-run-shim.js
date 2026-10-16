@@ -12,6 +12,12 @@
 
    এক অক্ষরও না বদলে আগের মতোই কাজ করবে — শুধু ব্যাকগ্রাউন্ডে এখন এটা
    Apps Script Web App এ fetch() দিয়ে POST পাঠায়।
+
+   ===== Token System (v2) =====
+   • loginUser/checkLogin সফল হলে সার্ভার token পাঠায় → সেটা localStorage-এ save হয়
+   • পরবর্তী প্রতিটা request-এ সেই token স্বয়ংক্রিয়ভাবে body-তে যোগ হয়
+   • Session expired হলে ("Session মেয়াদোত্তীর্ণ") token মুছে যায় ও user কে জানানো হয়
+   • logoutUser() কল করলে token সার্ভার + localStorage দুই জায়গা থেকেই মুছে যায়
    ================================================================ */
 
 (function (window) {
@@ -23,11 +29,70 @@
 
   // ===== কনফিগারেশন =====
   var CONFIG = {
-    TIMEOUT_MS: 60000,        // ৬০ সেকেন্ড পর টাইমআউট
-    DEBUG: false,             // true করলে প্রতিটা call console-এ দেখাবে
-    MAX_RETRIES: 0            // 0 = কোনো retry নেই; 1+ দিলে network error-এ আবার চেষ্টা করবে
+    TIMEOUT_MS: 60000,
+    DEBUG: false,
+    MAX_RETRIES: 0
   };
 
+  // ===== Token storage key =====
+  var TOKEN_STORAGE_KEY = 'psosk_disp_token';
+  var TOKEN_EXPIRED_EVENT = 'psosk_session_expired';
+
+  // ===== Session-expiry detection (server error message pattern) =====
+  var SESSION_EXPIRED_PATTERNS_ = [
+    'Session মেয়াদোত্তীর্ণ',
+    'আবার লগইন করুন',
+    'অবৈধ। অনুগ্রহ করে'
+  ];
+
+  // ===== Token helpers =====
+  function getToken_() {
+    try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ''; }
+    catch (e) { return ''; }
+  }
+
+  function setToken_(token) {
+    try {
+      if (token) localStorage.setItem(TOKEN_STORAGE_KEY, token);
+      else localStorage.removeItem(TOKEN_STORAGE_KEY);
+    } catch (e) {}
+  }
+
+  function clearToken_() {
+    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
+  }
+
+  function isSessionExpiredMsg_(msg) {
+    if (!msg) return false;
+    msg = String(msg);
+    for (var i = 0; i < SESSION_EXPIRED_PATTERNS_.length; i++) {
+      if (msg.indexOf(SESSION_EXPIRED_PATTERNS_[i]) !== -1) return true;
+    }
+    return false;
+  }
+
+  function fireSessionExpired_(reason) {
+    clearToken_();
+    try {
+      window.dispatchEvent(new CustomEvent(TOKEN_EXPIRED_EVENT, { detail: { reason: reason || '' } }));
+    } catch (e) {
+      // পুরনো ব্রাউজারে CustomEvent না থাকলে fallback
+      try {
+        var evt = document.createEvent('Event');
+        evt.initEvent(TOKEN_EXPIRED_EVENT, true, true);
+        window.dispatchEvent(evt);
+      } catch (e2) {}
+    }
+    logError_('🔒 Session expired — token cleared. Reason:', reason || '');
+  }
+
+  // ===== Public API for pages (login page থেকে কল করার জন্য) =====
+  window.PSOSK_getToken = getToken_;
+  window.PSOSK_setToken = setToken_;
+  window.PSOSK_clearToken = clearToken_;
+  window.PSOSK_SESSION_EXPIRED_EVENT = TOKEN_EXPIRED_EVENT;
+
+  // ===== Internal =====
   var REQUEST_ID_COUNTER = 0;
 
   function logDebug_() {
@@ -44,18 +109,57 @@
     console.error.apply(console, args);
   }
 
+  // যেসব function login-এর আগেই লাগতে পারে বা logout-এর সময় — এগুলোর জন্য
+  // token না থাকলেও কল করা যাবে (যদিও সার্ভার তার নিজের PUBLIC_FUNCTIONS list দেখে
+  // চূড়ান্ত সিদ্ধান্ত নেয়)।
+  var PUBLIC_FNS_ = {
+    'loginUser': 1, 'checkLogin': 1, 'checkEmailExists': 1,
+    'signupUserComplete': 1, 'sendSignupVerificationCode': 1,
+    'verifySignupCode': 1, 'forgotPassword': 1, 'resetPassword': 1,
+    'pingServer': 1, 'getScriptUrl': 1, 'getSiteSettings': 1,
+    'getLogoDataUri': 1, 'getCentersList': 1, 'getDesignationsList': 1,
+    'getDistrictDivisionMap': 1, 'getDistricts': 1, 'getBloodGroupsList': 1,
+    'getServiceCenters': 1, 'getAdminRolesList': 1, 'getCurrentUser': 1,
+    'logoutUser': 1
+  };
+
   function doFetch_(fnName, args, signal) {
+    // ===== Token সবসময় body-তে পাঠানো হচ্ছে — public fn-এর ক্ষেত্রেও (নাহলে
+    // login-এর পর সাথে সাথেই অন্য কলের সময় token নেই বলে সার্ভার reject করে দেবে)।
+    // public fn হলে token না থাকলেও সমস্যা নেই — সার্ভার সেটা ignore করবে।
+    var body = {
+      fn: fnName,
+      args: args,
+      token: getToken_()
+    };
+
     return fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ fn: fnName, args: args }),
+      body: JSON.stringify(body),
       signal: signal
     });
+  }
+
+  // Response-এ token থাকলে capture করে localStorage-এ save করা হয়
+  function captureTokenFromResult_(result) {
+    try {
+      if (result && typeof result === 'object' && result.token) {
+        setToken_(result.token);
+        logDebug_('🔑 Token captured & saved to localStorage');
+        // Caller কে token না দেওয়ার জন্য result থেকে সরিয়ে দেওয়া হচ্ছে —
+        // নাহলে UI-তে অপ্রয়োজনে token চলে যাবে
+        try { delete result.token; } catch (e) { /* non-configurable হলে চুপচাপ ignore */ }
+      }
+    } catch (e) {}
   }
 
   function callServer(fnName, args, onSuccess, onFailure) {
     var requestId = ++REQUEST_ID_COUNTER;
     var attempt = 0;
+
+    // logoutUser বিশেষ case: কল করার আগেই token ধরে রাখি, response আসার পর মুছে ফেলব
+    var isLogout_ = (fnName === 'logoutUser');
 
     function attemptCall() {
       attempt++;
@@ -69,7 +173,6 @@
           try { controller.abort(); } catch (e) {}
         }, CONFIG.TIMEOUT_MS);
       } catch (e) {
-        // কিছু পুরনো ব্রাউজারে AbortController নেই — সেক্ষেত্রে timeout কাজ করবে না
         controller = null;
       }
 
@@ -83,6 +186,15 @@
         })
         .then(function (data) {
           if (data && data.ok) {
+            // ✅ সফল হলে token capture করি (login/checkLogin থেকে আসে)
+            captureTokenFromResult_(data.result);
+
+            // logout হলে এখন token মুছে ফেলি (success/failure যাই হোক)
+            if (isLogout_) {
+              clearToken_();
+              logDebug_('🚪 Logout: token cleared from localStorage');
+            }
+
             logDebug_('✅ OK #' + requestId + ': ' + fnName, data.result);
             if (onSuccess) {
               try { onSuccess(data.result); }
@@ -90,6 +202,12 @@
             }
           } else {
             var errMsg = (data && data.error) || 'অজানা সার্ভার ত্রুটি।';
+
+            // 🔒 Session expired হলে token মুছে ফেলি এবং ইভেন্ট ছুড়ি
+            if (isSessionExpiredMsg_(errMsg)) {
+              fireSessionExpired_(errMsg);
+            }
+
             logError_('❌ Server error #' + requestId + ' (' + fnName + '):', errMsg);
             if (onFailure) {
               try { onFailure(new Error(errMsg)); }
@@ -120,7 +238,7 @@
             friendlyMsg = '🌐 নেটওয়ার্ক সমস্যা অথবা Apps Script deployment URL কাজ করছে না';
           }
 
-          // ===== Retry করব কি না =====
+          // ===== Retry =====
           if (CONFIG.MAX_RETRIES > 0 && attempt <= CONFIG.MAX_RETRIES) {
             logDebug_('↻ Retrying #' + requestId + ' (attempt ' + (attempt + 1) + ' of ' + (CONFIG.MAX_RETRIES + 1) + ')');
             setTimeout(attemptCall, 500 * attempt);
@@ -138,7 +256,6 @@
     attemptCall();
   }
 
-  // Chainable builder — .withSuccessHandler().withFailureHandler().anyFunctionName(args)
   function makeRunner(successHandler, failureHandler) {
     return new Proxy(function () {}, {
       get: function (target, prop) {
@@ -149,11 +266,8 @@
           return function (fn) { return makeRunner(successHandler, fn); };
         }
         if (prop === 'withUserObject') {
-          // google.script.run এর এই ফিচারটা এখানে ব্যবহার হয় না বলে ধরে নেওয়া হচ্ছে;
-          // দরকার হলে জানিও, যোগ করে দেওয়া যাবে।
           return function () { return makeRunner(successHandler, failureHandler); };
         }
-        // অন্য যেকোনো নাম = আসল ফাংশন কল, যেমন .resetPassword(...)
         return function () {
           var args = Array.prototype.slice.call(arguments);
           callServer(prop, args, successHandler, failureHandler);
@@ -166,16 +280,18 @@
   window.google.script = window.google.script || {};
   window.google.script.run = makeRunner(null, null);
 
-  // google.script.host.close() ইত্যাদি কোথাও ব্যবহার হলে যেন error না দেয়
   window.google.script.host = window.google.script.host || {
     close: function () { console.log('[gas-run-shim] google.script.host.close() — no-op outside Apps Script.'); },
     setHeight: function () {},
     setWidth: function () {}
   };
 
-  // ===== ডিবাগ টগল (ব্রাউজারে console-এ: gasShimDebug(true)) =====
   window.gasShimDebug = function (on) {
     CONFIG.DEBUG = !!on;
     console.log('[gas-run-shim] DEBUG =', CONFIG.DEBUG);
   };
+
+  // (Optional) auto-cleanup: পেজ load হওয়ার সময় যদি token থাকে কিন্তু expire হয়ে থাকে,
+  // প্রথম API কলেই সার্ভার "Session expired" error দেবে এবং shim token মুছে দেবে।
+  logDebug_('✅ gas-run-shim.js loaded — token-aware mode');
 })(window);
