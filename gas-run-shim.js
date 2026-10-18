@@ -292,6 +292,40 @@ var PAGE_MAP_ = {
   reset: 'reset.html'
 };
 
+     // ===== Page navigation helper =====
+  var IS_GAS_ = /script\.google\.com|googleusercontent\.com/.test(location.hostname);
+  window.PSOSK_IS_GAS = IS_GAS_;
+
+  // GitHub-এ পেজের ফাইলের নাম (সব ছোট হাতের)
+  var PAGE_MAP_ = {
+    login: 'index.html',
+    dashboard: 'dashboard.html',
+    patients: 'patients.html',
+    reset: 'reset.html'
+  };
+
+  window.PSOSK_pageUrl = function (page, params) {
+    var parts = [];
+    if (params) {
+      for (var k in params) {
+        if (params[k] != null && params[k] !== '') {
+          parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+        }
+      }
+    }
+    var qs = parts.join('&');
+    if (IS_GAS_) {
+      var q = (page && page !== 'login' ? 'page=' + page : '');
+      if (qs) q += (q ? '&' : '') + qs;
+      return APPS_SCRIPT_URL + (q ? '?' + q : '');
+    }
+    return (PAGE_MAP_[page] || 'index.html') + (qs ? '?' + qs : '');
+  };
+
+  window.PSOSK_goto = function (page, params) {
+    window.top.location.href = window.PSOSK_pageUrl(page, params);
+  };
+
 window.PSOSK_goto = function (page, params) {
   var qs = '';
   if (params) {
