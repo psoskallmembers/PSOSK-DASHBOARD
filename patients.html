@@ -2198,6 +2198,74 @@
 .rx-manage-item-row .btn-del-item:hover { background: #dc3545; color: #fff; }
 
 /* ================================================================ */
+/* ===== PRESCRIPTION FULLSCREEN SPLIT VIEW ====================== */
+/* ================================================================ */
+
+/* Left panel — Input sections */
+#prescriptionModal .rx-left-panel {
+  width: clamp(340px, 30vw, 460px);
+  flex-shrink: 0;
+  background: #fafbfc;
+  border-right: 1px solid #dadce0;
+  display: none;              /* hidden by default (Type mode) */
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+#prescriptionModal.rx-input-mode .rx-left-panel {
+  display: flex;
+}
+
+#prescriptionModal .rx-left-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Right panel — Live prescription preview */
+#prescriptionModal .rx-right-panel {
+  flex: 1;
+  overflow-y: auto;    /* শুধু উপরে-নিচে স্ক্রল হবে */
+  overflow-x: hidden;  /* ডানে-বামে স্ক্রল হবে না */
+  padding: 20px;
+  background: #f0f4f8;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Split view container */
+#prescriptionModal .rx-split-view {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ===== Mobile: stack vertically instead of side-by-side ===== */
+@media screen and (max-width: 768px) {
+  #prescriptionModal .pd-modal-box {
+    min-height: 0;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+  #prescriptionModal .rx-split-view {
+    flex-direction: column;
+  }
+  #prescriptionModal .rx-left-panel {
+    width: 100%;
+    max-height: 45vh;
+    border-right: none;
+    border-bottom: 1px solid #dadce0;
+  }
+  #prescriptionModal .rx-right-panel {
+    padding: 10px;
+  }
+}
+
+
+/* ================================================================ */
 /* ===== RX INPUT POPUP (floating left side) ====================== */
 /* ================================================================ */
 .rx-input-popup {
@@ -3722,127 +3790,221 @@
 <!-- ================================================================ -->
 <!-- ===== PRESCRIPTION FORM MODAL ===== -->
 <!-- ================================================================ -->
+<!-- ================================================================ -->
+<!-- ===== PRESCRIPTION FORM MODAL — FULLSCREEN SPLIT VIEW ========== -->
+<!-- ================================================================ -->
 <div class="pd-modal-overlay" id="prescriptionModal">
-  <div class="pd-modal-box" style="max-width:880px; padding:0; display:flex; flex-direction:column; height:95vh; overflow:hidden;">
-    <span class="pd-modal-close" onclick="closePrescriptionForm()" style="z-index:999;"><i class="fas fa-times"></i></span>
+  <div class="pd-modal-box" style="max-width:none; width:calc(100vw - 40px); height:calc(100vh - 40px); padding:0; display:flex; flex-direction:column; overflow:hidden; border-radius:12px;">
 
-    <!-- ===== স্ক্রলেবল প্রিভিউ এরিয়া (যা ছোট-বড় হবে) ===== -->
-    <div style="flex:1; overflow:auto; padding:20px; background:#f0f4f8;">
-      
-      <div id="prescriptionLiveContainer" style="transform-origin: top center; transition: transform 0.15s ease, width 0.15s ease, height 0.15s ease; margin: 0 auto;">
-        
-        <div class="prescription-wrapper" style="position:relative;background:#fff;padding:22px 28px 18px 28px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-radius:4px; max-width:100%; box-sizing:border-box;">
-          
-          <!-- Mode toggle overlay (Input/Type) -->
-          <div class="rx-mode-toggle-overlay no-print" role="tablist">
-            <button type="button" class="rx-mode-btn" data-mode="input" onclick="switchRxMode('input')">
-              <i class="fas fa-list-check"></i> Input
-            </button>
-            <button type="button" class="rx-mode-btn active" data-mode="type" onclick="switchRxMode('type')">
-              <i class="fas fa-pen"></i> Type
-            </button>
+    <!-- Close button (top-right, align to end) -->
+    <span class="pd-modal-close" onclick="closePrescriptionForm()"
+          style="align-self:flex-end; margin:8px 14px 0 0; position:static; z-index:999;">
+      <i class="fas fa-times"></i>
+    </span>
+
+    <!-- ============================================================ -->
+    <!-- ===== SPLIT VIEW: LEFT = INPUT PANEL | RIGHT = PREVIEW ==== -->
+    <!-- ============================================================ -->
+    <div class="rx-split-view" style="flex:1; display:flex; overflow:hidden; min-height:0;">
+
+      <!-- ===== LEFT PANEL: INPUT SECTIONS ===== -->
+      <div class="rx-left-panel no-print" id="rxInputPopup">
+        <div class="rx-input-popup-head">
+          <h4><i class="fas fa-list-check"></i> Prescription Items</h4>
+          <button type="button" class="rx-input-popup-close" onclick="switchRxMode('type')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="rx-left-panel-body">
+          <!-- Physiotherapy Intervention -->
+          <div class="rx-input-section" id="physioInputSection">
+            <div class="rx-input-head">
+              <input type="checkbox" class="rx-sec-check" id="physioSecCheck" checked onchange="toggleRxInputSection('physio')">
+              <label class="rx-sec-title" for="physioSecCheck">
+                <i class="fas fa-hand-holding-medical"></i> Physiotherapy Intervention
+              </label>
+              <button type="button" class="rx-sec-add" onclick="openRxManageModal('physio')" title="Add / manage"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="rx-input-body">
+              <div class="accordion rx-cat-acc" id="physioCatAcc">
+                <div class="text-muted small p-2">Loading...</div>
+              </div>
+              <div class="rx-quick-add no-print">
+                <input type="text" id="physioQuickAdd" placeholder="Quick add item..." onkeypress="if(event.key==='Enter'){event.preventDefault();quickAddRxItem('physio');}">
+                <button type="button" onclick="quickAddRxItem('physio')"><i class="fas fa-plus"></i></button>
+              </div>
+              <small id="physioQuickHint" class="d-block mt-1 text-muted"></small>
+            </div>
           </div>
 
-          <!-- B&W + KHOSRA buttons -->
-          <div class="no-print" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;padding-right:160px;">
-            <button type="button" class="btn btn-sm bw-toggle-btn active-colour" id="rxBwToggle" onclick="togglePrescriptionBw()" title="Colour / B&W">
-              <i class="fas fa-palette"></i> <span id="rxBwLabel">Colour</span>
-            </button>
-            <button type="button" class="btn btn-sm slogan-btn" id="rxSloganBtn" onclick="openSloganManager()" title="Slogan Manager (Add / Edit / Delete)">
-              <i class="fas fa-quote-left"></i> Slogan
-            </button>
-            <button type="button" class="btn btn-sm notepad-btn" onclick="openKhosraNotepad()" title="Notepad (KHOSRA)">
-              <i class="fas fa-sticky-note"></i> KHOSRA
-            </button>
+          <!-- Home Management -->
+          <div class="rx-input-section" id="hmInputSection">
+            <div class="rx-input-head">
+              <input type="checkbox" class="rx-sec-check" id="hmSecCheck" checked onchange="toggleRxInputSection('hm')">
+              <label class="rx-sec-title" for="hmSecCheck">
+                <i class="fas fa-home"></i> Home Management
+              </label>
+              <button type="button" class="rx-sec-add" onclick="openRxManageModal('hm')" title="Add / manage"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="rx-input-body">
+              <div class="accordion rx-cat-acc" id="hmCatAcc">
+                <div class="text-muted small p-2">Loading...</div>
+              </div>
+              <div class="rx-quick-add no-print">
+                <input type="text" id="hmQuickAdd" placeholder="Quick add item..." onkeypress="if(event.key==='Enter'){event.preventDefault();quickAddRxItem('hm');}">
+                <button type="button" onclick="quickAddRxItem('hm')"><i class="fas fa-plus"></i></button>
+              </div>
+              <small id="hmQuickHint" class="d-block mt-1 text-muted"></small>
+            </div>
           </div>
 
-          <input type="hidden" id="prescPatientId">
-          <input type="hidden" id="prescFromPending" value="false">
-          <input type="hidden" id="prescType" value="regular">
+          <!-- Rx (Medicine) -->
+          <div class="rx-input-section" id="rxInputSection">
+            <div class="rx-input-head">
+              <input type="checkbox" class="rx-sec-check" id="rxSecCheck" onchange="toggleRxInputSection('rx')">
+              <label class="rx-sec-title" for="rxSecCheck">
+                <i class="fas fa-prescription"></i> Rx (Medicine)
+              </label>
+              <button type="button" class="rx-sec-add" onclick="openRxManageModal('rx')" title="Add / manage"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="rx-input-body">
+              <div class="accordion rx-cat-acc" id="rxCatAcc">
+                <div class="text-muted small p-2">Loading...</div>
+              </div>
+              <div class="med-input-row no-print" style="margin-top:8px;">
+                <input type="text" id="medCatInp" class="med-cat-input" list="medCatList2" placeholder="Cat">
+                <datalist id="medCatList2"></datalist>
+                <input type="text" id="medNameInp" placeholder="Medicine name">
+                <input type="text" id="medDoseInp" placeholder="Dose">
+                <input type="text" id="medDurInp" placeholder="Duration">
+                <button type="button" class="med-add-btn" onclick="quickAddMedicine()" title="Add"><i class="fas fa-plus"></i></button>
+              </div>
+              <div class="rx-med-list-box" id="rxMedListBox">
+                <div class="text-muted small p-2" id="rxMedEmpty">No medicine added yet.</div>
+              </div>
+              <label class="rx-free-note-label no-print"><i class="fas fa-paragraph"></i> Free-text Note (optional)</label>
+              <textarea id="rxFreeNote" class="rx-free-note" placeholder="Tab:      Mayolax 50mg&#10;          1+0+1   -------- 1month" oninput="rxRebuildRxBox_()"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <div class="header">
-            <div class="header-left">
-              <div class="logo">
-                <img class="pd-logo" src="" alt="BD Government Logo">
+      <!-- ===== RIGHT PANEL: LIVE PRESCRIPTION PREVIEW ===== -->
+      <div class="rx-right-panel" style="flex:1; overflow:auto; padding:20px; background:#f0f4f8; min-width:0;">
+
+        <div id="prescriptionLiveContainer" style="transform-origin: top center; transition: transform 0.15s ease, width 0.15s ease, height 0.15s ease; margin: 0 auto;">
+
+          <div class="prescription-wrapper" style="position:relative;background:#fff;padding:22px 28px 18px 28px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-radius:4px; max-width:100%; box-sizing:border-box;">
+
+            <!-- Mode toggle overlay (Input/Type) -->
+            <div class="rx-mode-toggle-overlay no-print" role="tablist">
+              <button type="button" class="rx-mode-btn" data-mode="input" onclick="switchRxMode('input')">
+                <i class="fas fa-list-check"></i> Input
+              </button>
+              <button type="button" class="rx-mode-btn active" data-mode="type" onclick="switchRxMode('type')">
+                <i class="fas fa-pen"></i> Type
+              </button>
+            </div>
+
+            <!-- B&W + Slogan + KHOSRA buttons -->
+            <div class="no-print" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;padding-right:160px;">
+              <button type="button" class="btn btn-sm bw-toggle-btn active-colour" id="rxBwToggle" onclick="togglePrescriptionBw()" title="Colour / B&W">
+                <i class="fas fa-palette"></i> <span id="rxBwLabel">Colour</span>
+              </button>
+              <button type="button" class="btn btn-sm slogan-btn" id="rxSloganBtn" onclick="openSloganManager()" title="Slogan Manager">
+                <i class="fas fa-quote-left"></i> Slogan
+              </button>
+              <button type="button" class="btn btn-sm notepad-btn" onclick="openKhosraNotepad()" title="Notepad (KHOSRA)">
+                <i class="fas fa-sticky-note"></i> KHOSRA
+              </button>
+            </div>
+
+            <input type="hidden" id="prescPatientId">
+            <input type="hidden" id="prescFromPending" value="false">
+            <input type="hidden" id="prescType" value="regular">
+
+            <div class="header">
+              <div class="header-left">
+                <div class="logo">
+                  <img class="pd-logo" src="" alt="BD Government Logo">
+                </div>
+              </div>
+              <div class="header-center">
+                <div class="govt">Government of the People's Republic of Bangladesh</div>
+                <div class="org">Jatiyo Protibondhi Unnayan Foundation (JPUF)</div>
+                <div class="ministry">Ministry of Social Welfare</div>
+                <div class="kendro" id="prescCenterName">Protibondhi Seba O Sahajya Kendro: Meherpur</div>
+                <div class="form-title">Prescription Form</div>
+              </div>
+              <div class="header-right">
+                <div class="reg-label">Centre Registration no:</div>
+                <input type="text" class="reg-input" id="prescRegNo" placeholder="PIN" oninput="autoSizeRegInput(this)">
               </div>
             </div>
-            <div class="header-center">
-              <div class="govt">Government of the People's Republic of Bangladesh</div>
-              <div class="org">Jatiyo Protibondhi Unnayan Foundation (JPUF)</div>
-              <div class="ministry">Ministry of Social Welfare</div>
-              <div class="kendro" id="prescCenterName">Protibondhi Seba O Sahajya Kendro: Meherpur</div>
-              <div class="form-title">Prescription Form</div>
-            </div>
-            <div class="header-right">
-              <div class="reg-label">Centre Registration no:</div>
-              <input type="text" class="reg-input" id="prescRegNo" placeholder="PIN" oninput="autoSizeRegInput(this)">
-            </div>
-          </div>
 
-          <div class="client-info">
-            <div>
-              <div class="info-row"><span class="label">Client Name:</span><span class="value"><input type="text" id="prescClientName" placeholder=""></span></div>
-              <div class="info-row"><span class="label">Father's/Husband/Guardian's Name:</span><span class="value"><input type="text" id="prescGuardianName" placeholder=""></span></div>
-              <div class="info-row"><span class="label">Mother's Name:</span><span class="value"><input type="text" id="prescMotherName" placeholder=""></span></div>
-              <div class="info-row"><span class="label">Address:</span><span class="value"><input type="text" id="prescAddress" placeholder=""></span></div>
-            </div>
-            <div>
-              <div class="info-row"><span class="label">Date:</span><span class="value"><input type="date" id="prescDate"></span></div>
-              <div class="info-row"><span class="label">Age:</span><span class="value"><input type="number" id="prescAge" placeholder="" min="0"></span></div>
-              <div class="info-row"><span class="label">Gender:</span><span class="value"><select id="prescGender"><option value="">Select</option><option value="M">M</option><option value="F">F</option><option value="Other">Other</option></select></span></div>
-              <div class="info-row"><span class="label">Disability reg no:</span><span class="value"><input type="text" id="prescDisabilityRegNo" placeholder=""></span></div>
-            </div>
-          </div>
-
-          <div class="prescription-table">
-            <div class="left-col">
-              <div class="field-row"><div class="field-label">C/C:</div><div class="field-value"><textarea id="prescCc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-              <div class="field-row"><div class="field-label">HPC:</div><div class="field-value"><textarea id="prescHpc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-              <div class="field-row"><div class="field-label">PMH:</div><div class="field-value"><textarea id="prescPmh" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-              <div class="field-row"><div class="field-label">D/H:</div><div class="field-value"><textarea id="prescDh" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-              <div class="field-row"><div class="field-label">O/E:</div><div class="field-value"><textarea id="prescOe" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-              <div class="field-row"><div class="field-label">Investigation:</div><div class="field-value"><textarea id="prescInvestigation" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-              <div class="field-row"><div class="field-label">Advice:</div><div class="field-value"><textarea id="prescAdvice" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-              <div class="field-row"><div class="field-label">Diagnosis:</div><div class="field-value"><textarea id="prescDiagnosis" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-            </div>
-
-            <div class="right-col">
-              <div class="rx-toolbar no-print" id="prescRxToolbar">
-                <button type="button" title="Bold" onclick="richExec('bold')"><i class="fas fa-bold"></i></button>
-                <button type="button" title="Italic" onclick="richExec('italic')"><i class="fas fa-italic"></i></button>
-                <button type="button" title="Underline" onclick="richExec('underline')"><i class="fas fa-underline"></i></button>
-                <select title="Font size" id="rxFontSizeSelect" onchange="richExec('fontSize', this.value); this.selectedIndex=0;">
-                  <option value="">Size</option>
-                  <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                  <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                  <option value="8">8</option><option value="10">10</option><option value="12">12</option>
-                  <option value="14">14</option><option value="16">16</option><option value="18">18</option>
-                </select>
-                <input type="color" title="Text color" onchange="richExec('foreColor', this.value)" value="#000000">
+            <div class="client-info">
+              <div>
+                <div class="info-row"><span class="label">Client Name:</span><span class="value"><input type="text" id="prescClientName" placeholder=""></span></div>
+                <div class="info-row"><span class="label">Father's/Husband/Guardian's Name:</span><span class="value"><input type="text" id="prescGuardianName" placeholder=""></span></div>
+                <div class="info-row"><span class="label">Mother's Name:</span><span class="value"><input type="text" id="prescMotherName" placeholder=""></span></div>
+                <div class="info-row"><span class="label">Address:</span><span class="value"><input type="text" id="prescAddress" placeholder=""></span></div>
               </div>
-              <div class="rx-body" id="prescRx" contenteditable="true" data-placeholder="প্রেসক্রিপশন লিখুন..."></div>
+              <div>
+                <div class="info-row"><span class="label">Date:</span><span class="value"><input type="date" id="prescDate"></span></div>
+                <div class="info-row"><span class="label">Age:</span><span class="value"><input type="number" id="prescAge" placeholder="" min="0"></span></div>
+                <div class="info-row"><span class="label">Gender:</span><span class="value"><select id="prescGender"><option value="">Select</option><option value="M">M</option><option value="F">F</option><option value="Other">Other</option></select></span></div>
+                <div class="info-row"><span class="label">Disability reg no:</span><span class="value"><input type="text" id="prescDisabilityRegNo" placeholder=""></span></div>
+              </div>
             </div>
-          </div>
-          
-          <div class="signature-row">
-            <div class="sig-left"><div class="sig-text"><i class="fas fa-check-circle"></i> Prescription valid with signature</div></div>
-            <div class="sig-right"><div class="sig-line"></div><div class="sig-label">Signature</div><div class="sig-sub" id="prescSignatureDesignation">Consultant (Physiotherapist)</div></div>
-          </div>
 
-          <div class="presc-slogan-display" id="prescSloganDisplay" style="display:none;">
-            <span class="slogan-text" id="prescSloganText"></span>
-          </div>
+            <div class="prescription-table">
+              <div class="left-col">
+                <div class="field-row"><div class="field-label">C/C:</div><div class="field-value"><textarea id="prescCc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+                <div class="field-row"><div class="field-label">HPC:</div><div class="field-value"><textarea id="prescHpc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+                <div class="field-row"><div class="field-label">PMH:</div><div class="field-value"><textarea id="prescPmh" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+                <div class="field-row"><div class="field-label">D/H:</div><div class="field-value"><textarea id="prescDh" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+                <div class="field-row"><div class="field-label">O/E:</div><div class="field-value"><textarea id="prescOe" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+                <div class="field-row"><div class="field-label">Investigation:</div><div class="field-value"><textarea id="prescInvestigation" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+                <div class="field-row"><div class="field-label">Advice:</div><div class="field-value"><textarea id="prescAdvice" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+                <div class="field-row"><div class="field-label">Diagnosis:</div><div class="field-value"><textarea id="prescDiagnosis" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+              </div>
 
-          <div class="footer">JPUF, Ministry of Social Welfare</div>
+              <div class="right-col">
+                <div class="rx-toolbar no-print" id="prescRxToolbar">
+                  <button type="button" title="Bold" onclick="richExec('bold')"><i class="fas fa-bold"></i></button>
+                  <button type="button" title="Italic" onclick="richExec('italic')"><i class="fas fa-italic"></i></button>
+                  <button type="button" title="Underline" onclick="richExec('underline')"><i class="fas fa-underline"></i></button>
+                  <select title="Font size" id="rxFontSizeSelect" onchange="richExec('fontSize', this.value); this.selectedIndex=0;">
+                    <option value="">Size</option>
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                    <option value="8">8</option><option value="10">10</option><option value="12">12</option>
+                    <option value="14">14</option><option value="16">16</option><option value="18">18</option>
+                  </select>
+                  <input type="color" title="Text color" onchange="richExec('foreColor', this.value)" value="#000000">
+                </div>
+                <div class="rx-body" id="prescRx" contenteditable="true" data-placeholder="প্রেসক্রিপশন লিখুন..."></div>
+              </div>
+            </div>
+
+            <div class="signature-row">
+              <div class="sig-left"><div class="sig-text"><i class="fas fa-check-circle"></i> Prescription valid with signature</div></div>
+              <div class="sig-right"><div class="sig-line"></div><div class="sig-label">Signature</div><div class="sig-sub" id="prescSignatureDesignation">Consultant (Physiotherapist)</div></div>
+            </div>
+
+            <div class="presc-slogan-display" id="prescSloganDisplay" style="display:none;">
+              <span class="slogan-text" id="prescSloganText"></span>
+            </div>
+
+            <div class="footer">JPUF, Ministry of Social Welfare</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== ফিক্সড কন্ট্রোল বাটন ===== -->
+    <!-- ===== Fixed footer controls ===== -->
     <div class="form-actions no-print" style="padding: 12px 20px; margin: 0; border-top: 1px solid #dadce0; background: #fff; border-radius:0 0 12px 12px; flex-shrink: 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
       <button type="button" class="btn btn-success" id="prescSubmitBtn" onclick="submitPrescriptionForm()"><i class="fas fa-save"></i> Submit</button>
       <button type="button" class="btn btn-outline" onclick="resetPrescriptionForm()"><i class="fas fa-undo"></i> Reset</button>
-      
+
       <span class="pd-print-ctrl no-print" title="প্রিন্ট প্রস্থ ও উচ্চতা">
         <label>W:</label>
         <input type="range" min="30" max="150" step="5" value="100" oninput="pdSetPrintWidth('prescriptionModal', this.value)">
@@ -3869,6 +4031,7 @@
       <button type="button" class="btn btn-primary" onclick="printModalOnly('prescriptionModal')"><i class="fas fa-print"></i> Print</button>
       <button type="button" class="btn btn-danger" onclick="closePrescriptionForm()"><i class="fas fa-times"></i> Close</button>
     </div>
+
   </div>
 </div>
 
@@ -6562,38 +6725,59 @@ function pdApplySavedSettingsToUI_(modalId) {
 
   // ===== নতুন ফাংশন: স্ক্রিনে লাইভ সাইজ ছোট-বড় করার জন্য =====
   function applyLiveScale_(modalId) {
-    var modal = document.getElementById(modalId);
-    if (!modal) return;
+  var modal = document.getElementById(modalId);
+  if (!modal) return;
 
-    var container = modal.querySelector('#prescriptionLiveContainer');
-    if (!container) return; 
+  var container = modal.querySelector('#prescriptionLiveContainer');
+  if (!container) return;
 
-    var settings = PD_PRINT_SETTINGS[modalId] || { widthPct: 100, heightPct: 100 };
-    var w = settings.widthPct / 100;
-    var h = settings.heightPct / 100;
+  var wrapper = container.querySelector('.prescription-wrapper');
+  if (!wrapper) return;
 
-    var wrapper = container.querySelector('.prescription-wrapper');
-    if (!wrapper) return;
+  var rightPanel = container.closest('.rx-right-panel');
+  if (!rightPanel) return;
 
-    // আগের সাইজ রিসেট করে ন্যাচারাল সাইজ বের করা
-    container.style.transform = 'none';
-    container.style.width = '';
-    container.style.height = '';
-    
-    var naturalW = wrapper.offsetWidth;
-    var naturalH = wrapper.offsetHeight;
+  // ⚠️ Measurement-এর সময় transition বন্ধ রাখি
+  var prevTransition = container.style.transition;
+  container.style.transition = 'none';
 
-    if (w === 1 && h === 1) {
-      container.style.margin = '0 auto';
-      return;
-    }
+  // ===== ১. Natural size বের করা =====
+  container.style.transform = 'none';
+  container.style.width = '';
+  container.style.height = '';
+  container.style.margin = '0 auto';
+  void container.offsetHeight;
 
-    // স্কেল অ্যাপ্লাই করা
-    container.style.transform = 'scale(' + w + ', ' + h + ')';
-    container.style.width = (naturalW * w) + 'px';
-    container.style.height = (naturalH * h) + 'px';
-    container.style.margin = '0 auto';
-  }
+  var naturalW = wrapper.offsetWidth || 1;
+  var naturalH = wrapper.offsetHeight || 1;
+
+  // ===== ২. Available width বের করা (Height বাদ) =====
+  var ps = window.getComputedStyle(rightPanel);
+  var padX = (parseFloat(ps.paddingLeft) || 0) + (parseFloat(ps.paddingRight) || 0);
+  // স্ক্রলবারের জন্য একটু জায়গা বাদ দিলাম (20px)
+  var availW = rightPanel.clientWidth - padX - 20; 
+
+  var settings = PD_PRINT_SETTINGS[modalId] || { widthPct: 100 };
+  var userW = (settings.widthPct || 100) / 100;
+
+  // Base scale = যাতে স্ক্রিনের প্রস্থে ফিট হয়
+  var baseScale = availW / naturalW;
+  
+  // Final scale = Base scale × W slider
+  var finalScale = baseScale * userW;
+
+  // transition ফেরত
+  container.style.transition = prevTransition || '';
+
+  // ===== ৩. Apply =====
+  container.style.transform = 'scale(' + finalScale + ')';
+  container.style.transformOrigin = 'top center';
+  
+  // কন্টেইনারের সাইজ স্কেল অনুযায়ী ঠিক করা, যাতে স্ক্রলবার ঠিকমতো কাজ করে
+  container.style.width  = (naturalW * finalScale) + 'px';
+  container.style.height = (naturalH * finalScale) + 'px';
+  container.style.marginBottom = '40px'; // নিচে একটু স্পেস যাতে স্ক্রল করা যায়
+}
 
   function pdSetPrintAlign(modalId, align) {
     if (!PD_PRINT_SETTINGS[modalId]) PD_PRINT_SETTINGS[modalId] = { widthPct: 100, heightPct: 100, align: 'middle' };
@@ -7071,10 +7255,8 @@ function pdApplySavedSettingsToUI_(modalId) {
 function closePrescriptionForm() {
   var modal = document.getElementById('prescriptionModal');
   modal.classList.remove('show');
+  modal.classList.remove('rx-input-mode');   // ✅ নতুন — split view class reset
   modal.style.display = 'none';
-
-  var popup = document.getElementById('rxInputPopup');
-  if (popup) popup.classList.remove('show');
 
   var saveBtn = document.getElementById('prescSubmitBtn');
   if (saveBtn) {
@@ -8484,9 +8666,20 @@ function richExec(command, value) {
     setupOtherCheckbox('profOtherCheck', 'profOtherText');
     setupOtherCheckbox('disOtherCheck', 'disOtherText');
     setupOtherCheckbox('sourceOtherCheck', 'sourceOtherText');
-
-    initRegSignaturePad();
+            initRegSignaturePad();
     window.addEventListener('resize', resizeRegSignatureCanvas);
+
+    // ✅ নতুন — window resize হলে prescription preview auto-fit recalc
+    var _rxResizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(_rxResizeTimer);
+      _rxResizeTimer = setTimeout(function () {
+        var pm = document.getElementById('prescriptionModal');
+        if (pm && pm.classList.contains('show')) {
+          applyLiveScale_('prescriptionModal');
+        }
+      }, 200);
+    });
   })();
 
     // ===================== রিপোর্ট মোডাল ফাংশন =====================
@@ -10224,21 +10417,27 @@ function initRxMode() {
 
 function switchRxMode(mode) {
   if (mode !== 'input' && mode !== 'type') mode = 'type';
-  var popup = document.getElementById('rxInputPopup');
+  var modal = document.getElementById('prescriptionModal');
   var rxBox = document.getElementById('prescRx');
 
   document.querySelectorAll('.rx-mode-btn').forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
   });
 
+  if (modal) modal.classList.toggle('rx-input-mode', mode === 'input');
+
   if (mode === 'input') {
-    if (popup) popup.classList.add('show');
     if (rxBox) { rxBox.contentEditable = 'false'; rxBox.style.background = '#fafbfc'; }
     loadRxInputSections();
   } else {
-    if (popup) popup.classList.remove('show');
     if (rxBox) { rxBox.contentEditable = 'true'; rxBox.style.background = ''; }
   }
+
+  // ✅ Mode switch-এ panel width বদলায় → auto-fit recalculate
+  setTimeout(function () {
+    if (typeof applyLiveScale_ === 'function') applyLiveScale_('prescriptionModal');
+  }, 100);
+
   try { localStorage.setItem(PD_RX_MODE_KEY, mode); } catch(e) {}
 }
 
