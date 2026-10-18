@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="gas-run-shim.js"></script>
+  <!-- Apps Script এর ভেতরে শিম লোড হবে না, শুধু GitHub Pages এ লোড হবে -->
+  <script>
+    if (typeof google === 'undefined' || !google.script || !google.script.run) {
+      document.write('<script src="gas-run-shim.js"><\/script>');
+    }
+  </script>
+  
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PSOSK - Login / Signup</title>
+  
+  <!-- Font Awesome (আইকন দেখানোর জন্য) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1pMM_NAAVUwh7yC97_Q9j4bnqF3b04zM5=w200">
-<link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1pMM_NAAVUwh7yC97_Q9j4bnqF3b04zM5=w200">
+  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1pMM_NAAVUwh7yC97_Q9j4bnqF3b04zM5=w200">
+  
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
     body{background:linear-gradient(135deg,#1A73E8,#0d47a1);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
@@ -142,17 +153,15 @@
     }
 
     @media(max-width:480px){
-  #signupStep1_5 .btn-outline {
-    width: 100%;
-    justify-content: center;
-  }
-  #verifyCodeForm .btn {
-    font-size: 14px;
-    padding: 12px;
-  }
-}
-
-
+      #signupStep1_5 .btn-outline {
+        width: 100%;
+        justify-content: center;
+      }
+      #verifyCodeForm .btn {
+        font-size: 14px;
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -240,49 +249,27 @@
         </form>
       </div>
 
-<!-- Step 1.5: Email Verification -->
-<div id="signupStep1_5" style="display:none;">
-  <div class="step-2-box">
-    📧 আপনার ই-মেইলে একটি <span class="highlight">৬-সংখ্যার ভেরিফিকেশন কোড</span> পাঠানো হয়েছে।<br>
-    কোডটি বসিয়ে সাইনআপ সম্পূর্ণ করুন।
-  </div>
-  <form id="verifyCodeForm" onsubmit="verifySignupCodeStep(event)">
-    <div class="form-group">
-      <label>ভেরিফিকেশন কোড <span class="required">*</span></label>
-      <input type="text" id="signupVerifyCode" placeholder="৬-সংখ্যার কোড (যেমন: 123456)" required maxlength="6" inputmode="numeric">
-    </div>
-    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
-      <button type="submit" class="btn btn-success" id="verifyCodeBtn"><i class="fas fa-check"></i> কোড যাচাই করুন</button>
-      <button type="button" class="btn btn-outline" onclick="resendSignupCode()"><i class="fas fa-redo"></i> নতুন কোড পাঠান</button>
-    </div>
-    <div id="verifyMsg" style="margin-top:12px; font-size:13px; font-weight:600;"></div>
-  </form>
-  <div style="margin-top:15px;">
-    <button type="button" class="btn btn-outline" onclick="signupGoBackStep1()"><i class="fas fa-arrow-left"></i> আগের ধাপে ফিরুন</button>
-  </div>
-</div>
-
-<!-- Step 1.5: Email Verification -->
-<div id="signupStep1_5" style="display:none;">
-  <div class="step-2-box">
-    📧 আপনার ই-মেইলে একটি <span class="highlight">৬-সংখ্যার ভেরিফিকেশন কোড</span> পাঠানো হয়েছে।<br>
-    কোডটি বসিয়ে সাইনআপ সম্পূর্ণ করুন।
-  </div>
-  <form id="verifyCodeForm" onsubmit="verifySignupCodeStep(event)">
-    <div class="form-group">
-      <label>ভেরিফিকেশন কোড <span class="required">*</span></label>
-      <input type="text" id="signupVerifyCode" placeholder="৬-সংখ্যার কোড (যেমন: 123456)" required maxlength="6" inputmode="numeric">
-    </div>
-    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
-      <button type="submit" class="btn btn-success" id="verifyCodeBtn"><i class="fas fa-check"></i> কোড যাচাই করুন</button>
-      <button type="button" class="btn btn-outline" onclick="resendSignupCode()"><i class="fas fa-redo"></i> নতুন কোড পাঠান</button>
-    </div>
-    <div id="verifyMsg" style="margin-top:12px; font-size:13px; font-weight:600;"></div>
-  </form>
-  <div style="margin-top:15px;">
-    <button type="button" class="btn btn-outline" onclick="signupGoBackStep1()"><i class="fas fa-arrow-left"></i> আগের ধাপে ফিরুন</button>
-  </div>
-</div>
+      <!-- Step 1.5: Email Verification -->
+      <div id="signupStep1_5" style="display:none;">
+        <div class="step-2-box">
+          📧 আপনার ই-মেইলে একটি <span class="highlight">৬-সংখ্যার ভেরিফিকেশন কোড</span> পাঠানো হয়েছে।<br>
+          কোডটি বসিয়ে সাইনআপ সম্পূর্ণ করুন।
+        </div>
+        <form id="verifyCodeForm" onsubmit="verifySignupCodeStep(event)">
+          <div class="form-group">
+            <label>ভেরিফিকেশন কোড <span class="required">*</span></label>
+            <input type="text" id="signupVerifyCode" placeholder="৬-সংখ্যার কোড (যেমন: 123456)" required maxlength="6" inputmode="numeric">
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
+            <button type="submit" class="btn btn-success" id="verifyCodeBtn"><i class="fas fa-check"></i> কোড যাচাই করুন</button>
+            <button type="button" class="btn btn-outline" onclick="resendSignupCode()"><i class="fas fa-redo"></i> নতুন কোড পাঠান</button>
+          </div>
+          <div id="verifyMsg" style="margin-top:12px; font-size:13px; font-weight:600;"></div>
+        </form>
+        <div style="margin-top:15px;">
+          <button type="button" class="btn btn-outline" onclick="signupGoBackStep1()"><i class="fas fa-arrow-left"></i> আগের ধাপে ফিরুন</button>
+        </div>
+      </div>
 
       <!-- Step 2: Detailed Profile -->
       <div id="signupStep2" style="display:none;">
@@ -698,6 +685,7 @@
         document.getElementById('signupSection').classList.add('active');
         document.getElementById('forgotSection').style.display = 'none';
         document.getElementById('signupStep1').style.display = 'block';
+        document.getElementById('signupStep1_5').style.display = 'none';
         document.getElementById('signupStep2').style.display = 'none';
       }
     }
@@ -814,35 +802,54 @@
 
     // ===================== LOGIN =====================
     function loginUser(e) {
-      e.preventDefault();
-      var email = document.getElementById('loginEmail').value;
-      var password = document.getElementById('loginPassword').value;
-      var btn = document.getElementById('loginBtn');
-      btn.textContent = '⏳ লগইন হচ্ছে...';
-      btn.disabled = true;
-      google.script.run
-        .withSuccessHandler(function(result) {
-          btn.textContent = '🔑 লগইন করুন';
-          btn.disabled = false;
-          if (result.success) {
-            showToast('✅ লগইন সফল!', 'success');
-            localStorage.setItem('userEmail', result.email);
-                        var target = 'Dashboard.html?email=' + encodeURIComponent(result.email);
+  e.preventDefault();
+  var email = document.getElementById('loginEmail').value;
+  var password = document.getElementById('loginPassword').value;
+  var btn = document.getElementById('loginBtn');
+  btn.textContent = '⏳ লগইন হচ্ছে...';
+  btn.disabled = true;
+  google.script.run
+    .withSuccessHandler(function(result) {
+      btn.textContent = '🔑 লগইন করুন';
+      btn.disabled = false;
+      if (result.success) {
+        showToast('✅ লগইন সফল!', 'success');
+        localStorage.setItem('userEmail', result.email);
+
+        // GitHub Pages: সরাসরি dashboard.html-এ যান
+        if (window.PSOSK_pageUrl) {
+          var target = window.PSOSK_pageUrl('dashboard', { email: result.email });
+          try { window.top.location.href = target; } catch (navErr) {
+            console.warn('Auto-redirect blocked:', navErr);
+          }
+          setTimeout(function() { showContinueLink_(target); }, 400);
+          return;
+        }
+
+        // Apps Script নিজস্ব URL: আগের মতো
+        google.script.run
+          .withSuccessHandler(function(url) {
+            var target = url + '?page=dashboard&email=' + encodeURIComponent(result.email);
             try { window.top.location.href = target; } catch (navErr) {
               console.warn('Auto-redirect blocked by sandbox:', navErr);
             }
             setTimeout(function() { showContinueLink_(target); }, 400);
-          } else {
-            showToast('❌ ' + result.error, 'error');
-          }
-        })
-        .withFailureHandler(function(error) {
-          btn.textContent = '🔑 লগইন করুন';
-          btn.disabled = false;
-          showToast('❌ Error: ' + error, 'error');
-        })
-        .loginUser({email: email, password: password});
-    }
+          })
+          .withFailureHandler(function(error) {
+            showToast('❌ Dashboard এ যেতে সমস্যা হয়েছে: ' + (error.message || error), 'error');
+          })
+          .getScriptUrl();
+      } else {
+        showToast('❌ ' + result.error, 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      btn.textContent = '🔑 লগইন করুন';
+      btn.disabled = false;
+      showToast('❌ Error: ' + (error.message || error), 'error');
+    })
+    .loginUser({email: email, password: password});
+}
 
     function showContinueLink_(url) {
       var old = document.getElementById('continueLinkBox');
@@ -858,255 +865,250 @@
     // ===================== SIGNUP: TWO-STEP =====================
 
     function signupStep1(e) {
-  e.preventDefault();
-  var nickname = document.getElementById('signupNickname').value.trim();
-  var email = document.getElementById('signupEmail').value.trim();
-  var password = document.getElementById('signupPassword').value;
-  var confirm = document.getElementById('signupConfirm').value;
+      e.preventDefault();
+      var nickname = document.getElementById('signupNickname').value.trim();
+      var email = document.getElementById('signupEmail').value.trim();
+      var password = document.getElementById('signupPassword').value;
+      var confirm = document.getElementById('signupConfirm').value;
 
-  if (!nickname || !email || !password || !confirm) {
-    showToast('❌ সব ফিল্ড পূরণ করুন!', 'error');
-    return;
-  }
-  if (password !== confirm) {
-    showToast('❌ পাসওয়ার্ড মিলছে না!', 'error');
-    return;
-  }
-  if (password.length < 6) {
-    showToast('❌ পাসওয়ার্ড ৬ অক্ষরের বেশি হতে হবে!', 'error');
-    return;
-  }
-  if (!email.includes('@') || !email.includes('.')) {
-    showToast('❌ সঠিক ই-মেইল দিন!', 'error');
-    return;
-  }
-
-  var btn = document.getElementById('signupBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ চেক করা হচ্ছে...';
-
-  google.script.run
-    .withSuccessHandler(function(result) {
-      btn.disabled = false;
-      btn.textContent = '📝 পরবর্তী ধাপ →';
-      if (result && result.exists) {
-        showToast('❌ এই ই-মেইল আগে থেকে নিবন্ধিত!', 'error');
+      if (!nickname || !email || !password || !confirm) {
+        showToast('❌ সব ফিল্ড পূরণ করুন!', 'error');
         return;
       }
-      // কোড পাঠান
-      sendVerificationCode(email);
-    })
-    .withFailureHandler(function(error) {
-      btn.disabled = false;
-      btn.textContent = '📝 পরবর্তী ধাপ →';
-      showToast('❌ Error: ' + error, 'error');
-    })
-    .checkEmailExists({ email: email });
-}
-
-function sendVerificationCode(email) {
-  var btn = document.getElementById('signupBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ কোড পাঠানো হচ্ছে...';
-  google.script.run
-    .withSuccessHandler(function(result) {
-      btn.disabled = false;
-      btn.textContent = '📝 পরবর্তী ধাপ →';
-      if (result && result.success) {
-        showToast(result.message, 'success');
-        document.getElementById('signup_temp_email').value = email;
-        document.getElementById('signup_temp_nickname').value = document.getElementById('signupNickname').value.trim();
-        document.getElementById('signup_temp_password').value = document.getElementById('signupPassword').value;
-        document.getElementById('signupStep1').style.display = 'none';
-        document.getElementById('signupStep1_5').style.display = 'block';
-        document.getElementById('signupVerifyCode').value = '';
-        document.getElementById('verifyMsg').textContent = '';
-      } else {
-        showToast('❌ ' + (result ? result.error : 'কোড পাঠানো ব্যর্থ'), 'error');
+      if (password !== confirm) {
+        showToast('❌ পাসওয়ার্ড মিলছে না!', 'error');
+        return;
       }
-    })
-    .withFailureHandler(function(error) {
-      btn.disabled = false;
-      btn.textContent = '📝 পরবর্তী ধাপ →';
-      showToast('❌ Error: ' + error, 'error');
-    })
-    .sendSignupVerificationCode(email);
-}
+      if (password.length < 6) {
+        showToast('❌ পাসওয়ার্ড ৬ অক্ষরের বেশি হতে হবে!', 'error');
+        return;
+      }
+      if (!email.includes('@') || !email.includes('.')) {
+        showToast('❌ সঠিক ই-মেইল দিন!', 'error');
+        return;
+      }
 
-function verifySignupCodeStep(e) {
-  e.preventDefault();
-  var email = document.getElementById('signup_temp_email').value;
-  var code = document.getElementById('signupVerifyCode').value.trim();
-  var msg = document.getElementById('verifyMsg');
-  var btn = document.getElementById('verifyCodeBtn');
-  
-  if (!email || !code) {
-    msg.innerHTML = '❌ ই-মেইল ও কোড দিন!';
-    msg.style.color = '#c62828';
-    return;
-  }
-  
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যাচাই হচ্ছে...';
-  msg.innerHTML = '';
-  
-  google.script.run
-    .withSuccessHandler(function(result) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-check"></i> কোড যাচাই করুন';
+      var btn = document.getElementById('signupBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ চেক করা হচ্ছে...';
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.textContent = '📝 পরবর্তী ধাপ →';
+          if (result && result.exists) {
+            showToast('❌ এই ই-মেইল আগে থেকে নিবন্ধিত!', 'error');
+            return;
+          }
+          sendVerificationCode(email);
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.textContent = '📝 পরবর্তী ধাপ →';
+          showToast('❌ Error: ' + error, 'error');
+        })
+        .checkEmailExists({ email: email });
+    }
+
+    function sendVerificationCode(email) {
+      var btn = document.getElementById('signupBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ কোড পাঠানো হচ্ছে...';
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.textContent = '📝 পরবর্তী ধাপ →';
+          if (result && result.success) {
+            showToast(result.message, 'success');
+            document.getElementById('signup_temp_email').value = email;
+            document.getElementById('signup_temp_nickname').value = document.getElementById('signupNickname').value.trim();
+            document.getElementById('signup_temp_password').value = document.getElementById('signupPassword').value;
+            document.getElementById('signupStep1').style.display = 'none';
+            document.getElementById('signupStep1_5').style.display = 'block';
+            document.getElementById('signupVerifyCode').value = '';
+            document.getElementById('verifyMsg').textContent = '';
+          } else {
+            showToast('❌ ' + (result ? result.error : 'কোড পাঠানো ব্যর্থ'), 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.textContent = '📝 পরবর্তী ধাপ →';
+          showToast('❌ Error: ' + error, 'error');
+        })
+        .sendSignupVerificationCode(email);
+    }
+
+    function verifySignupCodeStep(e) {
+      e.preventDefault();
+      var email = document.getElementById('signup_temp_email').value;
+      var code = document.getElementById('signupVerifyCode').value.trim();
+      var msg = document.getElementById('verifyMsg');
+      var btn = document.getElementById('verifyCodeBtn');
       
-      console.log('🔍 verifySignupCode result:', result);
-      
-      if (result && result.success) {
-        msg.innerHTML = '✅ ' + result.message;
-        msg.style.color = '#1e7e34';
-        msg.style.background = '#e6f4ea';
-        msg.style.padding = '10px';
-        msg.style.borderRadius = '6px';
-        
-        // ===== স্টেপ ২ দেখান =====
-        document.getElementById('signupStep1_5').style.display = 'none';
-        document.getElementById('signupStep2').style.display = 'block';
-        document.getElementById('f_email').value = email;
-        
-        // প্রয়োজনীয় ডেটা লোড করুন
-        loadDistrictsForSignup();
-        loadDivisionsForSignup();
-        loadDesignationsForSignup();
-        loadServiceCenters();
-        
-        showToast('✅ কোড সঠিক! এখন আপনার প্রোফাইল পূরণ করুন।', 'success');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        msg.innerHTML = '❌ ' + (result ? result.error : 'কোড মেলেনি');
+      if (!email || !code) {
+        msg.innerHTML = '❌ ই-মেইল ও কোড দিন!';
         msg.style.color = '#c62828';
-        msg.style.background = '#fce8e6';
-        msg.style.padding = '10px';
-        msg.style.borderRadius = '6px';
-        showToast('❌ ' + (result ? result.error : 'ভুল কোড, আবার চেষ্টা করুন।'), 'error');
+        return;
       }
-    })
-    .withFailureHandler(function(error) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-check"></i> কোড যাচাই করুন';
-      msg.innerHTML = '❌ Error: ' + error;
-      msg.style.color = '#c62828';
-      msg.style.background = '#fce8e6';
-      msg.style.padding = '10px';
-      msg.style.borderRadius = '6px';
-      showToast('❌ Error: ' + error, 'error');
-    })
-    .verifySignupCode(email, code);
-}
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যাচাই হচ্ছে...';
+      msg.innerHTML = '';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-check"></i> কোড যাচাই করুন';
+          
+          if (result && result.success) {
+            msg.innerHTML = '✅ ' + result.message;
+            msg.style.color = '#1e7e34';
+            msg.style.background = '#e6f4ea';
+            msg.style.padding = '10px';
+            msg.style.borderRadius = '6px';
+            
+            document.getElementById('signupStep1_5').style.display = 'none';
+            document.getElementById('signupStep2').style.display = 'block';
+            document.getElementById('f_email').value = email;
+            
+            loadDistrictsForSignup();
+            loadDivisionsForSignup();
+            loadDesignationsForSignup();
+            loadServiceCenters();
+            
+            showToast('✅ কোড সঠিক! এখন আপনার প্রোফাইল পূরণ করুন।', 'success');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            msg.innerHTML = '❌ ' + (result ? result.error : 'কোড মেলেনি');
+            msg.style.color = '#c62828';
+            msg.style.background = '#fce8e6';
+            msg.style.padding = '10px';
+            msg.style.borderRadius = '6px';
+            showToast('❌ ' + (result ? result.error : 'ভুল কোড, আবার চেষ্টা করুন।'), 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-check"></i> কোড যাচাই করুন';
+          msg.innerHTML = '❌ Error: ' + error;
+          msg.style.color = '#c62828';
+          msg.style.background = '#fce8e6';
+          msg.style.padding = '10px';
+          msg.style.borderRadius = '6px';
+          showToast('❌ Error: ' + error, 'error');
+        })
+        .verifySignupCode(email, code);
+    }
 
-function resendSignupCode() {
-  var email = document.getElementById('signup_temp_email').value;
-  if (!email) {
-    showToast('❌ ই-মেইল পাওয়া যায়নি! আবার স্টেপ ১ থেকে শুরু করুন।', 'error');
-    return;
-  }
-  
-  var btn = document.querySelector('#verifyCodeForm .btn-outline');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পাঠানো হচ্ছে...';
-  
-  google.script.run
-    .withSuccessHandler(function(result) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-redo"></i> নতুন কোড পাঠান';
-      if (result && result.success) {
-        showToast('✅ নতুন কোড ই-মেইলে পাঠানো হয়েছে।', 'success');
-        document.getElementById('signupVerifyCode').value = '';
-        document.getElementById('verifyMsg').innerHTML = '';
-        document.getElementById('verifyMsg').style.background = 'transparent';
-        document.getElementById('verifyMsg').style.padding = '0';
-      } else {
-        showToast('❌ ' + (result ? result.error : 'পাঠানো ব্যর্থ'), 'error');
+    function resendSignupCode() {
+      var email = document.getElementById('signup_temp_email').value;
+      if (!email) {
+        showToast('❌ ই-মেইল পাওয়া যায়নি! আবার স্টেপ ১ থেকে শুরু করুন।', 'error');
+        return;
       }
-    })
-    .withFailureHandler(function(error) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-redo"></i> নতুন কোড পাঠান';
-      showToast('❌ Error: ' + error, 'error');
-    })
-    .sendSignupVerificationCode(email);
-}
+      
+      var btn = document.querySelector('#verifyCodeForm .btn-outline');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পাঠানো হচ্ছে...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-redo"></i> নতুন কোড পাঠান';
+          if (result && result.success) {
+            showToast('✅ নতুন কোড ই-মেইলে পাঠানো হয়েছে।', 'success');
+            document.getElementById('signupVerifyCode').value = '';
+            document.getElementById('verifyMsg').innerHTML = '';
+            document.getElementById('verifyMsg').style.background = 'transparent';
+            document.getElementById('verifyMsg').style.padding = '0';
+          } else {
+            showToast('❌ ' + (result ? result.error : 'পাঠানো ব্যর্থ'), 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-redo"></i> নতুন কোড পাঠান';
+          showToast('❌ Error: ' + error, 'error');
+        })
+        .sendSignupVerificationCode(email);
+    }
 
-function signupGoBackStep1() {
-  document.getElementById('signupStep2').style.display = 'none';
-  document.getElementById('signupStep1_5').style.display = 'none';
-  document.getElementById('signupStep1').style.display = 'block';
-  document.getElementById('signupVerifyCode').value = '';
-  document.getElementById('verifyMsg').innerHTML = '';
-  document.getElementById('verifyMsg').style.background = 'transparent';
-  document.getElementById('verifyMsg').style.padding = '0';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    function signupGoBackStep1() {
+      document.getElementById('signupStep2').style.display = 'none';
+      document.getElementById('signupStep1_5').style.display = 'none';
+      document.getElementById('signupStep1').style.display = 'block';
+      document.getElementById('signupVerifyCode').value = '';
+      document.getElementById('verifyMsg').innerHTML = '';
+      document.getElementById('verifyMsg').style.background = 'transparent';
+      document.getElementById('verifyMsg').style.padding = '0';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     function signupStep2(e) {
-  e.preventDefault();
-  
-  var centerShort = getCenterValue();
-  if (centerShort === '') {
-    showToast('❌ দয়া করে একটি কর্মস্থল নির্বাচন করুন অথবা "অন্যান্য" এ নাম লিখুন!', 'error');
-    return;
-  }
-  
-  var centerFull = centerShort ? 'প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র, ' + centerShort : '';
+      e.preventDefault();
+      
+      var centerShort = getCenterValue();
+      if (centerShort === '') {
+        showToast('❌ দয়া করে একটি কর্মস্থল নির্বাচন করুন অথবা "অন্যান্য" এ নাম লিখুন!', 'error');
+        return;
+      }
+      
+      var centerFull = centerShort ? 'প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র, ' + centerShort : '';
 
-  var data = {
-    email: document.getElementById('signup_temp_email').value,
-    nickname: document.getElementById('signup_temp_nickname').value,
-    password: document.getElementById('signup_temp_password').value,
-    nameBn: document.getElementById('f_name_bn').value.trim(),
-    nameEn: document.getElementById('f_name_en').value.trim(),
-    father: document.getElementById('f_father').value.trim(),
-    mother: document.getElementById('f_mother').value.trim(),
-    dob: document.getElementById('f_dob').value,
-    nid: document.getElementById('f_nid').value.trim(),
-    gender: document.getElementById('f_gender').value,
-    religion: document.getElementById('f_religion').value,
-    blood: document.getElementById('f_blood').value,
-    mobile: document.getElementById('f_mobile').value.trim(),
-    whatsapp: document.getElementById('f_whatsapp').value.trim(),
-    permanent: document.getElementById('f_permanent').value.trim(),
-    present: document.getElementById('f_present').value.trim(),
-    district: document.getElementById('f_district').value,
-    upazila: document.getElementById('f_upazila').value.trim(),
-    division: document.getElementById('f_division').value,
-    designation: document.getElementById('f_designation').value,
-    center: centerFull,
-    joiningDate: document.getElementById('f_joining_date').value,
-    centerJoin: document.getElementById('f_center_join').value,
-    empType: document.getElementById('f_emp_type').value,
-    status: document.getElementById('f_status').value,
-    history: document.getElementById('f_history').value.trim(),
-    education: getEducationData().join(', '),
-    trainingDetails: document.getElementById('f_training_details').value.trim(),
-    trainingYear: document.getElementById('f_training_year').value.trim(),
-    specialization: document.getElementById('f_specialization').value.trim(),
-    membershipStatus: document.getElementById('f_membership_status').value,
-    feeStatus: document.getElementById('f_fee_status').value,
-    position: document.getElementById('f_position').value.trim(),
-    photo: document.getElementById('f_photo').value.trim(),
-    doc: document.getElementById('f_doc').value.trim(),
-    remarks: document.getElementById('f_remarks').value.trim()
-  };
+      var data = {
+        email: document.getElementById('signup_temp_email').value,
+        nickname: document.getElementById('signup_temp_nickname').value,
+        password: document.getElementById('signup_temp_password').value,
+        nameBn: document.getElementById('f_name_bn').value.trim(),
+        nameEn: document.getElementById('f_name_en').value.trim(),
+        father: document.getElementById('f_father').value.trim(),
+        mother: document.getElementById('f_mother').value.trim(),
+        dob: document.getElementById('f_dob').value,
+        nid: document.getElementById('f_nid').value.trim(),
+        gender: document.getElementById('f_gender').value,
+        religion: document.getElementById('f_religion').value,
+        blood: document.getElementById('f_blood').value,
+        mobile: document.getElementById('f_mobile').value.trim(),
+        whatsapp: document.getElementById('f_whatsapp').value.trim(),
+        permanent: document.getElementById('f_permanent').value.trim(),
+        present: document.getElementById('f_present').value.trim(),
+        district: document.getElementById('f_district').value,
+        upazila: document.getElementById('f_upazila').value.trim(),
+        division: document.getElementById('f_division').value,
+        designation: document.getElementById('f_designation').value,
+        center: centerFull,
+        joiningDate: document.getElementById('f_joining_date').value,
+        centerJoin: document.getElementById('f_center_join').value,
+        empType: document.getElementById('f_emp_type').value,
+        status: document.getElementById('f_status').value,
+        history: document.getElementById('f_history').value.trim(),
+        education: getEducationData().join(', '),
+        trainingDetails: document.getElementById('f_training_details').value.trim(),
+        trainingYear: document.getElementById('f_training_year').value.trim(),
+        specialization: document.getElementById('f_specialization').value.trim(),
+        membershipStatus: document.getElementById('f_membership_status').value,
+        feeStatus: document.getElementById('f_fee_status').value,
+        position: document.getElementById('f_position').value.trim(),
+        photo: document.getElementById('f_photo').value.trim(),
+        doc: document.getElementById('f_doc').value.trim(),
+        remarks: document.getElementById('f_remarks').value.trim()
+      };
 
-  var requiredFields = ['nameBn', 'nameEn', 'father', 'mother', 'dob', 'nid', 'gender', 'religion', 'blood', 'mobile', 'permanent', 'present', 'district', 'division', 'designation', 'center', 'joiningDate', 'centerJoin', 'empType', 'status', 'membershipStatus', 'feeStatus'];
-  for (var i = 0; i < requiredFields.length; i++) {
-    if (!data[requiredFields[i]]) {
-      showToast('❌ সব প্রয়োজনীয় ফিল্ড পূরণ করুন!', 'error');
-      return;
+      var requiredFields = ['nameBn', 'nameEn', 'father', 'mother', 'dob', 'nid', 'gender', 'religion', 'blood', 'mobile', 'permanent', 'present', 'district', 'division', 'designation', 'center', 'joiningDate', 'centerJoin', 'empType', 'status', 'membershipStatus', 'feeStatus'];
+      for (var i = 0; i < requiredFields.length; i++) {
+        if (!data[requiredFields[i]]) {
+          showToast('❌ সব প্রয়োজনীয় ফিল্ড পূরণ করুন!', 'error');
+          return;
+        }
+      }
+
+      var btn = document.getElementById('signupProfileBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> নিবন্ধন হচ্ছে...';
+
+      submitSignupStep2_(data, btn, data.email);
     }
-  }
-
-  var btn = document.getElementById('signupProfileBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> নিবন্ধন হচ্ছে...';
-
-  submitSignupStep2_(data, btn, data.email);
-}
 
     function submitSignupStep2_(data, btn, email) {
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> নিবন্ধন হচ্ছে...';
@@ -1336,7 +1338,6 @@ function signupGoBackStep1() {
     }
 
     // ===================== CENTER FUNCTIONS =====================
-
     function loadServiceCenters() {
       google.script.run
         .withSuccessHandler(function(centers) {
@@ -1353,7 +1354,6 @@ function signupGoBackStep1() {
             select.appendChild(opt);
           }
           
-          // ===== "অন্যান্য" অপশন যোগ করুন (এখন onchange কাজ করবে) =====
           var otherOpt = document.createElement('option');
           otherOpt.value = 'other';
           otherOpt.textContent = '➕ অন্যান্য (নতুন যোগ করুন)';
@@ -1367,70 +1367,65 @@ function signupGoBackStep1() {
     }
 
     function onCenterSelectChange() {
-  var select = document.getElementById('f_center');
-  var otherInput = document.getElementById('centerOtherInput');
-  var otherText = document.getElementById('f_center_other');
-  
-  if (select.value === 'other') {
-    otherInput.style.display = 'block';
-    otherText.focus();
-    select.removeAttribute('required');
-  } else {
-    otherInput.style.display = 'none';
-    otherText.value = '';
-    select.setAttribute('required', 'required');
-  }
-}
+      var select = document.getElementById('f_center');
+      var otherInput = document.getElementById('centerOtherInput');
+      var otherText = document.getElementById('f_center_other');
+      
+      if (select.value === 'other') {
+        otherInput.style.display = 'block';
+        otherText.focus();
+        select.removeAttribute('required');
+      } else {
+        otherInput.style.display = 'none';
+        otherText.value = '';
+        select.setAttribute('required', 'required');
+      }
+    }
 
     function showCenterOtherInput() {
       var select = document.getElementById('f_center');
       select.value = 'other';
-      onCenterSelectChange(); // এখন কাজ করবে, কারণ "other" অপশন আছে
+      onCenterSelectChange();
     }
 
     function addCustomCenter() {
-  var otherText = document.getElementById('f_center_other');
-  var select = document.getElementById('f_center');
-  var val = otherText.value.trim();
-  
-  if (!val) {
-    showToast('❌ দয়া করে একটি নাম লিখুন!', 'error');
-    return;
-  }
-  
-  // চেক করুন ইতিমধ্যে আছে কিনা
-  var exists = false;
-  for (var i = 0; i < select.options.length; i++) {
-    if (select.options[i].value === val) {
-      exists = true;
-      break;
+      var otherText = document.getElementById('f_center_other');
+      var select = document.getElementById('f_center');
+      var val = otherText.value.trim();
+      
+      if (!val) {
+        showToast('❌ দয়া করে একটি নাম লিখুন!', 'error');
+        return;
+      }
+      
+      var exists = false;
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === val) {
+          exists = true;
+          break;
+        }
+      }
+      
+      if (exists) {
+        showToast('⚠️ এই নামটি ইতিমধ্যে তালিকায় আছে!', 'error');
+        return;
+      }
+      
+      var opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val;
+      select.insertBefore(opt, select.options[select.options.length - 1]);
+      
+      select.value = val;
+      
+      otherText.value = '';
+      document.getElementById('centerOtherInput').style.display = 'none';
+      select.setAttribute('required', 'required');
+      
+      addCustomCenterTag(val);
+      
+      showToast('✅ "' + val + '" যোগ করা হয়েছে!', 'success');
     }
-  }
-  
-  if (exists) {
-    showToast('⚠️ এই নামটি ইতিমধ্যে তালিকায় আছে!', 'error');
-    return;
-  }
-  
-  // নতুন অপশন যোগ করুন
-  var opt = document.createElement('option');
-  opt.value = val;
-  opt.textContent = val;
-  select.insertBefore(opt, select.options[select.options.length - 1]);
-  
-  // সিলেক্ট করুন
-  select.value = val;
-  
-  // ইনপুট বক্স ক্লিয়ার করুন
-  otherText.value = '';
-  document.getElementById('centerOtherInput').style.display = 'none';
-  select.setAttribute('required', 'required'); // required ফিরিয়ে দিন
-  
-  // যোগ করা নামের ট্যাগ দেখান
-  addCustomCenterTag(val);
-  
-  showToast('✅ "' + val + '" যোগ করা হয়েছে!', 'success');
-}
 
     function addCustomCenterTag(name) {
       var container = document.getElementById('customCentersList');
@@ -1445,7 +1440,6 @@ function signupGoBackStep1() {
     function removeCustomCenter(name, el) {
       var select = document.getElementById('f_center');
       
-      // ড্রপডাউন থেকে অপশন সরান
       for (var i = 0; i < select.options.length; i++) {
         if (select.options[i].value === name) {
           select.remove(i);
@@ -1453,13 +1447,11 @@ function signupGoBackStep1() {
         }
       }
       
-      // ট্যাগ সরান
       if (el) {
         var tag = el.closest('.center-tag');
         if (tag) tag.remove();
       }
       
-      // যদি সিলেক্টেড থাকে তাহলে আনসিলেক্ট করুন
       if (select.value === name) {
         select.value = '';
       }
@@ -1468,42 +1460,39 @@ function signupGoBackStep1() {
     }
 
     function getCenterValue() {
-  var select = document.getElementById('f_center');
-  var otherText = document.getElementById('f_center_other');
-  
-  // যদি "অন্যান্য" সিলেক্ট করা থাকে
-  if (select.value === 'other') {
-    var otherVal = otherText.value.trim();
-    if (otherVal) {
-      return otherVal; // টেক্সট থাকলে সেটা রিটার্ন করবে
-    } else {
-      // টেক্সট খালি থাকলে ড্রপডাউনের প্রথম অপশন (খালি) সিলেক্ট করে ফাঁকা রিটার্ন করবে
-      select.value = '';
-      showToast('⚠️ "অন্যান্য" সিলেক্ট করলে দয়া করে একটি নাম লিখুন!', 'error');
-      return '';
+      var select = document.getElementById('f_center');
+      var otherText = document.getElementById('f_center_other');
+      
+      if (select.value === 'other') {
+        var otherVal = otherText.value.trim();
+        if (otherVal) {
+          return otherVal;
+        } else {
+          select.value = '';
+          showToast('⚠️ "অন্যান্য" সিলেক্ট করলে দয়া করে একটি নাম লিখুন!', 'error');
+          return '';
+        }
+      }
+      
+      return select.value;
     }
-  }
-  
-  return select.value;
-}
 
     // ===================== INPUT VALIDATION =====================
-
     function validateEnglish(input) {
-  var regex = /^[A-Za-z0-9\s\.\-\,_@+()\/><?:=+*#@!~`|\\^&%$"]*$/;
-  if (!regex.test(input.value)) {
-    input.value = input.value.replace(/[^A-Za-z0-9\s\.\-\,_@+()\/><?:=+*#@!~`|\\^&%$"]/g, '');
-    showToast('❌ শুধু ইংরেজি অক্ষর, সংখ্যা ও অনুমোদিত চিহ্ন দিন!', 'error');
-  }
-}
+      var regex = /^[A-Za-z0-9\s\.\-\,_@+()\/><?:=+*#@!~`|\\^&%$"]*$/;
+      if (!regex.test(input.value)) {
+        input.value = input.value.replace(/[^A-Za-z0-9\s\.\-\,_@+()\/><?:=+*#@!~`|\\^&%$"]/g, '');
+        showToast('❌ শুধু ইংরেজি অক্ষর, সংখ্যা ও অনুমোদিত চিহ্ন দিন!', 'error');
+      }
+    }
 
     function validateBangla(input) {
-  var regex = /^[\u0980-\u09FF\s\.\-\,\u0964\u0965()\u09E6-\u09EF\/><?:=+*#@!~`|\\^&%$"]*$/;
-  if (!regex.test(input.value)) {
-    input.value = input.value.replace(/[^\u0980-\u09FF\s\.\-\,\u0964\u0965()\u09E6-\u09EF\/><?:=+*#@!~`|\\^&%$"]/g, '');
-    showToast('❌ শুধু বাংলা অক্ষর ও অনুমোদিত চিহ্ন দিন!', 'error');
-  }
-}
+      var regex = /^[\u0980-\u09FF\s\.\-\,\u0964\u0965()\u09E6-\u09EF\/><?:=+*#@!~`|\\^&%$"]*$/;
+      if (!regex.test(input.value)) {
+        input.value = input.value.replace(/[^\u0980-\u09FF\s\.\-\,\u0964\u0965()\u09E6-\u09EF\/><?:=+*#@!~`|\\^&%$"]/g, '');
+        showToast('❌ শুধু বাংলা অক্ষর ও অনুমোদিত চিহ্ন দিন!', 'error');
+      }
+    }
 
     function validateDigits(input) {
       var regex = /^[0-9]*$/;
