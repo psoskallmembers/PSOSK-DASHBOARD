@@ -2430,6 +2430,47 @@
 }
 
 /* ================================================================ */
+/* ===== DESKTOP-FIXED FORMS ON MOBILE ============================ */
+/* Registration, Assessment, Prescription — সবসময় desktop layout। */
+/* মোবাইলে হরাইজন্টাল scroll হবে। এতে PDF (Drive) ও Print output   */
+/* হুবহু on-screen layout-এর মতো আসবে (WYSIWYG)।                  */
+/* Dashboard / Tabs / Chat — আগের মতোই mobile responsive থাকে।    */
+/* ================================================================ */
+@media screen and (max-width: 768px) {
+
+  /* ---- Registration & Assessment ---- */
+  #registrationModal .reg-form-container,
+  #assessmentModal .assessment-form-container {
+    min-width: 900px;
+  }
+  #registrationModal .pd-modal-box,
+  #assessmentModal .pd-modal-box {
+    overflow-x: auto;
+  }
+
+  /* ---- Prescription (split-view desktop layout) ---- */
+  #prescriptionModal .pd-modal-box {
+    overflow-x: auto !important;  /* inline overflow:hidden override */
+  }
+  #prescriptionModal .rx-split-view {
+    flex-direction: row !important;
+    min-width: 900px;
+  }
+  #prescriptionModal .rx-left-panel {
+    width: clamp(340px, 30vw, 460px) !important;
+    max-height: none !important;
+    border-right: 1px solid #dadce0 !important;
+    border-bottom: none !important;
+  }
+  #prescriptionModal .rx-right-panel {
+    overflow-x: auto !important;
+  }
+  #prescriptionModal .prescription-wrapper {
+    min-width: 900px;
+  }
+}
+
+/* ================================================================ */
 /* ===== MOBILE RESPONSIVE — SCREEN ONLY (Print/PDF preserved) ===== */
 /* ================================================================ */
 /* এই ব্লকের সব নিয়ম শুধুমাত্র mobile screen-এ কাজ করবে।
@@ -2442,7 +2483,9 @@
 .assessment-form-container,
 .prescription-wrapper {
   container-type: inline-size;
-  container-name: pdform;
+  /* container-name: pdform; — REMOVED: forcefully keeps desktop layout for
+     Registration / Assessment / Prescription so PDF (Drive) and Print output
+     exactly match what the user sees on screen (WYSIWYG). */
 }
 
 /* ================= Dashboard / Tabs / Modals / Chat ================ */
@@ -6822,126 +6865,132 @@ function pdApplySavedSettingsToUI_(modalId) {
     if (pctEl) pctEl.textContent = '100%';
   }
 
-      function printModalOnly(modalId) {
-    var modal = document.getElementById(modalId);
-    if (!modal) { window.print(); return; }
+function printModalOnly(modalId) {
+  var modal = document.getElementById(modalId);
+  if (!modal) { window.print(); return; }
 
-    var inner = pdGetPrintTarget_(modal);
-    if (!inner) { window.print(); return; }
+  var inner = pdGetPrintTarget_(modal);
+  if (!inner) { window.print(); return; }
 
-    var settings = PD_PRINT_SETTINGS[modalId] || { widthPct: 100, heightPct: 100, align: 'middle' };
-    var widthPct = (settings.widthPct || 100) / 100;
-    var heightPct = (settings.heightPct || 100) / 100;
-    var align = settings.align || 'middle';
+  var settings = PD_PRINT_SETTINGS[modalId] || { widthPct: 100, heightPct: 100, align: 'middle' };
+  var widthPct = (settings.widthPct || 100) / 100;
+  var heightPct = (settings.heightPct || 100) / 100;
+  var align = settings.align || 'middle';
 
-    var MM_TO_PX = 3.7795275591;
-    var PAGE_W_MM = 210;
-    var PAGE_H_MM = 297;
-    var PAGE_MARGIN_MM = 5;
-    var availW_mm = PAGE_W_MM - PAGE_MARGIN_MM * 2;
-    var availH_mm = PAGE_H_MM - PAGE_MARGIN_MM * 2;
+  var MM_TO_PX = 3.7795275591;
+  var PAGE_W_MM = 210;
+  var PAGE_H_MM = 297;
+  var PAGE_MARGIN_MM = 5;
+  var availW_mm = PAGE_W_MM - PAGE_MARGIN_MM * 2;
+  var availH_mm = PAGE_H_MM - PAGE_MARGIN_MM * 2;
 
-    // লাইভ স্কেল সাময়িকভাবে বন্ধ রাখা
-    var liveContainer = modal.querySelector('#prescriptionLiveContainer');
-    var prevContainerTransform = '';
-    if (liveContainer) {
-      prevContainerTransform = liveContainer.style.transform;
-      liveContainer.style.transform = 'none';
-      liveContainer.style.width = '';
-      liveContainer.style.height = '';
-      liveContainer.style.margin = '';
-    }
-
-    var prev = {
-      transform: inner.style.transform,
-      transformOrigin: inner.style.transformOrigin,
-      position: inner.style.position,
-      left: inner.style.left,
-      top: inner.style.top,
-      width: inner.style.width,
-      margin: inner.style.margin,
-      boxSizing: inner.style.boxSizing
-    };
-
-    inner.style.transform = 'none';
-    inner.style.transformOrigin = '';
-    inner.style.position = 'static';
-    inner.style.left = '';
-    inner.style.top = '';
-    inner.style.margin = '0';
-    inner.style.width = '194mm';
-    inner.style.boxSizing = 'border-box';
-    void inner.offsetWidth;
-
-    var naturalW_px = inner.scrollWidth || 1;
-    var naturalH_px = inner.scrollHeight || 1;
-    var naturalW_mm = naturalW_px / MM_TO_PX;
-    var naturalH_mm = naturalH_px / MM_TO_PX;
-
-    var manualMul = PD_MANUAL_SCALES[modalId] || 1;
-
-    var targetW_mm = availW_mm * widthPct;
-    var targetH_mm = availH_mm * heightPct;
-
-    var scaleX = (targetW_mm / naturalW_mm) * manualMul;
-    var scaleY = (targetH_mm / naturalH_mm) * manualMul;
-    if (scaleX < 0.15) scaleX = 0.15;
-    if (scaleY < 0.15) scaleY = 0.15;
-
-    var scaledW_mm = naturalW_mm * scaleX;
-    var scaledH_mm = naturalH_mm * scaleY;
-
-    var x_mm = PAGE_MARGIN_MM + (availW_mm - scaledW_mm) / 2;
-
-    var y_mm;
-    if (align === 'top') {
-      y_mm = PAGE_MARGIN_MM;
-    } else if (align === 'bottom') {
-      y_mm = PAGE_MARGIN_MM + (availH_mm - scaledH_mm);
-      if (y_mm < PAGE_MARGIN_MM) y_mm = PAGE_MARGIN_MM;
-    } else {
-      y_mm = PAGE_MARGIN_MM + (availH_mm - scaledH_mm) / 2;
-      if (y_mm < PAGE_MARGIN_MM) y_mm = PAGE_MARGIN_MM;
-    }
-
-    inner.style.transformOrigin = 'top left';
-    inner.style.transform = 'scale(' + scaleX + ', ' + scaleY + ')';
-    inner.style.position = 'absolute';
-    inner.style.left = x_mm.toFixed(3) + 'mm';
-    inner.style.top = y_mm.toFixed(3) + 'mm';
-    inner.style.width = naturalW_mm.toFixed(3) + 'mm';
-    inner.style.margin = '0';
-    inner.style.boxSizing = 'border-box';
-
-    document.body.classList.add('pd-printing');
-    modal.classList.add('pd-print-target');
-
-    function cleanup() {
-      document.body.classList.remove('pd-printing');
-      modal.classList.remove('pd-print-target');
-      inner.style.transform = prev.transform || '';
-      inner.style.transformOrigin = prev.transformOrigin || '';
-      inner.style.position = prev.position || '';
-      inner.style.left = prev.left || '';
-      inner.style.top = prev.top || '';
-      inner.style.width = prev.width || '';
-      inner.style.margin = prev.margin || '';
-      inner.style.boxSizing = prev.boxSizing || '';
-      
-      if (liveContainer) {
-        liveContainer.style.transform = prevContainerTransform;
-        applyLiveScale_(modalId); // স্ক্রিনে আবার স্কেল ফিরিয়ে আনা
-      }
-      window.removeEventListener('afterprint', cleanup);
-    }
-
-    window.addEventListener('afterprint', cleanup);
-
-    setTimeout(function () {
-      window.print();
-      setTimeout(cleanup, 3000);
-    }, 150); // 60 থেকে বাড়িয়ে 150 করা হলো
+  // লাইভ স্কেল সাময়িকভাবে বন্ধ
+  var liveContainer = modal.querySelector('#prescriptionLiveContainer');
+  var prevContainerTransform = '';
+  if (liveContainer) {
+    prevContainerTransform = liveContainer.style.transform;
+    liveContainer.style.transform = 'none';
+    liveContainer.style.width = '';
+    liveContainer.style.height = '';
+    liveContainer.style.margin = '';
   }
+
+  var prev = {
+    transform: inner.style.transform,
+    transformOrigin: inner.style.transformOrigin,
+    position: inner.style.position,
+    left: inner.style.left,
+    top: inner.style.top,
+    width: inner.style.width,
+    minWidth: inner.style.minWidth,       // ✅ নতুন — desktop-fixed form-এর min-width সাময়িকভাবে 0
+    maxWidth: inner.style.maxWidth,       // ✅ নতুন — নিরাপত্তার জন্য save/restore
+    margin: inner.style.margin,
+    boxSizing: inner.style.boxSizing
+  };
+
+  inner.style.transform = 'none';
+  inner.style.transformOrigin = '';
+  inner.style.position = 'static';
+  inner.style.left = '';
+  inner.style.top = '';
+  inner.style.margin = '0';
+  inner.style.width = '194mm';
+  inner.style.minWidth = '0';             // ✅ নতুন — stylesheet min-width:900px override
+  inner.style.maxWidth = 'none';          // ✅ নতুন
+  inner.style.boxSizing = 'border-box';
+  void inner.offsetWidth;
+
+  var naturalW_px = inner.scrollWidth || 1;
+  var naturalH_px = inner.scrollHeight || 1;
+  var naturalW_mm = naturalW_px / MM_TO_PX;
+  var naturalH_mm = naturalH_px / MM_TO_PX;
+
+  var manualMul = PD_MANUAL_SCALES[modalId] || 1;
+
+  var targetW_mm = availW_mm * widthPct;
+  var targetH_mm = availH_mm * heightPct;
+
+  var scaleX = (targetW_mm / naturalW_mm) * manualMul;
+  var scaleY = (targetH_mm / naturalH_mm) * manualMul;
+  if (scaleX < 0.15) scaleX = 0.15;
+  if (scaleY < 0.15) scaleY = 0.15;
+
+  var scaledW_mm = naturalW_mm * scaleX;
+  var scaledH_mm = naturalH_mm * scaleY;
+
+  var x_mm = PAGE_MARGIN_MM + (availW_mm - scaledW_mm) / 2;
+
+  var y_mm;
+  if (align === 'top') {
+    y_mm = PAGE_MARGIN_MM;
+  } else if (align === 'bottom') {
+    y_mm = PAGE_MARGIN_MM + (availH_mm - scaledH_mm);
+    if (y_mm < PAGE_MARGIN_MM) y_mm = PAGE_MARGIN_MM;
+  } else {
+    y_mm = PAGE_MARGIN_MM + (availH_mm - scaledH_mm) / 2;
+    if (y_mm < PAGE_MARGIN_MM) y_mm = PAGE_MARGIN_MM;
+  }
+
+  inner.style.transformOrigin = 'top left';
+  inner.style.transform = 'scale(' + scaleX + ', ' + scaleY + ')';
+  inner.style.position = 'absolute';
+  inner.style.left = x_mm.toFixed(3) + 'mm';
+  inner.style.top = y_mm.toFixed(3) + 'mm';
+  inner.style.width = naturalW_mm.toFixed(3) + 'mm';
+  inner.style.margin = '0';
+  inner.style.boxSizing = 'border-box';
+
+  document.body.classList.add('pd-printing');
+  modal.classList.add('pd-print-target');
+
+  function cleanup() {
+    document.body.classList.remove('pd-printing');
+    modal.classList.remove('pd-print-target');
+    inner.style.transform = prev.transform || '';
+    inner.style.transformOrigin = prev.transformOrigin || '';
+    inner.style.position = prev.position || '';
+    inner.style.left = prev.left || '';
+    inner.style.top = prev.top || '';
+    inner.style.width = prev.width || '';
+    inner.style.minWidth = prev.minWidth || '';    // ✅ নতুন — stylesheet min-width:900px restore
+    inner.style.maxWidth = prev.maxWidth || '';    // ✅ নতুন
+    inner.style.margin = prev.margin || '';
+    inner.style.boxSizing = prev.boxSizing || '';
+
+    if (liveContainer) {
+      liveContainer.style.transform = prevContainerTransform;
+      applyLiveScale_(modalId);
+    }
+    window.removeEventListener('afterprint', cleanup);
+  }
+
+  window.addEventListener('afterprint', cleanup);
+
+  setTimeout(function () {
+    window.print();
+    setTimeout(cleanup, 3000);
+  }, 150);
+}
 
   function printRegistrationForm() {
     printModalOnly('registrationModal');
