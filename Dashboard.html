@@ -2353,13 +2353,16 @@ function getEmail() {
 }
 
 function goToLogin() {
+  if (window.PSOSK_pageUrl) {
+    window.top.location.href = window.PSOSK_pageUrl('login', { email: USER_EMAIL || '' });
+    return;
+  }
   google.script.run
     .withSuccessHandler(function(url) {
       var target = url + '?email=' + encodeURIComponent(USER_EMAIL || '');
       try { window.top.location.href = target; } catch (navErr) {
         console.warn('Auto-redirect blocked by sandbox:', navErr);
       }
-      // sandbox ব্লক করলে fallback ক্লিকযোগ্য লিংক দেখানো হচ্ছে
       var container = document.querySelector('.login-required');
       if (container && !document.getElementById('manualLoginLink')) {
         var a = document.createElement('a');
@@ -2426,17 +2429,25 @@ function playNotifSound_() {
 }
 
 function logout() {
-  if (confirm('লগআউট করতে চান?')) {
-    stopChatPolling();
-    stopDashboardAutoRefresh();
-    stopNotifPolling();
-    localStorage.removeItem('userEmail');
+  if (!confirm('লগআউট করতে চান?')) return;
+  stopChatPolling();
+  stopDashboardAutoRefresh();
+  stopNotifPolling();
+  localStorage.removeItem('userEmail');
+
+  // সার্ভারে token revoke (shim থাকলে), তারপর লগইন পেজে যান
+  var tok = (window.PSOSK_getToken && PSOSK_getToken()) || '';
+
+  function finish() {
+    if (window.PSOSK_pageUrl) {
+      window.top.location.href = window.PSOSK_pageUrl('login');
+      return;
+    }
     google.script.run
       .withSuccessHandler(function(url) {
         try { window.top.location.href = url; } catch (navErr) {
           console.warn('Auto-redirect blocked by sandbox:', navErr);
         }
-        // sandbox ব্লক করলে fallback ক্লিকযোগ্য বাটন দেখানো হচ্ছে
         setTimeout(function() {
           if (!document.getElementById('manualLogoutLink')) {
             var a = document.createElement('a');
@@ -2453,6 +2464,15 @@ function logout() {
         showToast('❌ Error: ' + (error.message || error), 'error');
       })
       .getScriptUrl();
+  }
+
+  if (tok) {
+    google.script.run
+      .withSuccessHandler(finish)
+      .withFailureHandler(finish)
+      .logoutUser(tok);
+  } else {
+    finish();
   }
 }
 
@@ -2522,28 +2542,41 @@ function loadPatientUI() {
     console.error('❌ patientContainer not found');
     return;
   }
-  
-  // Check if already loaded
   if (container.querySelector('.patient-container') || container.querySelector('iframe')) {
     return;
   }
-  
-  // ===== Iframe ব্যবহার করে লোড করুন =====
-    // ===== Iframe ব্যবহার করে লোড করুন (একই GitHub সাইটের static ফাইল থেকে) =====
-  var iframe = document.createElement('iframe');
-  iframe.src = 'PatientManagementUI.html?email=' + encodeURIComponent(USER_EMAIL);
-  iframe.style.width = '100%';
-  iframe.style.height = '800px';
-  iframe.style.border = 'none';
-  iframe.style.borderRadius = '8px';
-  iframe.style.background = '#f0f4f8';
-  container.innerHTML = '';
-  container.appendChild(iframe);
 
-  setTimeout(function() {
-    iframe.style.height = 'auto';
-    iframe.style.minHeight = '800px';
-  }, 500);
+  function mountIframe(src) {
+    var iframe = document.createElement('iframe');
+    iframe.src = src;
+    iframe.style.width = '100%';
+    iframe.style.height = '800px';
+    iframe.style.border = 'none';
+    iframe.style.borderRadius = '8px';
+    iframe.style.background = '#f0f4f8';
+    container.innerHTML = '';
+    container.appendChild(iframe);
+    setTimeout(function() {
+      iframe.style.height = 'auto';
+      iframe.style.minHeight = '800px';
+    }, 500);
+  }
+
+  // GitHub Pages: একই সাইটের patients.html (localStorage শেয়ার হয়, তাই token পাবে)
+  if (window.PSOSK_pageUrl) {
+    mountIframe(window.PSOSK_pageUrl('patients', { email: USER_EMAIL }));
+    return;
+  }
+
+  // Apps Script নিজস্ব URL
+  google.script.run
+    .withSuccessHandler(function(scriptUrl) {
+      mountIframe(scriptUrl + '?page=patients&email=' + encodeURIComponent(USER_EMAIL));
+    })
+    .withFailureHandler(function(error) {
+      container.innerHTML = '<div style="text-align:center;padding:40px;color:#EA4335;">❌ রোগী ব্যবস্থাপনা লোড করতে ব্যর্থ: ' + (error.message || error) + '</div>';
+    })
+    .getScriptUrl();
 }
 
 function navigateTo(tab) { showTab(tab); closeProfileMenu(); }
