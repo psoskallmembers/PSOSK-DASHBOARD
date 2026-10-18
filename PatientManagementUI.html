@@ -3728,142 +3728,151 @@
 <!-- ===== PRESCRIPTION FORM MODAL ===== -->
 <!-- ================================================================ -->
 <div class="pd-modal-overlay" id="prescriptionModal">
-  <div class="pd-modal-box" style="max-width:880px;">
-    <span class="pd-modal-close" onclick="closePrescriptionForm()"><i class="fas fa-times"></i></span>
-        <div class="prescription-wrapper" style="position:relative;max-width:100%;padding:22px 28px 18px 28px;margin:0;box-shadow:none;border-radius:0;">
-      <!-- ===== Mode toggle overlay (Input/Type) ===== -->
-      <div class="rx-mode-toggle-overlay no-print" role="tablist">
-        <button type="button" class="rx-mode-btn" data-mode="input" onclick="switchRxMode('input')">
-          <i class="fas fa-list-check"></i> Input
-        </button>
-        <button type="button" class="rx-mode-btn active" data-mode="type" onclick="switchRxMode('type')">
-          <i class="fas fa-pen"></i> Type
-        </button>
-      </div>
+  <div class="pd-modal-box" style="max-width:880px; padding:0; display:flex; flex-direction:column; height:95vh; overflow:hidden;">
+    <span class="pd-modal-close" onclick="closePrescriptionForm()" style="z-index:999;"><i class="fas fa-times"></i></span>
 
-      <!-- ===== B&W + KHOSRA buttons ===== -->
-<div class="no-print" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;padding-right:160px;">
-  <button type="button" class="btn btn-sm bw-toggle-btn active-colour" id="rxBwToggle" onclick="togglePrescriptionBw()" title="Colour / B&W">
-    <i class="fas fa-palette"></i> <span id="rxBwLabel">Colour</span>
-  </button>
-  <button type="button" class="btn btn-sm slogan-btn" id="rxSloganBtn" onclick="openSloganManager()" title="Slogan Manager (Add / Edit / Delete)">
-    <i class="fas fa-quote-left"></i> Slogan
-  </button>
-  <button type="button" class="btn btn-sm notepad-btn" onclick="openKhosraNotepad()" title="Notepad (KHOSRA)">
-    <i class="fas fa-sticky-note"></i> KHOSRA
-  </button>
-</div>
-
-      <input type="hidden" id="prescPatientId">
-      <input type="hidden" id="prescFromPending" value="false">
-      <input type="hidden" id="prescType" value="regular">
-
-      <div class="header">
-        <div class="header-left">
-          <div class="logo">
-            <img class="pd-logo" src="" alt="BD Government Logo">
+    <!-- ===== স্ক্রলেবল প্রিভিউ এরিয়া (যা ছোট-বড় হবে) ===== -->
+    <div style="flex:1; overflow:auto; padding:20px; background:#f0f4f8;">
+      
+      <div id="prescriptionLiveContainer" style="transform-origin: top center; transition: transform 0.15s ease, width 0.15s ease, height 0.15s ease; margin: 0 auto;">
+        
+        <div class="prescription-wrapper" style="position:relative;background:#fff;padding:22px 28px 18px 28px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-radius:4px; max-width:100%; box-sizing:border-box;">
+          
+          <!-- Mode toggle overlay (Input/Type) -->
+          <div class="rx-mode-toggle-overlay no-print" role="tablist">
+            <button type="button" class="rx-mode-btn" data-mode="input" onclick="switchRxMode('input')">
+              <i class="fas fa-list-check"></i> Input
+            </button>
+            <button type="button" class="rx-mode-btn active" data-mode="type" onclick="switchRxMode('type')">
+              <i class="fas fa-pen"></i> Type
+            </button>
           </div>
-        </div>
-        <div class="header-center">
-          <div class="govt">Government of the People's Republic of Bangladesh</div>
-          <div class="org">Jatiyo Protibondhi Unnayan Foundation (JPUF)</div>
-          <div class="ministry">Ministry of Social Welfare</div>
-          <div class="kendro" id="prescCenterName">Protibondhi Seba O Sahajya Kendro: Meherpur</div>
-          <div class="form-title">Prescription Form</div>
-        </div>
-        <div class="header-right">
-          <div class="reg-label">Centre Registration no:</div>
-          <input type="text" class="reg-input" id="prescRegNo" placeholder="PIN" oninput="autoSizeRegInput(this)">
-        </div>
-      </div>
 
-      <div class="client-info">
-        <div>
-          <div class="info-row"><span class="label">Client Name:</span><span class="value"><input type="text" id="prescClientName" placeholder=""></span></div>
-          <div class="info-row"><span class="label">Father's/Husband/Guardian's Name:</span><span class="value"><input type="text" id="prescGuardianName" placeholder=""></span></div>
-          <div class="info-row"><span class="label">Mother's Name:</span><span class="value"><input type="text" id="prescMotherName" placeholder=""></span></div>
-          <div class="info-row"><span class="label">Address:</span><span class="value"><input type="text" id="prescAddress" placeholder=""></span></div>
-        </div>
-        <div>
-          <div class="info-row"><span class="label">Date:</span><span class="value"><input type="date" id="prescDate"></span></div>
-          <div class="info-row"><span class="label">Age:</span><span class="value"><input type="number" id="prescAge" placeholder="" min="0"></span></div>
-          <div class="info-row"><span class="label">Gender:</span><span class="value"><select id="prescGender"><option value="">Select</option><option value="M">M</option><option value="F">F</option><option value="Other">Other</option></select></span></div>
-          <div class="info-row"><span class="label">Disability reg no:</span><span class="value"><input type="text" id="prescDisabilityRegNo" placeholder=""></span></div>
-        </div>
-      </div>
-
-      <div class="prescription-table">
-        <!-- ===== LEFT COLUMN (unchanged — typing fields) ===== -->
-        <div class="left-col">
-          <div class="field-row"><div class="field-label">C/C:</div><div class="field-value"><textarea id="prescCc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-          <div class="field-row"><div class="field-label">HPC:</div><div class="field-value"><textarea id="prescHpc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-          <div class="field-row"><div class="field-label">PMH:</div><div class="field-value"><textarea id="prescPmh" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-          <div class="field-row"><div class="field-label">D/H:</div><div class="field-value"><textarea id="prescDh" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-          <div class="field-row"><div class="field-label">O/E:</div><div class="field-value"><textarea id="prescOe" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-          <div class="field-row"><div class="field-label">Investigation:</div><div class="field-value"><textarea id="prescInvestigation" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-          <div class="field-row"><div class="field-label">Advice:</div><div class="field-value"><textarea id="prescAdvice" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-          <div class="field-row"><div class="field-label">Diagnosis:</div><div class="field-value"><textarea id="prescDiagnosis" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
-        </div>
-
-        <!-- ===== RIGHT COLUMN (Mode toggle + Type mode + Input mode) ===== -->
-                <div class="right-col">
-          <div class="rx-toolbar no-print" id="prescRxToolbar">
-            <button type="button" title="Bold" onclick="richExec('bold')"><i class="fas fa-bold"></i></button>
-            <button type="button" title="Italic" onclick="richExec('italic')"><i class="fas fa-italic"></i></button>
-            <button type="button" title="Underline" onclick="richExec('underline')"><i class="fas fa-underline"></i></button>
-            <select title="Font size" id="rxFontSizeSelect" onchange="richExec('fontSize', this.value); this.selectedIndex=0;">
-              <option value="">Size</option>
-              <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-              <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-              <option value="8">8</option><option value="10">10</option><option value="12">12</option>
-              <option value="14">14</option><option value="16">16</option><option value="18">18</option>
-            </select>
-            <input type="color" title="Text color" onchange="richExec('foreColor', this.value)" value="#000000">
+          <!-- B&W + KHOSRA buttons -->
+          <div class="no-print" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;padding-right:160px;">
+            <button type="button" class="btn btn-sm bw-toggle-btn active-colour" id="rxBwToggle" onclick="togglePrescriptionBw()" title="Colour / B&W">
+              <i class="fas fa-palette"></i> <span id="rxBwLabel">Colour</span>
+            </button>
+            <button type="button" class="btn btn-sm slogan-btn" id="rxSloganBtn" onclick="openSloganManager()" title="Slogan Manager (Add / Edit / Delete)">
+              <i class="fas fa-quote-left"></i> Slogan
+            </button>
+            <button type="button" class="btn btn-sm notepad-btn" onclick="openKhosraNotepad()" title="Notepad (KHOSRA)">
+              <i class="fas fa-sticky-note"></i> KHOSRA
+            </button>
           </div>
-          <div class="rx-body" id="prescRx" contenteditable="true" data-placeholder="প্রেসক্রিপশন লিখুন..."></div>
+
+          <input type="hidden" id="prescPatientId">
+          <input type="hidden" id="prescFromPending" value="false">
+          <input type="hidden" id="prescType" value="regular">
+
+          <div class="header">
+            <div class="header-left">
+              <div class="logo">
+                <img class="pd-logo" src="" alt="BD Government Logo">
+              </div>
+            </div>
+            <div class="header-center">
+              <div class="govt">Government of the People's Republic of Bangladesh</div>
+              <div class="org">Jatiyo Protibondhi Unnayan Foundation (JPUF)</div>
+              <div class="ministry">Ministry of Social Welfare</div>
+              <div class="kendro" id="prescCenterName">Protibondhi Seba O Sahajya Kendro: Meherpur</div>
+              <div class="form-title">Prescription Form</div>
+            </div>
+            <div class="header-right">
+              <div class="reg-label">Centre Registration no:</div>
+              <input type="text" class="reg-input" id="prescRegNo" placeholder="PIN" oninput="autoSizeRegInput(this)">
+            </div>
+          </div>
+
+          <div class="client-info">
+            <div>
+              <div class="info-row"><span class="label">Client Name:</span><span class="value"><input type="text" id="prescClientName" placeholder=""></span></div>
+              <div class="info-row"><span class="label">Father's/Husband/Guardian's Name:</span><span class="value"><input type="text" id="prescGuardianName" placeholder=""></span></div>
+              <div class="info-row"><span class="label">Mother's Name:</span><span class="value"><input type="text" id="prescMotherName" placeholder=""></span></div>
+              <div class="info-row"><span class="label">Address:</span><span class="value"><input type="text" id="prescAddress" placeholder=""></span></div>
+            </div>
+            <div>
+              <div class="info-row"><span class="label">Date:</span><span class="value"><input type="date" id="prescDate"></span></div>
+              <div class="info-row"><span class="label">Age:</span><span class="value"><input type="number" id="prescAge" placeholder="" min="0"></span></div>
+              <div class="info-row"><span class="label">Gender:</span><span class="value"><select id="prescGender"><option value="">Select</option><option value="M">M</option><option value="F">F</option><option value="Other">Other</option></select></span></div>
+              <div class="info-row"><span class="label">Disability reg no:</span><span class="value"><input type="text" id="prescDisabilityRegNo" placeholder=""></span></div>
+            </div>
+          </div>
+
+          <div class="prescription-table">
+            <div class="left-col">
+              <div class="field-row"><div class="field-label">C/C:</div><div class="field-value"><textarea id="prescCc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+              <div class="field-row"><div class="field-label">HPC:</div><div class="field-value"><textarea id="prescHpc" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+              <div class="field-row"><div class="field-label">PMH:</div><div class="field-value"><textarea id="prescPmh" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+              <div class="field-row"><div class="field-label">D/H:</div><div class="field-value"><textarea id="prescDh" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+              <div class="field-row"><div class="field-label">O/E:</div><div class="field-value"><textarea id="prescOe" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+              <div class="field-row"><div class="field-label">Investigation:</div><div class="field-value"><textarea id="prescInvestigation" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+              <div class="field-row"><div class="field-label">Advice:</div><div class="field-value"><textarea id="prescAdvice" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+              <div class="field-row"><div class="field-label">Diagnosis:</div><div class="field-value"><textarea id="prescDiagnosis" rows="1" placeholder="" oninput="autoGrow(this)"></textarea></div></div>
+            </div>
+
+            <div class="right-col">
+              <div class="rx-toolbar no-print" id="prescRxToolbar">
+                <button type="button" title="Bold" onclick="richExec('bold')"><i class="fas fa-bold"></i></button>
+                <button type="button" title="Italic" onclick="richExec('italic')"><i class="fas fa-italic"></i></button>
+                <button type="button" title="Underline" onclick="richExec('underline')"><i class="fas fa-underline"></i></button>
+                <select title="Font size" id="rxFontSizeSelect" onchange="richExec('fontSize', this.value); this.selectedIndex=0;">
+                  <option value="">Size</option>
+                  <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                  <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                  <option value="8">8</option><option value="10">10</option><option value="12">12</option>
+                  <option value="14">14</option><option value="16">16</option><option value="18">18</option>
+                </select>
+                <input type="color" title="Text color" onchange="richExec('foreColor', this.value)" value="#000000">
+              </div>
+              <div class="rx-body" id="prescRx" contenteditable="true" data-placeholder="প্রেসক্রিপশন লিখুন..."></div>
+            </div>
+          </div>
+          
+          <div class="signature-row">
+            <div class="sig-left"><div class="sig-text"><i class="fas fa-check-circle"></i> Prescription valid with signature</div></div>
+            <div class="sig-right"><div class="sig-line"></div><div class="sig-label">Signature</div><div class="sig-sub" id="prescSignatureDesignation">Consultant (Physiotherapist)</div></div>
+          </div>
+
+          <div class="presc-slogan-display" id="prescSloganDisplay" style="display:none;">
+            <span class="slogan-text" id="prescSloganText"></span>
+          </div>
+
+          <div class="footer">JPUF, Ministry of Social Welfare</div>
         </div>
       </div>
-<div class="signature-row">
-  <div class="sig-left"><div class="sig-text"><i class="fas fa-check-circle"></i> Prescription valid with signature</div></div>
-  <div class="sig-right"><div class="sig-line"></div><div class="sig-label">Signature</div><div class="sig-sub" id="prescSignatureDesignation">Consultant (Physiotherapist)</div></div>
-</div>
+    </div>
 
-<!-- ✅ এই ৩ লাইন নতুন যোগ করুন -->
-<div class="presc-slogan-display" id="prescSloganDisplay" style="display:none;">
-  <span class="slogan-text" id="prescSloganText"></span>
-</div>
+    <!-- ===== ফিক্সড কন্ট্রোল বাটন ===== -->
+    <div class="form-actions no-print" style="padding: 12px 20px; margin: 0; border-top: 1px solid #dadce0; background: #fff; border-radius:0 0 12px 12px; flex-shrink: 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
+      <button type="button" class="btn btn-success" id="prescSubmitBtn" onclick="submitPrescriptionForm()"><i class="fas fa-save"></i> Submit</button>
+      <button type="button" class="btn btn-outline" onclick="resetPrescriptionForm()"><i class="fas fa-undo"></i> Reset</button>
+      
+      <span class="pd-print-ctrl no-print" title="প্রিন্ট প্রস্থ ও উচ্চতা">
+        <label>W:</label>
+        <input type="range" min="30" max="150" step="5" value="100" oninput="pdSetPrintWidth('prescriptionModal', this.value)">
+        <span class="pct-val" id="prescriptionModalWidthPct">100%</span>
+        <span class="sep">|</span>
+        <label>H:</label>
+        <input type="range" min="30" max="150" step="5" value="100" oninput="pdSetPrintHeight('prescriptionModal', this.value)">
+        <span class="pct-val" id="prescriptionModalHeightPct">100%</span>
+        <span class="sep">|</span>
+        <label>A:</label>
+        <select onchange="pdSetPrintAlign('prescriptionModal', this.value)">
+          <option value="top">Top</option>
+          <option value="middle" selected>Mid</option>
+          <option value="bottom">Bottom</option>
+        </select>
+      </span>
 
-<div class="footer">JPUF, Ministry of Social Welfare</div>
+      <span class="pd-font-ctrl no-print" title="প্রিন্ট ফন্ট সাইজ">
+        <button type="button" class="btn-sm" onclick="pdAdjustPrintFontSize('prescriptionModal',-1)"><i class="fas fa-minus"></i></button>
+        <span id="prescriptionModalFontPct">100%</span>
+        <button type="button" class="btn-sm" onclick="pdAdjustPrintFontSize('prescriptionModal',1)"><i class="fas fa-plus"></i></button>
+      </span>
 
-      <div class="form-actions no-print">
-        <button type="button" class="btn btn-success" id="prescSubmitBtn" onclick="submitPrescriptionForm()"><i class="fas fa-save"></i> Submit</button>
-        <button type="button" class="btn btn-outline" onclick="resetPrescriptionForm()"><i class="fas fa-undo"></i> Reset</button>
-        <span class="pd-print-ctrl no-print" title="প্রিন্ট প্রস্থ ও উচ্চতা (আলাদা করে)">
-          <label>W:</label>
-          <input type="range" min="30" max="150" step="5" value="100"
-                 oninput="pdSetPrintWidth('prescriptionModal', this.value)">
-          <span class="pct-val" id="prescriptionModalWidthPct">100%</span>
-          <span class="sep">|</span>
-          <label>H:</label>
-          <input type="range" min="30" max="150" step="5" value="100"
-                 oninput="pdSetPrintHeight('prescriptionModal', this.value)">
-          <span class="pct-val" id="prescriptionModalHeightPct">100%</span>
-          <span class="sep">|</span>
-          <label>A:</label>
-          <select onchange="pdSetPrintAlign('prescriptionModal', this.value)">
-            <option value="top">Top</option>
-            <option value="middle" selected>Mid</option>
-            <option value="bottom">Bottom</option>
-          </select>
-        </span>
-        <span class="pd-font-ctrl no-print" title="প্রিন্ট ফন্ট সাইজ">
-          <button type="button" class="btn-sm" onclick="pdAdjustPrintFontSize('prescriptionModal',-1)"><i class="fas fa-minus"></i></button>
-          <span id="prescriptionModalFontPct">100%</span>
-          <button type="button" class="btn-sm" onclick="pdAdjustPrintFontSize('prescriptionModal',1)"><i class="fas fa-plus"></i></button>
-        </span>
-        <button type="button" class="btn btn-primary" onclick="printModalOnly('prescriptionModal')"><i class="fas fa-print"></i> Print</button>
-        <button type="button" class="btn btn-danger" onclick="closePrescriptionForm()"><i class="fas fa-times"></i> Close</button>
-      </div>
+      <button type="button" class="btn btn-primary" onclick="printModalOnly('prescriptionModal')"><i class="fas fa-print"></i> Print</button>
+      <button type="button" class="btn btn-danger" onclick="closePrescriptionForm()"><i class="fas fa-times"></i> Close</button>
     </div>
   </div>
 </div>
@@ -6457,6 +6466,9 @@ function initReceptionChatDragDrop_() {
     PD_PRINT_SETTINGS[modalId].widthPct = v;
     var el = document.getElementById(modalId + 'WidthPct');
     if (el) el.textContent = v + '%';
+    
+    // লাইভ স্ক্রিনে প্রিভিউ আপডেট করার ফাংশন কল
+    applyLiveScale_(modalId);
   }
 
   function pdSetPrintHeight(modalId, pct) {
@@ -6465,6 +6477,44 @@ function initReceptionChatDragDrop_() {
     PD_PRINT_SETTINGS[modalId].heightPct = v;
     var el = document.getElementById(modalId + 'HeightPct');
     if (el) el.textContent = v + '%';
+    
+    // লাইভ স্ক্রিনে প্রিভিউ আপডেট করার ফাংশন কল
+    applyLiveScale_(modalId);
+  }
+
+  // ===== নতুন ফাংশন: স্ক্রিনে লাইভ সাইজ ছোট-বড় করার জন্য =====
+  function applyLiveScale_(modalId) {
+    var modal = document.getElementById(modalId);
+    if (!modal) return;
+
+    var container = modal.querySelector('#prescriptionLiveContainer');
+    if (!container) return; 
+
+    var settings = PD_PRINT_SETTINGS[modalId] || { widthPct: 100, heightPct: 100 };
+    var w = settings.widthPct / 100;
+    var h = settings.heightPct / 100;
+
+    var wrapper = container.querySelector('.prescription-wrapper');
+    if (!wrapper) return;
+
+    // আগের সাইজ রিসেট করে ন্যাচারাল সাইজ বের করা
+    container.style.transform = 'none';
+    container.style.width = '';
+    container.style.height = '';
+    
+    var naturalW = wrapper.offsetWidth;
+    var naturalH = wrapper.offsetHeight;
+
+    if (w === 1 && h === 1) {
+      container.style.margin = '0 auto';
+      return;
+    }
+
+    // স্কেল অ্যাপ্লাই করা
+    container.style.transform = 'scale(' + w + ', ' + h + ')';
+    container.style.width = (naturalW * w) + 'px';
+    container.style.height = (naturalH * h) + 'px';
+    container.style.margin = '0 auto';
   }
 
   function pdSetPrintAlign(modalId, align) {
@@ -6488,7 +6538,7 @@ function initReceptionChatDragDrop_() {
     if (pctEl) pctEl.textContent = '100%';
   }
 
-    function printModalOnly(modalId) {
+      function printModalOnly(modalId) {
     var modal = document.getElementById(modalId);
     if (!modal) { window.print(); return; }
 
@@ -6506,6 +6556,17 @@ function initReceptionChatDragDrop_() {
     var PAGE_MARGIN_MM = 5;
     var availW_mm = PAGE_W_MM - PAGE_MARGIN_MM * 2;
     var availH_mm = PAGE_H_MM - PAGE_MARGIN_MM * 2;
+
+    // লাইভ স্কেল সাময়িকভাবে বন্ধ রাখা
+    var liveContainer = modal.querySelector('#prescriptionLiveContainer');
+    var prevContainerTransform = '';
+    if (liveContainer) {
+      prevContainerTransform = liveContainer.style.transform;
+      liveContainer.style.transform = 'none';
+      liveContainer.style.width = '';
+      liveContainer.style.height = '';
+      liveContainer.style.margin = '';
+    }
 
     var prev = {
       transform: inner.style.transform,
@@ -6535,7 +6596,6 @@ function initReceptionChatDragDrop_() {
 
     var manualMul = PD_MANUAL_SCALES[modalId] || 1;
 
-    // ===== W ও H আলাদা করে scale =====
     var targetW_mm = availW_mm * widthPct;
     var targetH_mm = availH_mm * heightPct;
 
@@ -6583,6 +6643,11 @@ function initReceptionChatDragDrop_() {
       inner.style.width = prev.width || '';
       inner.style.margin = prev.margin || '';
       inner.style.boxSizing = prev.boxSizing || '';
+      
+      if (liveContainer) {
+        liveContainer.style.transform = prevContainerTransform;
+        applyLiveScale_(modalId); // স্ক্রিনে আবার স্কেল ফিরিয়ে আনা
+      }
       window.removeEventListener('afterprint', cleanup);
     }
 
@@ -11120,7 +11185,6 @@ var _formPdfCurrentFileName = '';
 function generateFormPdfBase64(element, fileName, maxPages) {
   maxPages = maxPages || 1;
 
-  // ── settings থেকে W/H/align নিই ──
   var modalEl = element.closest('.pd-modal-overlay');
   var modalId = modalEl ? modalEl.id : '';
   var settings = (typeof PD_PRINT_SETTINGS !== 'undefined' && PD_PRINT_SETTINGS[modalId])
@@ -11143,6 +11207,17 @@ function generateFormPdfBase64(element, fileName, maxPages) {
 
         var modalBox = element.closest('.pd-modal-box');
         var overlay  = element.closest('.pd-modal-overlay');
+        
+        // লাইভ স্কেল সাময়িকভাবে বন্ধ রাখা
+        var liveContainer = element.closest('#prescriptionLiveContainer');
+        var savedLiveTransform = '';
+        if (liveContainer) {
+          savedLiveTransform = liveContainer.style.transform;
+          liveContainer.style.transform = 'none';
+          liveContainer.style.width = '';
+          liveContainer.style.height = '';
+        }
+
         var saved = {
           ov: overlay ? overlay.style.overflow : null,
           mbH: modalBox ? modalBox.style.maxHeight : null,
@@ -11178,6 +11253,10 @@ function generateFormPdfBase64(element, fileName, maxPages) {
           element.style.width    = saved.eW  || '';
           element.style.maxWidth = saved.eMW || '';
           element.style.minWidth = saved.eNW || '';
+          
+          if (liveContainer) {
+            liveContainer.style.transform = savedLiveTransform;
+          }
         }
 
         setTimeout(function () {
@@ -11199,14 +11278,12 @@ function generateFormPdfBase64(element, fileName, maxPages) {
             var availW = pageW - margin * 2;
             var availH = pageH - margin * 2;
 
-            // ===== W ও H আলাদা target size =====
             var targetW_mm = availW * widthPct;
             var targetH_mm = availH * heightPct;
 
             var drawW = targetW_mm;
             var drawH = targetH_mm;
 
-            // maxPages-এ fit
             var maxTotalH = availH * maxPages;
             if (drawH > maxTotalH) {
               var s = maxTotalH / drawH;
@@ -11216,11 +11293,6 @@ function generateFormPdfBase64(element, fileName, maxPages) {
 
             var totalPages = Math.max(1, Math.ceil(drawH / availH - 0.001));
             var x = margin + (availW - drawW) / 2;
-
-            console.log('📄 PDF →',
-              'draw:', drawW.toFixed(1) + '×' + drawH.toFixed(1) + 'mm',
-              '| pages:', totalPages,
-              '| W:', (widthPct * 100) + '%', '| H:', (heightPct * 100) + '%', '| align:', align);
 
             if (totalPages === 1) {
               var y;
