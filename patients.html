@@ -835,99 +835,118 @@
       resize: none;
     }
 
-    /* ================================================================ */
-    /* ===== PRINT: EXACT WYSIWYG — ONE A4 PAGE ======================== */
-    /* ================================================================ */
-    @media print {
-      @page {
-        size: 210mm 297mm; /* Explicit A4 size */
-        margin: 0;
-      }
+  /* ================================================================ */
+/* ===== PRINT: EXACT WYSIWYG — DESKTOP LAYOUT FORCED ============= */
+/* ================================================================ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
 
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 
-      html, body {
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        overflow: hidden !important;
-      }
+  /* ১. পুরো পেজের সবকিছু হাইড করুন */
+  body * {
+    visibility: hidden;
+  }
 
-      /* Hide everything except the active form modal */
-      body.pd-printing > * {
-        display: none !important;
-      }
-      
-      /* The main print target */
-      body.pd-printing > .pd-print-target {
-        display: block !important;
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        max-width: 210mm !important;
-        max-height: 297mm !important;
-        overflow: hidden !important;
-        background: #ffffff !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        border-radius: 0 !important;
-      }
+  /* ২. শুধুমাত্র ওপেন করা মোডাল এবং তার ভেতরের জিনিসপত্র দেখান */
+  .pd-modal-overlay.show, 
+  .pd-modal-overlay.show * {
+    visibility: visible;
+  }
 
-      body.pd-printing > .pd-print-target .pd-modal-box {
-        display: block !important;
-        position: static !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-        background: #ffffff !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        border-radius: 0 !important;
-      }
+  /* ৩. মোডালকে A4 পেজের উপরে বামে পজিশন করুন */
+  .pd-modal-overlay.show {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+    display: block !important;
+  }
 
-      /* 🟢 FIX: Mobile Split View flattening for Print */
-      body.pd-printing > .pd-print-target .rx-split-view,
-      body.pd-printing > .pd-print-target .rx-right-panel {
-        display: block !important;
-        width: 100% !important;
-        height: auto !important;
-        max-width: 100% !important;
-        max-height: none !important;
-        overflow: visible !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-      }
+  .pd-modal-box {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    height: auto !important;
+    max-height: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
+  }
 
-      /* Hide in-modal controls */
-      body.pd-printing .pd-print-target .no-print,
-      body.pd-printing .pd-print-target .pd-modal-close,
-      body.pd-printing .pd-print-target .form-actions,
-      body.pd-printing .pd-print-target .sig-actions,
-      body.pd-printing .pd-print-target .rx-toolbar,
-      body.pd-printing .pd-print-target .rx-mode-toggle-overlay,
-      body.pd-printing .pd-print-target .pd-font-ctrl,
-      body.pd-printing .pd-print-target .bw-toggle-btn,
-      body.pd-printing .pd-print-target .notepad-btn {
-        display: none !important;
-        visibility: hidden !important;
-      }
-    }
+  /* ৪. মোবাইলের রেসপন্সিভ ডিজাইন বন্ধ করে ডেস্কটপ লেআউট ফোর্স করুন */
+  .prescription-wrapper, 
+  .reg-form-container, 
+  .assessment-form-container {
+    width: 190mm !important; /* A4 এর ভেতরে ফিট করার জন্য */
+    max-width: 190mm !important;
+    min-width: 190mm !important;
+    padding: 5mm !important;
+    margin: 0 auto !important;
+    display: block !important;
+    box-shadow: none !important;
+  }
+
+  /* ৫. প্রেসক্রিপশন ফর্মের গ্রিড ও ফ্লেক্স লেআউট ঠিক করা */
+  .prescription-wrapper .header {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+  }
+  .prescription-wrapper .client-info {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr !important;
+  }
+  .prescription-wrapper .prescription-table {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .prescription-wrapper .left-col {
+    display: block !important;
+    border-right: 1.5px solid #222 !important;
+  }
+  .prescription-wrapper .right-col {
+    display: block !important;
+  }
+
+  /* ৬. প্রিন্টের সময় অপ্রয়োজনীয় বাটন, প্যানেল ও কন্ট্রোল হাইড করুন */
+  .no-print, 
+  .rx-left-panel, 
+  .rx-mode-toggle-overlay, 
+  .rx-toolbar, 
+  .form-actions, 
+  .pd-modal-close,
+  .rx-quick-add,
+  .med-input-row,
+  .rx-sec-add,
+  .rx-sec-check,
+  .rx-free-note-label {
+    display: none !important;
+  }
+
+  /* ৭. ইনপুট ও টেক্সটএরিয়াকে প্রিন্টে সাধারণ লেখার মতো দেখান */
+  input, textarea, select {
+    border: none !important;
+    background: transparent !important;
+    outline: none !important;
+    resize: none !important;
+    box-shadow: none !important;
+    -webkit-appearance: none !important;
+    color: #000 !important;
+  }
+}
 
     /* ================================================================ */
     /* ===== ASSESSMENT FORM STYLES ===== */
@@ -3999,7 +4018,7 @@
                   </select>
                   <input type="color" title="Text color" onchange="richExec('foreColor', this.value)" value="#000000">
                 </div>
-                <div class="rx-body" id="prescRx" contenteditable="true" data-placeholder="প্রেসক্রিপশন লিখুন..."></div>
+                <div class="rx-body" id="prescRx" contenteditable="true" data-placeholder="প্রেসক্রিপশন লিখুন..."> </div>
               </div>
             </div>
 
@@ -6822,126 +6841,11 @@ function pdApplySavedSettingsToUI_(modalId) {
     if (pctEl) pctEl.textContent = '100%';
   }
 
-      function printModalOnly(modalId) {
-    var modal = document.getElementById(modalId);
-    if (!modal) { window.print(); return; }
-
-    var inner = pdGetPrintTarget_(modal);
-    if (!inner) { window.print(); return; }
-
-    var settings = PD_PRINT_SETTINGS[modalId] || { widthPct: 100, heightPct: 100, align: 'middle' };
-    var widthPct = (settings.widthPct || 100) / 100;
-    var heightPct = (settings.heightPct || 100) / 100;
-    var align = settings.align || 'middle';
-
-    var MM_TO_PX = 3.7795275591;
-    var PAGE_W_MM = 210;
-    var PAGE_H_MM = 297;
-    var PAGE_MARGIN_MM = 5;
-    var availW_mm = PAGE_W_MM - PAGE_MARGIN_MM * 2;
-    var availH_mm = PAGE_H_MM - PAGE_MARGIN_MM * 2;
-
-    // লাইভ স্কেল সাময়িকভাবে বন্ধ রাখা
-    var liveContainer = modal.querySelector('#prescriptionLiveContainer');
-    var prevContainerTransform = '';
-    if (liveContainer) {
-      prevContainerTransform = liveContainer.style.transform;
-      liveContainer.style.transform = 'none';
-      liveContainer.style.width = '';
-      liveContainer.style.height = '';
-      liveContainer.style.margin = '';
-    }
-
-    var prev = {
-      transform: inner.style.transform,
-      transformOrigin: inner.style.transformOrigin,
-      position: inner.style.position,
-      left: inner.style.left,
-      top: inner.style.top,
-      width: inner.style.width,
-      margin: inner.style.margin,
-      boxSizing: inner.style.boxSizing
-    };
-
-    inner.style.transform = 'none';
-    inner.style.transformOrigin = '';
-    inner.style.position = 'static';
-    inner.style.left = '';
-    inner.style.top = '';
-    inner.style.margin = '0';
-    inner.style.width = '194mm';
-    inner.style.boxSizing = 'border-box';
-    void inner.offsetWidth;
-
-    var naturalW_px = inner.scrollWidth || 1;
-    var naturalH_px = inner.scrollHeight || 1;
-    var naturalW_mm = naturalW_px / MM_TO_PX;
-    var naturalH_mm = naturalH_px / MM_TO_PX;
-
-    var manualMul = PD_MANUAL_SCALES[modalId] || 1;
-
-    var targetW_mm = availW_mm * widthPct;
-    var targetH_mm = availH_mm * heightPct;
-
-    var scaleX = (targetW_mm / naturalW_mm) * manualMul;
-    var scaleY = (targetH_mm / naturalH_mm) * manualMul;
-    if (scaleX < 0.15) scaleX = 0.15;
-    if (scaleY < 0.15) scaleY = 0.15;
-
-    var scaledW_mm = naturalW_mm * scaleX;
-    var scaledH_mm = naturalH_mm * scaleY;
-
-    var x_mm = PAGE_MARGIN_MM + (availW_mm - scaledW_mm) / 2;
-
-    var y_mm;
-    if (align === 'top') {
-      y_mm = PAGE_MARGIN_MM;
-    } else if (align === 'bottom') {
-      y_mm = PAGE_MARGIN_MM + (availH_mm - scaledH_mm);
-      if (y_mm < PAGE_MARGIN_MM) y_mm = PAGE_MARGIN_MM;
-    } else {
-      y_mm = PAGE_MARGIN_MM + (availH_mm - scaledH_mm) / 2;
-      if (y_mm < PAGE_MARGIN_MM) y_mm = PAGE_MARGIN_MM;
-    }
-
-    inner.style.transformOrigin = 'top left';
-    inner.style.transform = 'scale(' + scaleX + ', ' + scaleY + ')';
-    inner.style.position = 'absolute';
-    inner.style.left = x_mm.toFixed(3) + 'mm';
-    inner.style.top = y_mm.toFixed(3) + 'mm';
-    inner.style.width = naturalW_mm.toFixed(3) + 'mm';
-    inner.style.margin = '0';
-    inner.style.boxSizing = 'border-box';
-
-    document.body.classList.add('pd-printing');
-    modal.classList.add('pd-print-target');
-
-    function cleanup() {
-      document.body.classList.remove('pd-printing');
-      modal.classList.remove('pd-print-target');
-      inner.style.transform = prev.transform || '';
-      inner.style.transformOrigin = prev.transformOrigin || '';
-      inner.style.position = prev.position || '';
-      inner.style.left = prev.left || '';
-      inner.style.top = prev.top || '';
-      inner.style.width = prev.width || '';
-      inner.style.margin = prev.margin || '';
-      inner.style.boxSizing = prev.boxSizing || '';
-      
-      if (liveContainer) {
-        liveContainer.style.transform = prevContainerTransform;
-        applyLiveScale_(modalId); // স্ক্রিনে আবার স্কেল ফিরিয়ে আনা
-      }
-      window.removeEventListener('afterprint', cleanup);
-    }
-
-    window.addEventListener('afterprint', cleanup);
-
-    setTimeout(function () {
-      window.print();
-      setTimeout(cleanup, 3000);
-    }, 150); // 60 থেকে বাড়িয়ে 150 করা হলো
-  }
+  function printModalOnly(modalId) {
+  // জাভাস্ক্রিপ্ট স্কেলিং বাদ দিয়ে সরাসরি ব্রাউজার প্রিন্ট কল করুন
+  // ব্রাউজার এখন আমাদের নতুন CSS অনুযায়ী পারফেক্ট A4 সাইজে প্রিন্ট করবে
+  window.print();
+}
 
   function printRegistrationForm() {
     printModalOnly('registrationModal');
