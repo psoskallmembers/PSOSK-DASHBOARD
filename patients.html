@@ -5074,7 +5074,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   // ===== OPEN ASSESSMENT FROM PENDING =============================
   // ================================================================
 
-  function openAssessmentFromPending(patientId) {
+    function openAssessmentFromPending(patientId) {
   if (!patientId) {
     showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
     return;
@@ -5118,6 +5118,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
       document.querySelectorAll('#romTable input').forEach(function(inp) { inp.value = ''; });
 
       document.getElementById('assessCc').focus();
+      pdApplySavedSettingsToUI_('assessmentModal');   // ✅ নতুন — saved W/H/Font restore
       showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে', 'info');
     })
     .withFailureHandler(function(e) {
@@ -5403,7 +5404,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   // ===== OPEN PRESCRIPTION FROM PENDING ============================
   // ================================================================
 
-    function openPrescriptionFromPending(patientId) {
+        function openPrescriptionFromPending(patientId) {
   if (!patientId) {
     showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
     return;
@@ -5468,6 +5469,7 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
         if (typeof initRxMode === 'function') initRxMode();
         if (typeof loadRxInputSections === 'function') loadRxInputSections();
         if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+        pdApplySavedSettingsToUI_('prescriptionModal');   // ✅ নতুন
       }, 150);
 
       initSloganForPrescription_(null);
@@ -5664,7 +5666,7 @@ function viewFollowupPatient(patientId, requestId) {
 }
 
 
-  function openFollowupPrescription(patientId, requestId) {
+    function openFollowupPrescription(patientId, requestId) {
     if (!patientId) { showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error'); return; }
 
     // Request টি Viewed হিসেবে মার্ক করুন
@@ -5735,6 +5737,7 @@ function viewFollowupPatient(patientId, requestId) {
           if (typeof initRxMode === 'function') initRxMode();
           if (typeof loadRxInputSections === 'function') loadRxInputSections();
           if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+          pdApplySavedSettingsToUI_('prescriptionModal');   // ✅ নতুন
         }, 150);
 
         showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে — ফলোআপ প্রেসক্রিপশন লিখুন', 'info');
@@ -5806,7 +5809,7 @@ function viewFollowupPatient(patientId, requestId) {
     document.getElementById('saCount').textContent = '('+visible+' টি)';
   }
 
-  function viewSavedAssessment(patientId) {
+    function viewSavedAssessment(patientId) {
     if (!patientId) {
       showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
       return;
@@ -5862,6 +5865,7 @@ function viewFollowupPatient(patientId, requestId) {
 
         showPdToast('📋 সংরক্ষিত মূল্যায়ন লোড করা হয়েছে', 'info');
         setTimeout(function() { autoGrowAll('assessmentModal'); }, 60);
+        pdApplySavedSettingsToUI_('assessmentModal');   // ✅ নতুন — saved W/H/Font restore
       })
       .withFailureHandler(function(e) {
         showPdToast('❌ Error: ' + e, 'error');
@@ -5929,7 +5933,7 @@ function viewFollowupPatient(patientId, requestId) {
     document.getElementById('spCount').textContent = '('+visible+' টি)';
   }
 
-    function viewSavedPrescription(patientId) {
+        function viewSavedPrescription(patientId) {
   if (!patientId) {
     showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
     return;
@@ -6008,6 +6012,7 @@ function viewFollowupPatient(patientId, requestId) {
         if (typeof initRxMode === 'function') initRxMode();
         if (typeof loadRxInputSections === 'function') loadRxInputSections();
         if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+        pdApplySavedSettingsToUI_('prescriptionModal');   // ✅ নতুন
 
         setTimeout(function() {
           if (presc) {
@@ -6138,6 +6143,7 @@ function editFollowupPrescription(patientId) {
 }
 
 // হেল্পার — Followup prescription ডেটা দিয়ে prescription modal populate
+// হেল্পার — Followup prescription ডেটা দিয়ে prescription modal populate
 function openFollowupPrescriptionEdit_(p, presc) {
   var modal = document.getElementById('prescriptionModal');
   modal.classList.add('show');
@@ -6184,6 +6190,8 @@ function openFollowupPrescriptionEdit_(p, presc) {
     if (typeof initRxMode === 'function') initRxMode();
     if (typeof loadRxInputSections === 'function') loadRxInputSections();
     if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+    pdApplySavedSettingsToUI_('prescriptionModal');   // ✅ নতুন
+
     setTimeout(function() {
       var physioSaved = presc.physiotherapyItems || [];
       var hmSaved = presc.homeManagement || [];
@@ -6326,7 +6334,7 @@ function initReceptionChatDragDrop_() {
   // ===== REGISTRATION FORM =========================================
   // ================================================================
 
-  function openRegistrationForm() {
+    function openRegistrationForm() {
     var modal = document.getElementById('registrationModal');
     modal.classList.add('show');
     modal.style.display = 'flex';
@@ -6378,13 +6386,14 @@ function initReceptionChatDragDrop_() {
         el.value = '';
       }
     });
+
+    pdApplySavedSettingsToUI_('registrationModal');   // ✅ নতুন — saved W/H/Font restore
   }
 
   function closeRegistrationForm() {
     var modal = document.getElementById('registrationModal');
     modal.classList.remove('show');
     modal.style.display = 'none';
-    pdResetFontControl_('registrationModal');
   }
 
   function generateSerialNo() {
@@ -6455,6 +6464,78 @@ function initReceptionChatDragDrop_() {
     prescriptionModal: { widthPct: 100, heightPct: 100, align: 'middle' }
   };
 
+  // ================================================================
+// ===== PRINT SETTINGS PERSISTENCE (localStorage) ================
+// ================================================================
+// W/H/Align ও Font Size localStorage-এ সেভ হয় — page reload করলেও
+// পরবর্তী use-এ আগের সেটিংসই ফিরে আসে। ইউজার নিজে পরিবর্তন না করা
+// পর্যন্ত এই সেটিংসই persist থাকে।
+var PD_SETTINGS_STORAGE_KEY_ = 'psosk_pd_print_settings_v1';
+
+function pdSavePrintSettings_() {
+  try {
+    localStorage.setItem(PD_SETTINGS_STORAGE_KEY_, JSON.stringify({
+      printSettings: PD_PRINT_SETTINGS,
+      manualScales: PD_MANUAL_SCALES
+    }));
+  } catch (e) { /* storage blocked — ignore */ }
+}
+
+function pdLoadPrintSettings_() {
+  try {
+    var raw = localStorage.getItem(PD_SETTINGS_STORAGE_KEY_);
+    if (!raw) return;
+    var parsed = JSON.parse(raw);
+    if (parsed && parsed.printSettings) {
+      Object.keys(parsed.printSettings).forEach(function (k) {
+        if (PD_PRINT_SETTINGS[k]) {
+          PD_PRINT_SETTINGS[k].widthPct  = parseInt(parsed.printSettings[k].widthPct, 10)  || 100;
+          PD_PRINT_SETTINGS[k].heightPct = parseInt(parsed.printSettings[k].heightPct, 10) || 100;
+          PD_PRINT_SETTINGS[k].align     = parsed.printSettings[k].align || 'middle';
+        }
+      });
+    }
+    if (parsed && parsed.manualScales) {
+      Object.keys(parsed.manualScales).forEach(function (k) {
+        var v = parseFloat(parsed.manualScales[k]);
+        if (!isNaN(v)) PD_MANUAL_SCALES[k] = v;
+      });
+    }
+  } catch (e) {}
+}
+
+// modal খোলার সময় slider/label/align সব saved value দিয়ে সিঙ্ক করে
+function pdApplySavedSettingsToUI_(modalId) {
+  var s = PD_PRINT_SETTINGS[modalId];
+  var m = PD_MANUAL_SCALES[modalId] || 1;
+  if (!s) return;
+  var modal = document.getElementById(modalId);
+  if (!modal) return;
+
+  // Width slider + label
+  var wSlider = modal.querySelector('input[type=range][oninput*="pdSetPrintWidth"]');
+  if (wSlider) wSlider.value = s.widthPct;
+  var wLbl = document.getElementById(modalId + 'WidthPct');
+  if (wLbl) wLbl.textContent = s.widthPct + '%';
+
+  // Height slider + label
+  var hSlider = modal.querySelector('input[type=range][oninput*="pdSetPrintHeight"]');
+  if (hSlider) hSlider.value = s.heightPct;
+  var hLbl = document.getElementById(modalId + 'HeightPct');
+  if (hLbl) hLbl.textContent = s.heightPct + '%';
+
+  // Align dropdown
+  var alignSel = modal.querySelector('select[onchange*="pdSetPrintAlign"]');
+  if (alignSel) alignSel.value = s.align;
+
+  // Font %
+  var fontLbl = document.getElementById(modalId + 'FontPct');
+  if (fontLbl) fontLbl.textContent = Math.round(m * 100) + '%';
+
+  // Live scale update (prescription এর ক্ষেত্রে)
+  if (typeof applyLiveScale_ === 'function') applyLiveScale_(modalId);
+}
+
   function pdSetPrintWidth(modalId, pct) {
     var v = Math.max(30, Math.min(150, parseInt(pct, 10) || 100));
     if (!PD_PRINT_SETTINGS[modalId]) PD_PRINT_SETTINGS[modalId] = { widthPct: 100, heightPct: 100, align: 'middle' };
@@ -6464,6 +6545,7 @@ function initReceptionChatDragDrop_() {
     
     // লাইভ স্ক্রিনে প্রিভিউ আপডেট করার ফাংশন কল
     applyLiveScale_(modalId);
+    pdSavePrintSettings_();
   }
 
   function pdSetPrintHeight(modalId, pct) {
@@ -6475,6 +6557,7 @@ function initReceptionChatDragDrop_() {
     
     // লাইভ স্ক্রিনে প্রিভিউ আপডেট করার ফাংশন কল
     applyLiveScale_(modalId);
+    pdSavePrintSettings_();
   }
 
   // ===== নতুন ফাংশন: স্ক্রিনে লাইভ সাইজ ছোট-বড় করার জন্য =====
@@ -6515,7 +6598,9 @@ function initReceptionChatDragDrop_() {
   function pdSetPrintAlign(modalId, align) {
     if (!PD_PRINT_SETTINGS[modalId]) PD_PRINT_SETTINGS[modalId] = { widthPct: 100, heightPct: 100, align: 'middle' };
     PD_PRINT_SETTINGS[modalId].align = (align === 'top' || align === 'bottom') ? align : 'middle';
+    pdSavePrintSettings_();
   }
+  
 
 
   function pdAdjustPrintFontSize(modalId, direction) {
@@ -6525,7 +6610,9 @@ function initReceptionChatDragDrop_() {
     PD_MANUAL_SCALES[modalId] = cur;
     var pctEl = document.getElementById(modalId + 'FontPct');
     if (pctEl) pctEl.textContent = Math.round(cur * 100) + '%';
+    pdSavePrintSettings_();
   }
+  
 
   function pdResetFontControl_(modalId) {
     PD_MANUAL_SCALES[modalId] = 1;
@@ -6962,7 +7049,6 @@ function initReceptionChatDragDrop_() {
     var modal = document.getElementById('assessmentModal');
     modal.classList.remove('show');
     modal.style.display = 'none';
-    pdResetFontControl_('assessmentModal');
   }
 
   function resetAssessmentForm() {
@@ -6986,7 +7072,6 @@ function closePrescriptionForm() {
   var modal = document.getElementById('prescriptionModal');
   modal.classList.remove('show');
   modal.style.display = 'none';
-  if (typeof pdResetFontControl_ === 'function') pdResetFontControl_('prescriptionModal');
 
   var popup = document.getElementById('rxInputPopup');
   if (popup) popup.classList.remove('show');
@@ -7011,8 +7096,7 @@ function closePrescriptionForm() {
 }
 
   // ===== ম্যানুয়াল প্রেসক্রিপশন (Print Only) — কোনো ডেটা সেভ হবে না =====
-  function openManualPrescription() {
-    if (typeof pdResetFontControl_ === 'function') pdResetFontControl_('prescriptionModal');
+    function openManualPrescription() {
 
     var modal = document.getElementById('prescriptionModal');
     modal.classList.add('show');
@@ -7078,6 +7162,7 @@ function closePrescriptionForm() {
       if (typeof initRxMode === 'function') initRxMode();
       if (typeof loadRxInputSections === 'function') loadRxInputSections();
       if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+      pdApplySavedSettingsToUI_('prescriptionModal');   // ✅ নতুন
     }, 150);
 
     showPdToast('📄 ম্যানুয়াল মোড — কোনো ডেটা সেভ হবে না, শুধু প্রিন্ট করা যাবে', 'info');
@@ -8346,6 +8431,7 @@ function richExec(command, value) {
 
 (function init() {
     console.log('🚀 Patient Management UI loaded');
+    pdLoadPrintSettings_();       // ✅ নতুন — localStorage থেকে saved W/H/Font মেমরিতে আনো
     loadPatientDashboard();
 
         // লোগো সার্ভার থেকে এনে দুই ফর্মের <img class="pd-logo">-তে বসানো
@@ -9941,6 +10027,8 @@ function viewFollowupPrescription(index) {
         if (typeof initRxMode === 'function') initRxMode();
         if (typeof loadRxInputSections === 'function') loadRxInputSections();
         if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+        pdApplySavedSettingsToUI_('prescriptionModal');   // ✅ নতুন
+
         setTimeout(function() {
           if (presc) {
             var physioSaved = presc.physiotherapyItems || [];
@@ -10001,7 +10089,7 @@ function viewFollowupPrescription(index) {
             }
           }
           // ✅ Slogan restore
-initSloganForPrescription_(presc);
+          initSloganForPrescription_(presc);
         }, 500);
       }, 150);
 
