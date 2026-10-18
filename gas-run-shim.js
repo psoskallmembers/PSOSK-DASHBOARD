@@ -278,6 +278,36 @@
 
   window.google = window.google || {};
   window.google.script = window.google.script || {};
+
+// GAS-এর ভেতরে চলছে কিনা
+var IS_GAS_ = /script\.google\.com|googleusercontent\.com/.test(location.hostname);
+window.PSOSK_IS_GAS = IS_GAS_;
+
+// পেজ নেভিগেশন: GAS-এ হলে ?page=..., GitHub-এ হলে আলাদা .html ফাইল
+// ধরে নিচ্ছি GitHub-এ পেজগুলোর নাম: index.html, dashboard.html, patients.html, reset.html
+var PAGE_MAP_ = {
+  login: 'index.html',
+  dashboard: 'dashboard.html',
+  patients: 'patients.html',
+  reset: 'reset.html'
+};
+
+window.PSOSK_goto = function (page, params) {
+  var qs = '';
+  if (params) {
+    var parts = [];
+    for (var k in params) {
+      if (params[k] != null) parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+    }
+    qs = parts.join('&');
+  }
+  if (IS_GAS_) {
+    window.top.location.href = APPS_SCRIPT_URL + '?page=' + page + (qs ? '&' + qs : '');
+  } else {
+    window.location.href = (PAGE_MAP_[page] || 'index.html') + (qs ? '?' + qs : '');
+  }
+};
+   
   window.google.script.run = makeRunner(null, null);
 
   window.google.script.host = window.google.script.host || {
