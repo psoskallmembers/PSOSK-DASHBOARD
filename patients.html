@@ -836,11 +836,11 @@
     }
 
     /* ================================================================ */
-    /* ===== PRINT: EXACT WYSIWYG — ONE A4 PAGE (MOBILE FIXED) ======== */
+    /* ===== PRINT: EXACT WYSIWYG — ONE A4 PAGE ======================== */
     /* ================================================================ */
     @media print {
       @page {
-        size: 210mm 297mm; /* Force exact A4 */
+        size: 210mm 297mm; /* Explicit A4 size */
         margin: 0;
       }
 
@@ -858,11 +858,12 @@
         overflow: hidden !important;
       }
 
-      /* Hide everything except the active target */
+      /* Hide everything except the active form modal */
       body.pd-printing > * {
         display: none !important;
       }
       
+      /* The main print target */
       body.pd-printing > .pd-print-target {
         display: block !important;
         position: absolute !important;
@@ -897,61 +898,32 @@
         border-radius: 0 !important;
       }
 
-      /* 🟢 CRITICAL FIX: Force hide Left Panel & Flatten Layout on Mobile */
-      body.pd-printing .rx-left-panel {
-        display: none !important;
-      }
-
-      body.pd-printing .rx-split-view {
+      /* 🟢 FIX: Mobile Split View flattening for Print */
+      body.pd-printing > .pd-print-target .rx-split-view,
+      body.pd-printing > .pd-print-target .rx-right-panel {
         display: block !important;
-        flex-direction: column !important;
         width: 100% !important;
         height: auto !important;
-        overflow: visible !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-
-      body.pd-printing .rx-right-panel {
-        display: block !important;
-        width: 100% !important;
         max-width: 100% !important;
-        height: auto !important;
         max-height: none !important;
         overflow: visible !important;
         padding: 0 !important;
         margin: 0 !important;
-        background: #ffffff !important;
-      }
-
-      /* Reset JS scale */
-      body.pd-printing #prescriptionLiveContainer {
-        transform: none !important;
-        width: 100% !important;
-        height: auto !important;
-        margin: 0 !important;
-      }
-
-      /* Force form to fill A4 */
-      body.pd-printing .prescription-wrapper {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        box-shadow: none !important;
+        background: transparent !important;
         border: none !important;
+        box-shadow: none !important;
       }
 
-      /* Hide all UI buttons & toolbars */
-      body.pd-printing .no-print,
-      body.pd-printing .pd-modal-close,
-      body.pd-printing .form-actions,
-      body.pd-printing .sig-actions,
-      body.pd-printing .rx-toolbar,
-      body.pd-printing .rx-mode-toggle-overlay,
-      body.pd-printing .pd-font-ctrl,
-      body.pd-printing .bw-toggle-btn,
-      body.pd-printing .notepad-btn {
+      /* Hide in-modal controls */
+      body.pd-printing .pd-print-target .no-print,
+      body.pd-printing .pd-print-target .pd-modal-close,
+      body.pd-printing .pd-print-target .form-actions,
+      body.pd-printing .pd-print-target .sig-actions,
+      body.pd-printing .pd-print-target .rx-toolbar,
+      body.pd-printing .pd-print-target .rx-mode-toggle-overlay,
+      body.pd-printing .pd-print-target .pd-font-ctrl,
+      body.pd-printing .pd-print-target .bw-toggle-btn,
+      body.pd-printing .pd-print-target .notepad-btn {
         display: none !important;
         visibility: hidden !important;
       }
@@ -6869,27 +6841,16 @@ function pdApplySavedSettingsToUI_(modalId) {
     var availW_mm = PAGE_W_MM - PAGE_MARGIN_MM * 2;
     var availH_mm = PAGE_H_MM - PAGE_MARGIN_MM * 2;
 
-    // 🟢 Temporarily remove constraints from ALL parent containers (Mobile Fix)
+    // লাইভ স্কেল সাময়িকভাবে বন্ধ রাখা
     var liveContainer = modal.querySelector('#prescriptionLiveContainer');
-    var rightPanel = modal.querySelector('.rx-right-panel');
-    var splitView = modal.querySelector('.rx-split-view');
-    var modalBox = modal.querySelector('.pd-modal-box');
-    var overlay = modal;
-
-    var prevStyles = {
-      live: liveContainer ? { tf: liveContainer.style.transform, w: liveContainer.style.width, h: liveContainer.style.height, m: liveContainer.style.margin } : null,
-      right: rightPanel ? { w: rightPanel.style.width, maxW: rightPanel.style.maxWidth, p: rightPanel.style.padding, o: rightPanel.style.overflow, h: rightPanel.style.height } : null,
-      split: splitView ? { w: splitView.style.width, maxW: splitView.style.maxWidth, d: splitView.style.display, fd: splitView.style.flexDirection } : null,
-      box: modalBox ? { w: modalBox.style.width, maxW: modalBox.style.maxWidth, p: modalBox.style.padding, h: modalBox.style.height } : null,
-      ov: overlay ? { o: overlay.style.overflow } : null
-    };
-
-    // Force expand to A4 size before measuring
-    if (liveContainer) { liveContainer.style.transform = 'none'; liveContainer.style.width = '194mm'; liveContainer.style.height = 'auto'; }
-    if (rightPanel) { rightPanel.style.width = '194mm'; rightPanel.style.maxWidth = '194mm'; rightPanel.style.padding = '0'; rightPanel.style.overflow = 'visible'; rightPanel.style.height = 'auto'; }
-    if (splitView) { splitView.style.width = '194mm'; splitView.style.maxWidth = '194mm'; splitView.style.display = 'block'; splitView.style.flexDirection = 'column'; }
-    if (modalBox) { modalBox.style.width = '194mm'; modalBox.style.maxWidth = '194mm'; modalBox.style.height = 'auto'; modalBox.style.padding = '0'; }
-    if (overlay) { overlay.style.overflow = 'visible'; }
+    var prevContainerTransform = '';
+    if (liveContainer) {
+      prevContainerTransform = liveContainer.style.transform;
+      liveContainer.style.transform = 'none';
+      liveContainer.style.width = '';
+      liveContainer.style.height = '';
+      liveContainer.style.margin = '';
+    }
 
     var prev = {
       transform: inner.style.transform,
@@ -6910,9 +6871,7 @@ function pdApplySavedSettingsToUI_(modalId) {
     inner.style.margin = '0';
     inner.style.width = '194mm';
     inner.style.boxSizing = 'border-box';
-    
-    // Force reflow so the browser calculates the true size
-    void inner.offsetWidth; 
+    void inner.offsetWidth;
 
     var naturalW_px = inner.scrollWidth || 1;
     var naturalH_px = inner.scrollHeight || 1;
@@ -6960,15 +6919,6 @@ function pdApplySavedSettingsToUI_(modalId) {
     function cleanup() {
       document.body.classList.remove('pd-printing');
       modal.classList.remove('pd-print-target');
-
-      // Restore parent styles
-      if (liveContainer && prevStyles.live) { liveContainer.style.transform = prevStyles.live.tf; liveContainer.style.width = prevStyles.live.w; liveContainer.style.height = prevStyles.live.h; liveContainer.style.margin = prevStyles.live.m; }
-      if (rightPanel && prevStyles.right) { rightPanel.style.width = prevStyles.right.w; rightPanel.style.maxWidth = prevStyles.right.maxW; rightPanel.style.padding = prevStyles.right.p; rightPanel.style.overflow = prevStyles.right.o; rightPanel.style.height = prevStyles.right.h; }
-      if (splitView && prevStyles.split) { splitView.style.width = prevStyles.split.w; splitView.style.maxWidth = prevStyles.split.maxW; splitView.style.display = prevStyles.split.d; splitView.style.flexDirection = prevStyles.split.fd; }
-      if (modalBox && prevStyles.box) { modalBox.style.width = prevStyles.box.w; modalBox.style.maxWidth = prevStyles.box.maxW; modalBox.style.padding = prevStyles.box.p; modalBox.style.height = prevStyles.box.h; }
-      if (overlay && prevStyles.ov) { overlay.style.overflow = prevStyles.ov.o; }
-
-      // Restore inner form
       inner.style.transform = prev.transform || '';
       inner.style.transformOrigin = prev.transformOrigin || '';
       inner.style.position = prev.position || '';
@@ -6977,18 +6927,20 @@ function pdApplySavedSettingsToUI_(modalId) {
       inner.style.width = prev.width || '';
       inner.style.margin = prev.margin || '';
       inner.style.boxSizing = prev.boxSizing || '';
-
-      if (typeof applyLiveScale_ === 'function') applyLiveScale_(modalId);
+      
+      if (liveContainer) {
+        liveContainer.style.transform = prevContainerTransform;
+        applyLiveScale_(modalId); // স্ক্রিনে আবার স্কেল ফিরিয়ে আনা
+      }
       window.removeEventListener('afterprint', cleanup);
     }
 
     window.addEventListener('afterprint', cleanup);
 
-    // Mobile-এ রেন্ডার হতে একটু বেশি সময় লাগে, তাই ২০০ms ডিলে দেওয়া হলো
     setTimeout(function () {
       window.print();
       setTimeout(cleanup, 3000);
-    }, 200);
+    }, 150); // 60 থেকে বাড়িয়ে 150 করা হলো
   }
 
   function printRegistrationForm() {
