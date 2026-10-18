@@ -130,16 +130,15 @@
         }, 5000);
       }
 
-      function goToLogin() {
-        google.script.run
-          .withSuccessHandler(function(url) {
-            window.top.location.href = url;
-          })
-          .withFailureHandler(function(error) {
-            showToast('❌ Error: ' + (error.message || error), 'error');
-          })
-          .getScriptUrl();
-      }
+function goToLogin() {
+  if (window.PSOSK_goto) { PSOSK_goto('login'); return; }
+  google.script.run
+    .withSuccessHandler(function(url) { window.top.location.href = url; })
+    .withFailureHandler(function(error) {
+      showToast('❌ Error: ' + (error.message || error), 'error');
+    })
+    .getScriptUrl();
+}
 
       function submitReset(e) {
         e.preventDefault();
