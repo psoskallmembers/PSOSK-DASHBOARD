@@ -2711,6 +2711,42 @@
   }
 }
 
+/* ===== Prescription Slogan Display ===== */
+.prescription-wrapper .presc-slogan-display{
+  text-align:center;
+  margin-top:10px;
+  padding:7px 14px;
+  font-style:italic;
+  font-size:12.5px;
+  color:#1a3c6e;
+  font-weight:600;
+  border-top:1px dashed #b0c4de;
+  border-bottom:1px dashed #b0c4de;
+  background:linear-gradient(90deg,#fafcff,#f0f7ff,#fafcff);
+  letter-spacing:.2px;
+}
+.prescription-wrapper .presc-slogan-display .slogan-text{display:inline-block;}
+#prescriptionModal.paper-grayscale .prescription-wrapper .presc-slogan-display{
+  color:#000 !important;
+  background:#f5f5f5 !important;
+  border-color:#000 !important;
+}
+.slogan-btn{background:#fff8e1;color:#b06000;border:1px solid #f9a825;}
+.slogan-btn:hover{background:#ffecb3;}
+.slogan-item{background:#f8f9fa;border:1px solid #dadce0;border-radius:8px;padding:10px 12px;}
+.slogan-item.active{background:#e6f4ea;border:2px solid #34A853;}
+.slogan-item .slogan-text{font-style:italic;font-size:13.5px;color:#202124;word-break:break-word;}
+.slogan-item .slogan-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.slogan-item .slogan-actions button{border:none;padding:5px 11px;border-radius:5px;font-size:11px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:4px;}
+.slogan-item .slogan-actions button i{font-size:10px;}
+.btn-slogan-activate{background:#34A853;color:#fff;}
+.btn-slogan-edit{background:#1A73E8;color:#fff;}
+.btn-slogan-delete{background:#EA4335;color:#fff;}
+
+@container pdform (max-width:640px){
+  .prescription-wrapper .presc-slogan-display{font-size:11px;padding:5px 8px;margin-top:8px;}
+}
+
 </style>
 </head>
 <body>
@@ -3706,14 +3742,17 @@
       </div>
 
       <!-- ===== B&W + KHOSRA buttons ===== -->
-      <div class="no-print" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;padding-right:160px;">
-        <button type="button" class="btn btn-sm bw-toggle-btn active-colour" id="rxBwToggle" onclick="togglePrescriptionBw()" title="Colour / B&W">
-          <i class="fas fa-palette"></i> <span id="rxBwLabel">Colour</span>
-        </button>
-        <button type="button" class="btn btn-sm notepad-btn" onclick="openKhosraNotepad()" title="Notepad (KHOSRA)">
-          <i class="fas fa-sticky-note"></i> KHOSRA
-        </button>
-      </div>
+<div class="no-print" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px;padding-right:160px;">
+  <button type="button" class="btn btn-sm bw-toggle-btn active-colour" id="rxBwToggle" onclick="togglePrescriptionBw()" title="Colour / B&W">
+    <i class="fas fa-palette"></i> <span id="rxBwLabel">Colour</span>
+  </button>
+  <button type="button" class="btn btn-sm slogan-btn" id="rxSloganBtn" onclick="openSloganManager()" title="Slogan Manager (Add / Edit / Delete)">
+    <i class="fas fa-quote-left"></i> Slogan
+  </button>
+  <button type="button" class="btn btn-sm notepad-btn" onclick="openKhosraNotepad()" title="Notepad (KHOSRA)">
+    <i class="fas fa-sticky-note"></i> KHOSRA
+  </button>
+</div>
 
       <input type="hidden" id="prescPatientId">
       <input type="hidden" id="prescFromPending" value="false">
@@ -3784,12 +3823,17 @@
           <div class="rx-body" id="prescRx" contenteditable="true" data-placeholder="প্রেসক্রিপশন লিখুন..."></div>
         </div>
       </div>
+<div class="signature-row">
+  <div class="sig-left"><div class="sig-text"><i class="fas fa-check-circle"></i> Prescription valid with signature</div></div>
+  <div class="sig-right"><div class="sig-line"></div><div class="sig-label">Signature</div><div class="sig-sub" id="prescSignatureDesignation">Consultant (Physiotherapist)</div></div>
+</div>
 
-      <div class="signature-row">
-        <div class="sig-left"><div class="sig-text"><i class="fas fa-check-circle"></i> Prescription valid with signature</div></div>
-        <div class="sig-right"><div class="sig-line"></div><div class="sig-label">Signature</div><div class="sig-sub" id="prescSignatureDesignation">Consultant (Physiotherapist)</div></div>
-      </div>
-      <div class="footer">JPUF, Ministry of Social Welfare</div>
+<!-- ✅ এই ৩ লাইন নতুন যোগ করুন -->
+<div class="presc-slogan-display" id="prescSloganDisplay" style="display:none;">
+  <span class="slogan-text" id="prescSloganText"></span>
+</div>
+
+<div class="footer">JPUF, Ministry of Social Welfare</div>
 
       <div class="form-actions no-print">
         <button type="button" class="btn btn-success" id="prescSubmitBtn" onclick="submitPrescriptionForm()"><i class="fas fa-save"></i> Submit</button>
@@ -4401,23 +4445,18 @@
     if (regSignaturePad) regSignaturePad.clear();
   }
 
-  function toggleSignatureType(type) {
-    var nameInput = document.getElementById('sigNameInput');
-    var padWrapper = document.getElementById('signaturePadWrapper');
-    if (type === 'name') {
-      nameInput.style.display = 'block';
-      padWrapper.classList.remove('show');
-      padWrapper.style.display = 'none';
-    } else {
-      nameInput.style.display = 'none';
-      padWrapper.style.display = 'block';
-            setTimeout(function() {
-        if (typeof initRxMode === 'function') initRxMode();
-        if (typeof loadRxInputSections === 'function') loadRxInputSections();
-        if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
-      }, 150);
-    }
+function toggleSignatureType(type) {
+  var nameInput = document.getElementById('sigNameInput');
+  var padWrapper = document.getElementById('signaturePadWrapper');
+  if (type === 'name') {
+    nameInput.style.display = 'block';
+    padWrapper.classList.remove('show');
+    padWrapper.style.display = 'none';
+  } else {
+    nameInput.style.display = 'none';
+    padWrapper.style.display = 'block';
   }
+}
 
   function clearSignature() {
     if (regSignaturePad) regSignaturePad.clear();
@@ -5032,56 +5071,56 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   // ================================================================
 
   function openAssessmentFromPending(patientId) {
-    if (!patientId) {
-      showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
-      return;
-    }
-
-    google.script.run
-      .withSuccessHandler(function(result) {
-        if (!result || !result.success) {
-          showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
-          return;
-        }
-        var p = result.patient;
-
-        var modal = document.getElementById('assessmentModal');
-        modal.classList.add('show');
-        modal.style.display = 'flex';
-
-        document.getElementById('assessPatientId').value = p.id || '';
-        document.getElementById('assessRegNo').value = p.centerPin || '';
-        document.getElementById('assessFromPending').value = 'true';
-
-        document.getElementById('assessClientName').value = p.name || '';
-
-        var today = new Date().toISOString().split('T')[0];
-        document.getElementById('assessDate').value = today;
-
-        var fields = [
-          'assessDiagnosis', 'assessCc', 'assessGeneralHistory', 'assessPastMedical',
-          'assessSensory', 'assessReflexes', 'assessMuscleTone', 'assessStiffness',
-          'assessFunctionalAbility', 'assessBowelBladder', 'assessCommunication',
-          'assessAnyLimb', 'assessBalanceCoord', 'assessExamOther',
-          'assessProblemList', 'assessGoalSmart', 'assessTreatmentPlan',
-          'assessHomeAdvice', 'assessRefTo', 'assessAssistiveDevice'
-        ];
-        fields.forEach(function(id) {
-          document.getElementById(id).value = '';
-        });
-        document.getElementById('assessDisability').value = '';
-
-        document.querySelectorAll('#muscleTable input').forEach(function(inp) { inp.value = ''; });
-        document.querySelectorAll('#romTable input').forEach(function(inp) { inp.value = ''; });
-
-        document.getElementById('assessCc').focus();
-        showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে', 'info');
-      })
-      .withFailureHandler(function(e) {
-        showPdToast('❌ Error: ' + e, 'error');
-      })
-      .getPatientById(patientId, PD_USER_EMAIL);
+  if (!patientId) {
+    showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
+    return;
   }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (!result || !result.success) {
+        showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
+        return;
+      }
+      var p = result.patient;
+
+      var modal = document.getElementById('assessmentModal');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+
+      document.getElementById('assessPatientId').value = p.id || '';
+      document.getElementById('assessRegNo').value = p.centerPin || '';
+      document.getElementById('assessFromPending').value = 'true';
+
+      document.getElementById('assessClientName').value = p.name || '';
+
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('assessDate').value = today;
+
+      var fields = [
+        'assessDiagnosis', 'assessCc', 'assessGeneralHistory', 'assessPastMedical',
+        'assessSensory', 'assessReflexes', 'assessMuscleTone', 'assessStiffness',
+        'assessFunctionalAbility', 'assessBowelBladder', 'assessCommunication',
+        'assessAnyLimb', 'assessBalanceCoord', 'assessExamOther',
+        'assessProblemList', 'assessGoalSmart', 'assessTreatmentPlan',
+        'assessHomeAdvice', 'assessRefTo', 'assessAssistiveDevice'
+      ];
+      fields.forEach(function(id) {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('assessDisability').value = '';
+
+      document.querySelectorAll('#muscleTable input').forEach(function(inp) { inp.value = ''; });
+      document.querySelectorAll('#romTable input').forEach(function(inp) { inp.value = ''; });
+
+      document.getElementById('assessCc').focus();
+      showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে', 'info');
+    })
+    .withFailureHandler(function(e) {
+      showPdToast('❌ Error: ' + e, 'error');
+    })
+    .getPatientById(patientId, PD_USER_EMAIL);
+}
 
   // ================================================================
   // ===== SUBMIT ASSESSMENT =========================================
@@ -5361,80 +5400,80 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
   // ================================================================
 
     function openPrescriptionFromPending(patientId) {
-    if (!patientId) {
-      showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
-      return;
-    }
-
-    google.script.run
-      .withSuccessHandler(function(result) {
-        if (!result || !result.success) {
-          showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
-          return;
-        }
-        var p = result.patient;
-
-        var modal = document.getElementById('prescriptionModal');
-        modal.classList.add('show');
-        modal.style.display = 'flex';
-
-        document.getElementById('prescPatientId').value = p.id || '';
-        document.getElementById('prescFromPending').value = 'true';
-        document.getElementById('prescRegNo').value = p.centerPin || '';
-        autoSizeRegInput(document.getElementById('prescRegNo'));
-
-        var today = new Date().toISOString().split('T')[0];
-        document.getElementById('prescDate').value = today;
-        document.getElementById('prescDate').max = today;
-
-        document.getElementById('prescClientName').value = p.name || '';
-        document.getElementById('prescAge').value = p.age || '';
-        document.getElementById('prescGuardianName').value = p.father || '';
-        document.getElementById('prescMotherName').value = p.mother || '';
-        document.getElementById('prescAddress').value = p.address || '';
-        document.getElementById('prescGender').value = p.gender || '';
-        document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
-
-        document.getElementById('prescCc').value = '';
-        document.getElementById('prescHpc').value = '';
-        document.getElementById('prescPmh').value = '';
-        document.getElementById('prescDh').value = '';
-        document.getElementById('prescOe').value = '';
-        document.getElementById('prescAdvice').value = '';
-        document.getElementById('prescDiagnosis').value = '';
-        document.getElementById('prescRx').innerHTML = '';
-        document.getElementById('prescSignatureDesignation').textContent = PD_USER_ROLE || 'Consultant (Physiotherapist)';
-
-        // ===== Reset Rx session state =====
-        PD_RX_MEDICINES = [];
-        if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
-        var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
-        var phyChk = document.getElementById('physioSecCheck'); if (phyChk) phyChk.checked = true;
-        var hmChk = document.getElementById('hmSecCheck'); if (hmChk) hmChk.checked = true;
-        var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = false;
-        document.querySelectorAll('.phy-rx-check, .hm-rx-check, .med-rx-check').forEach(function(cb) { cb.checked = false; });
-        document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
-          b.innerText = '0';
-          b.className = 'badge cat-count-badge bg-secondary';
-        });
-
-        document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
-          if (typeof autoGrow === 'function') autoGrow(ta);
-        });
-
-        setTimeout(function() {
-          if (typeof initRxMode === 'function') initRxMode();
-          if (typeof loadRxInputSections === 'function') loadRxInputSections();
-          if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
-        }, 150);
-
-        showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে', 'info');
-      })
-      .withFailureHandler(function(e) {
-        showPdToast('❌ Error: ' + e, 'error');
-      })
-      .getPatientById(patientId, PD_USER_EMAIL);
+  if (!patientId) {
+    showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
+    return;
   }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (!result || !result.success) {
+        showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
+        return;
+      }
+      var p = result.patient;
+
+      var modal = document.getElementById('prescriptionModal');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+
+      document.getElementById('prescPatientId').value = p.id || '';
+      document.getElementById('prescFromPending').value = 'true';
+      document.getElementById('prescRegNo').value = p.centerPin || '';
+      autoSizeRegInput(document.getElementById('prescRegNo'));
+
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('prescDate').value = today;
+      document.getElementById('prescDate').max = today;
+
+      document.getElementById('prescClientName').value = p.name || '';
+      document.getElementById('prescAge').value = p.age || '';
+      document.getElementById('prescGuardianName').value = p.father || '';
+      document.getElementById('prescMotherName').value = p.mother || '';
+      document.getElementById('prescAddress').value = p.address || '';
+      document.getElementById('prescGender').value = p.gender || '';
+      document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
+
+      document.getElementById('prescCc').value = '';
+      document.getElementById('prescHpc').value = '';
+      document.getElementById('prescPmh').value = '';
+      document.getElementById('prescDh').value = '';
+      document.getElementById('prescOe').value = '';
+      document.getElementById('prescAdvice').value = '';
+      document.getElementById('prescDiagnosis').value = '';
+      document.getElementById('prescRx').innerHTML = '';
+      document.getElementById('prescSignatureDesignation').textContent = PD_USER_ROLE || 'Consultant (Physiotherapist)';
+
+      PD_RX_MEDICINES = [];
+      if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+      var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
+      var phyChk = document.getElementById('physioSecCheck'); if (phyChk) phyChk.checked = true;
+      var hmChk = document.getElementById('hmSecCheck'); if (hmChk) hmChk.checked = true;
+      var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = false;
+      document.querySelectorAll('.phy-rx-check, .hm-rx-check, .med-rx-check').forEach(function(cb) { cb.checked = false; });
+      document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
+        b.innerText = '0';
+        b.className = 'badge cat-count-badge bg-secondary';
+      });
+
+      document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
+        if (typeof autoGrow === 'function') autoGrow(ta);
+      });
+
+      setTimeout(function() {
+        if (typeof initRxMode === 'function') initRxMode();
+        if (typeof loadRxInputSections === 'function') loadRxInputSections();
+        if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+      }, 150);
+
+      initSloganForPrescription_(null);
+      showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে', 'info');
+    })
+    .withFailureHandler(function(e) {
+      showPdToast('❌ Error: ' + e, 'error');
+    })
+    .getPatientById(patientId, PD_USER_EMAIL);
+}
 
   // ================================================================
   // ===== SUBMIT PRESCRIPTION =======================================
@@ -5488,7 +5527,8 @@ if (!followupPrescActions) followupPrescActions = 'N/A';
     physiotherapyItems: physioItems,
     homeManagement: hmItems,
     medicineItems: medicineItems,
-    medicineNote: medicineNote
+    medicineNote: medicineNote,
+    slogan: PD_CURRENT_SLOGAN || ''
   };
 
   var prescType = document.getElementById('prescType').value || 'regular';
@@ -5694,6 +5734,7 @@ function viewFollowupPatient(patientId, requestId) {
         }, 150);
 
         showPdToast('📋 রোগীর তথ্য প্রি-ফিল্ড করা হয়েছে — ফলোআপ প্রেসক্রিপশন লিখুন', 'info');
+        initSloganForPrescription_(null);
       })
       .withFailureHandler(function(e) {
         showPdToast('❌ Error: ' + e, 'error');
@@ -5885,175 +5926,168 @@ function viewFollowupPatient(patientId, requestId) {
   }
 
     function viewSavedPrescription(patientId) {
-    if (!patientId) {
-      showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
-      return;
-    }
-
-    google.script.run
-      .withSuccessHandler(function(result) {
-        if (!result || !result.success) {
-          showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
-          return;
-        }
-        var p = result.patient;
-
-        var modal = document.getElementById('prescriptionModal');
-        modal.classList.add('show');
-        modal.style.display = 'flex';
-
-        document.getElementById('prescPatientId').value = p.id || '';
-        document.getElementById('prescFromPending').value = 'false';
-        document.getElementById('prescRegNo').value = p.centerPin || ''; autoSizeRegInput(document.getElementById('prescRegNo'));
-
-        var today = new Date().toISOString().split('T')[0];
-        document.getElementById('prescDate').value = today;
-        document.getElementById('prescDate').max = today;
-
-        document.getElementById('prescClientName').value = p.name || '';
-        document.getElementById('prescAge').value = p.age || '';
-        document.getElementById('prescGuardianName').value = p.father || '';
-        document.getElementById('prescMotherName').value = p.mother || '';
-        document.getElementById('prescAddress').value = p.address || '';
-        document.getElementById('prescGender').value = p.gender || '';
-        document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
-
-        // ===== Reset Rx session state =====
-        PD_RX_MEDICINES = [];
-        if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
-        var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
-        document.getElementById('prescRx').innerHTML = '';
-        document.querySelectorAll('.phy-rx-check, .hm-rx-check, .med-rx-check').forEach(function(cb) { cb.checked = false; });
-        document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
-          b.innerText = '0';
-          b.className = 'badge cat-count-badge bg-secondary';
-        });
-
-        // ===== Populate from existing prescriptionData =====
-        var presc = null;
-        if (p.prescriptionData) {
-          try { presc = JSON.parse(p.prescriptionData); } catch (e) { presc = null; }
-        }
-
-        if (presc) {
-          document.getElementById('prescCc').value = presc.cc || '';
-          document.getElementById('prescHpc').value = presc.hpc || '';
-          document.getElementById('prescPmh').value = presc.pmh || '';
-          document.getElementById('prescDh').value = presc.dh || '';
-          document.getElementById('prescOe').value = presc.oe || '';
-          document.getElementById('prescAdvice').value = presc.advice || '';
-          document.getElementById('prescDiagnosis').value = presc.diagnosis || '';
-          document.getElementById('prescRx').innerHTML = presc.rx || '';
-          document.getElementById('prescSignatureDesignation').textContent = presc.prescribedByDesignation || PD_USER_ROLE || 'Consultant (Physiotherapist)';
-
-          // Restore structured data into PD_RX_MEDICINES
-          var medSaved = presc.medicineItems || [];
-          PD_RX_MEDICINES = Array.isArray(medSaved) ? medSaved.slice() : [];
-          if (fn) fn.value = presc.medicineNote || '';
-          if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
-
-          // Show Rx section if has meds
-          var rxChk = document.getElementById('rxSecCheck');
-          if (rxChk) rxChk.checked = (PD_RX_MEDICINES.length > 0 || (presc.medicineNote || '').trim());
-        }
-
-        document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
-          if (typeof autoGrow === 'function') autoGrow(ta);
-        });
-
-        // ===== Init Rx mode + load sections + B&W, then restore checkbox selections =====
-        setTimeout(function() {
-          if (typeof initRxMode === 'function') initRxMode();
-          if (typeof loadRxInputSections === 'function') loadRxInputSections();
-          if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
-
-          setTimeout(function() {
-            if (presc) {
-              var physioSaved = presc.physiotherapyItems || [];
-              var hmSaved = presc.homeManagement || [];
-              var medSaved = presc.medicineItems || [];
-
-              // 1) Physio checkbox restore
-              document.querySelectorAll('#physioCatAcc .phy-rx-check').forEach(function(cb) {
-                var key = cb.getAttribute('data-cat') + '||' + cb.value;
-                cb.checked = physioSaved.indexOf(key) !== -1;
-              });
-
-              // 2) HM checkbox restore
-              document.querySelectorAll('#hmCatAcc .hm-rx-check').forEach(function(cb) {
-                var key = cb.getAttribute('data-cat') + '||' + cb.value;
-                cb.checked = hmSaved.indexOf(key) !== -1;
-              });
-
-              // 3) ✅ Medicine checkbox restore (নতুন)
-              document.querySelectorAll('#rxCatAcc .med-rx-check').forEach(function(cb) {
-                var catName = cb.getAttribute('data-cat');
-                var medName = cb.value;
-                var found = medSaved.some(function(m) {
-                  return (m.category || '') === catName && (m.medicineName || '') === medName;
-                });
-                cb.checked = found;
-              });
-
-              // 4) সব badge update
-              document.querySelectorAll('.rx-cat-acc .accordion-item').forEach(function(w) {
-                var badge = w.querySelector('.cat-count-badge');
-                if (badge) {
-                  var checked = w.querySelectorAll('input[type=checkbox]:checked').length;
-                  badge.innerText = checked;
-                  badge.className = 'badge cat-count-badge ' + (checked > 0 ? 'bg-success' : 'bg-secondary');
-                }
-              });
-
-              // 5) Rx box-এর synced লাইনগুলোতে data-sync-key আবার tag করা
-              var rxBox = document.getElementById('prescRx');
-              if (rxBox) {
-                rxBox.querySelectorAll('div').forEach(function(div) {
-                  if (div.getAttribute('data-sync-key')) return;
-                  var txt = (div.textContent || '').trim();
-
-                  physioSaved.forEach(function(entry) {
-                    var parts = entry.split('||');
-                    var itemName = (parts[1] || '').trim();
-                    if (!itemName) return;
-                    if (txt === '• ' + itemName || txt === itemName) {
-                      div.setAttribute('data-sync-key', 'PHY::' + parts[0] + '::' + itemName);
-                      div.setAttribute('data-sync-type', 'physio');
-                    }
-                  });
-
-                  hmSaved.forEach(function(entry) {
-                    var parts = entry.split('||');
-                    var itemName = (parts[1] || '').trim();
-                    if (!itemName) return;
-                    if (txt === '• ' + itemName || txt === itemName) {
-                      div.setAttribute('data-sync-key', 'HM::' + parts[0] + '::' + itemName);
-                      div.setAttribute('data-sync-type', 'hm');
-                    }
-                  });
-
-                  medSaved.forEach(function(m) {
-                    var medName = (m.medicineName || '').trim();
-                    if (!medName) return;
-                    if (txt.indexOf(medName) !== -1) {
-                      var key = 'MED::' + (m.category || '') + '::' + medName + '::' + (m.dose || '');
-                      div.setAttribute('data-sync-key', key);
-                      div.setAttribute('data-sync-type', 'medicine');
-                    }
-                  });
-                });
-              }
-            }
-          }, 500);
-        }, 150);
-
-        showPdToast('📋 সংরক্ষিত প্রেসক্রিপশন লোড করা হয়েছে', 'info');
-      })
-      .withFailureHandler(function(e) {
-        showPdToast('❌ Error: ' + e, 'error');
-      })
-      .getPatientById(patientId, PD_USER_EMAIL);
+  if (!patientId) {
+    showPdToast('❌ রোগী ID পাওয়া যায়নি!', 'error');
+    return;
   }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (!result || !result.success) {
+        showPdToast('❌ ' + (result && result.error) || 'সার্ভার থেকে কোনো রেসপন্স আসেনি', 'error');
+        return;
+      }
+      var p = result.patient;
+
+      var modal = document.getElementById('prescriptionModal');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+
+      document.getElementById('prescPatientId').value = p.id || '';
+      document.getElementById('prescFromPending').value = 'false';
+      document.getElementById('prescRegNo').value = p.centerPin || '';
+      autoSizeRegInput(document.getElementById('prescRegNo'));
+
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('prescDate').value = today;
+      document.getElementById('prescDate').max = today;
+
+      document.getElementById('prescClientName').value = p.name || '';
+      document.getElementById('prescAge').value = p.age || '';
+      document.getElementById('prescGuardianName').value = p.father || '';
+      document.getElementById('prescMotherName').value = p.mother || '';
+      document.getElementById('prescAddress').value = p.address || '';
+      document.getElementById('prescGender').value = p.gender || '';
+      document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
+
+      PD_RX_MEDICINES = [];
+      if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+      var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
+      document.getElementById('prescRx').innerHTML = '';
+      document.querySelectorAll('.phy-rx-check, .hm-rx-check, .med-rx-check').forEach(function(cb) { cb.checked = false; });
+      document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
+        b.innerText = '0';
+        b.className = 'badge cat-count-badge bg-secondary';
+      });
+
+      var presc = null;
+      if (p.prescriptionData) {
+        try { presc = JSON.parse(p.prescriptionData); } catch (e) { presc = null; }
+      }
+
+      if (presc) {
+        document.getElementById('prescCc').value = presc.cc || '';
+        document.getElementById('prescHpc').value = presc.hpc || '';
+        document.getElementById('prescPmh').value = presc.pmh || '';
+        document.getElementById('prescDh').value = presc.dh || '';
+        document.getElementById('prescOe').value = presc.oe || '';
+        document.getElementById('prescInvestigation').value = presc.investigation || '';
+        document.getElementById('prescAdvice').value = presc.advice || '';
+        document.getElementById('prescDiagnosis').value = presc.diagnosis || '';
+        document.getElementById('prescRx').innerHTML = presc.rx || '';
+        document.getElementById('prescSignatureDesignation').textContent = presc.prescribedByDesignation || PD_USER_ROLE || 'Consultant (Physiotherapist)';
+
+        var medSaved = presc.medicineItems || [];
+        PD_RX_MEDICINES = Array.isArray(medSaved) ? medSaved.slice() : [];
+        if (fn) fn.value = presc.medicineNote || '';
+        if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+
+        var rxChk = document.getElementById('rxSecCheck');
+        if (rxChk) rxChk.checked = (PD_RX_MEDICINES.length > 0 || (presc.medicineNote || '').trim());
+      }
+
+      document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
+        if (typeof autoGrow === 'function') autoGrow(ta);
+      });
+
+      setTimeout(function() {
+        if (typeof initRxMode === 'function') initRxMode();
+        if (typeof loadRxInputSections === 'function') loadRxInputSections();
+        if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
+
+        setTimeout(function() {
+          if (presc) {
+            var physioSaved = presc.physiotherapyItems || [];
+            var hmSaved = presc.homeManagement || [];
+            var medSaved2 = presc.medicineItems || [];
+
+            document.querySelectorAll('#physioCatAcc .phy-rx-check').forEach(function(cb) {
+              var key = cb.getAttribute('data-cat') + '||' + cb.value;
+              cb.checked = physioSaved.indexOf(key) !== -1;
+            });
+
+            document.querySelectorAll('#hmCatAcc .hm-rx-check').forEach(function(cb) {
+              var key = cb.getAttribute('data-cat') + '||' + cb.value;
+              cb.checked = hmSaved.indexOf(key) !== -1;
+            });
+
+            document.querySelectorAll('#rxCatAcc .med-rx-check').forEach(function(cb) {
+              var catName = cb.getAttribute('data-cat');
+              var medName = cb.value;
+              var found = medSaved2.some(function(m) {
+                return (m.category || '') === catName && (m.medicineName || '') === medName;
+              });
+              cb.checked = found;
+            });
+
+            document.querySelectorAll('.rx-cat-acc .accordion-item').forEach(function(w) {
+              var badge = w.querySelector('.cat-count-badge');
+              if (badge) {
+                var checked = w.querySelectorAll('input[type=checkbox]:checked').length;
+                badge.innerText = checked;
+                badge.className = 'badge cat-count-badge ' + (checked > 0 ? 'bg-success' : 'bg-secondary');
+              }
+            });
+
+            var rxBox = document.getElementById('prescRx');
+            if (rxBox) {
+              rxBox.querySelectorAll('div').forEach(function(div) {
+                if (div.getAttribute('data-sync-key')) return;
+                var txt = (div.textContent || '').trim();
+
+                physioSaved.forEach(function(entry) {
+                  var parts = entry.split('||');
+                  var itemName = (parts[1] || '').trim();
+                  if (!itemName) return;
+                  if (txt === '• ' + itemName || txt === itemName) {
+                    div.setAttribute('data-sync-key', 'PHY::' + parts[0] + '::' + itemName);
+                    div.setAttribute('data-sync-type', 'physio');
+                  }
+                });
+
+                hmSaved.forEach(function(entry) {
+                  var parts = entry.split('||');
+                  var itemName = (parts[1] || '').trim();
+                  if (!itemName) return;
+                  if (txt === '• ' + itemName || txt === itemName) {
+                    div.setAttribute('data-sync-key', 'HM::' + parts[0] + '::' + itemName);
+                    div.setAttribute('data-sync-type', 'hm');
+                  }
+                });
+
+                medSaved2.forEach(function(m) {
+                  var medName = (m.medicineName || '').trim();
+                  if (!medName) return;
+                  if (txt.indexOf(medName) !== -1) {
+                    var key = 'MED::' + (m.category || '') + '::' + medName + '::' + (m.dose || '');
+                    div.setAttribute('data-sync-key', key);
+                    div.setAttribute('data-sync-type', 'medicine');
+                  }
+                });
+              });
+            }
+          }
+        }, 500);
+      }, 150);
+
+      initSloganForPrescription_(presc);
+      showPdToast('📋 সংরক্ষিত প্রেসক্রিপশন লোড করা হয়েছে', 'info');
+    })
+    .withFailureHandler(function(e) {
+      showPdToast('❌ Error: ' + e, 'error');
+    })
+    .getPatientById(patientId, PD_USER_EMAIL);
+}
 
   // ================================================================
 // Followup প্রেসক্রিপশন এডিট — Prescription modal followup mode-এ খুলবে
@@ -6176,86 +6210,7 @@ function openFollowupPrescriptionEdit_(p, presc) {
     }, 500);
   }, 150);
 
-  showPdToast('📋 Followup প্রেসক্রিপশন লোড হয়েছে — এডিট করে সেভ করুন', 'info');
-}
-
-// Followup prescription ডেটা দিয়ে prescription modal populate করে
-function openFollowupPrescriptionEdit_(p, presc) {
-  var modal = document.getElementById('prescriptionModal');
-  modal.classList.add('show');
-  modal.style.display = 'flex';
-
-  document.getElementById('prescPatientId').value = p.id || '';
-  document.getElementById('prescFromPending').value = 'false';
-  document.getElementById('prescType').value = 'followup';
-  document.getElementById('prescRegNo').value = p.centerPin || '';
-  autoSizeRegInput(document.getElementById('prescRegNo'));
-
-  var dateVal = presc.prescribeDate ? new Date(presc.prescribeDate) : new Date();
-  document.getElementById('prescDate').value = !isNaN(dateVal.getTime()) ? dateVal.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-
-  document.getElementById('prescClientName').value = p.name || '';
-  document.getElementById('prescAge').value = p.age || '';
-  document.getElementById('prescGuardianName').value = p.father || '';
-  document.getElementById('prescMotherName').value = p.mother || '';
-  document.getElementById('prescAddress').value = p.address || '';
-  document.getElementById('prescGender').value = p.gender || '';
-  document.getElementById('prescDisabilityRegNo').value = p.dssNo || '';
-
-  document.getElementById('prescCc').value = presc.cc || '';
-  document.getElementById('prescHpc').value = presc.hpc || '';
-  document.getElementById('prescPmh').value = presc.pmh || '';
-  document.getElementById('prescDh').value = presc.dh || '';
-  document.getElementById('prescOe').value = presc.oe || '';
-  document.getElementById('prescInvestigation').value = presc.investigation || '';
-  document.getElementById('prescAdvice').value = presc.advice || '';
-  document.getElementById('prescDiagnosis').value = presc.diagnosis || '';
-  document.getElementById('prescRx').innerHTML = presc.rx || '';
-  document.getElementById('prescSignatureDesignation').textContent = presc.prescribedByDesignation || PD_USER_ROLE || 'Consultant (Physiotherapist)';
-
-  PD_RX_MEDICINES = Array.isArray(presc.medicineItems) ? presc.medicineItems.slice() : [];
-  if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
-  var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = presc.medicineNote || '';
-  var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = (PD_RX_MEDICINES.length > 0 || (presc.medicineNote || '').trim());
-
-  document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
-    if (typeof autoGrow === 'function') autoGrow(ta);
-  });
-
-  setTimeout(function() {
-    if (typeof initRxMode === 'function') initRxMode();
-    if (typeof loadRxInputSections === 'function') loadRxInputSections();
-    if (typeof initPrescriptionBw === 'function') initPrescriptionBw();
-    setTimeout(function() {
-      var physioSaved = presc.physiotherapyItems || [];
-      var hmSaved = presc.homeManagement || [];
-      var medSaved = presc.medicineItems || [];
-      document.querySelectorAll('#physioCatAcc .phy-rx-check').forEach(function(cb) {
-        var key = cb.getAttribute('data-cat') + '||' + cb.value;
-        cb.checked = physioSaved.indexOf(key) !== -1;
-      });
-      document.querySelectorAll('#hmCatAcc .hm-rx-check').forEach(function(cb) {
-        var key = cb.getAttribute('data-cat') + '||' + cb.value;
-        cb.checked = hmSaved.indexOf(key) !== -1;
-      });
-      document.querySelectorAll('#rxCatAcc .med-rx-check').forEach(function(cb) {
-        var catName = cb.getAttribute('data-cat');
-        var medName = cb.value;
-        cb.checked = medSaved.some(function(m) {
-          return (m.category || '') === catName && (m.medicineName || '') === medName;
-        });
-      });
-      document.querySelectorAll('.rx-cat-acc .accordion-item').forEach(function(w) {
-        var badge = w.querySelector('.cat-count-badge');
-        if (badge) {
-          var checked = w.querySelectorAll('input[type=checkbox]:checked').length;
-          badge.innerText = checked;
-          badge.className = 'badge cat-count-badge ' + (checked > 0 ? 'bg-success' : 'bg-secondary');
-        }
-      });
-    }, 500);
-  }, 150);
-
+  initSloganForPrescription_(presc);
   showPdToast('📋 Followup প্রেসক্রিপশন লোড হয়েছে — এডিট করে সেভ করুন', 'info');
 }
 
@@ -6973,11 +6928,9 @@ function closePrescriptionForm() {
   modal.style.display = 'none';
   if (typeof pdResetFontControl_ === 'function') pdResetFontControl_('prescriptionModal');
 
-  // ===== NEW: Hide input popup =====
   var popup = document.getElementById('rxInputPopup');
   if (popup) popup.classList.remove('show');
 
-  // Re-enable save button
   var saveBtn = document.getElementById('prescSubmitBtn');
   if (saveBtn) {
     saveBtn.disabled = false;
@@ -6989,10 +6942,12 @@ function closePrescriptionForm() {
 
   document.getElementById('prescType').value = 'regular';
 
-  // ===== Cleanup Rx session =====
   PD_RX_MEDICINES = [];
   if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
   var fn = document.getElementById('rxFreeNote'); if (fn) fn.value = '';
+
+  PD_CURRENT_SLOGAN = '';
+  applySloganToPrescription('');
 }
 
   // ===== ম্যানুয়াল প্রেসক্রিপশন (Print Only) — কোনো ডেটা সেভ হবে না =====
@@ -7066,52 +7021,54 @@ function closePrescriptionForm() {
     }, 150);
 
     showPdToast('📄 ম্যানুয়াল মোড — কোনো ডেটা সেভ হবে না, শুধু প্রিন্ট করা যাবে', 'info');
+    initSloganForPrescription_(null);
   }
 
   function resetPrescriptionForm() {
-    if (!confirm('Reset all fields?')) return;
+  if (!confirm('Reset all fields?')) return;
 
-    document.querySelectorAll('#prescriptionModal input, #prescriptionModal select, #prescriptionModal textarea').forEach(function(el) {
-      if (el.type === 'radio' || el.type === 'checkbox') {
-        if (el.defaultChecked) el.checked = true;
-        else el.checked = false;
-      } else if (el.tagName === 'SELECT') {
-        el.selectedIndex = 0;
-      } else {
-        el.value = '';
-      }
-    });
+  document.querySelectorAll('#prescriptionModal input, #prescriptionModal select, #prescriptionModal textarea').forEach(function(el) {
+    if (el.type === 'radio' || el.type === 'checkbox') {
+      if (el.defaultChecked) el.checked = true;
+      else el.checked = false;
+    } else if (el.tagName === 'SELECT') {
+      el.selectedIndex = 0;
+    } else {
+      el.value = '';
+    }
+  });
 
-    document.getElementById('prescDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('prescDate').value = new Date().toISOString().split('T')[0];
 
-    var rxBox = document.getElementById('prescRx');
-    if (rxBox) rxBox.innerHTML = '';
+  var rxBox = document.getElementById('prescRx');
+  if (rxBox) rxBox.innerHTML = '';
 
-    // ===== Reset Rx input session =====
-    PD_RX_MEDICINES = [];
-    if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
+  PD_RX_MEDICINES = [];
+  if (typeof renderRxMedListInInput === 'function') renderRxMedListInInput();
 
-    document.querySelectorAll('.phy-rx-check, .hm-rx-check, .med-rx-check').forEach(function(cb) { cb.checked = false; });
-    document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
-      b.innerText = '0';
-      b.className = 'badge cat-count-badge bg-secondary';
-    });
+  document.querySelectorAll('.phy-rx-check, .hm-rx-check, .med-rx-check').forEach(function(cb) { cb.checked = false; });
+  document.querySelectorAll('.rx-cat-acc .cat-count-badge').forEach(function(b) {
+    b.innerText = '0';
+    b.className = 'badge cat-count-badge bg-secondary';
+  });
 
-    var phyChk = document.getElementById('physioSecCheck'); if (phyChk) phyChk.checked = true;
-    var hmChk = document.getElementById('hmSecCheck'); if (hmChk) hmChk.checked = true;
-    var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = false;
+  var phyChk = document.getElementById('physioSecCheck'); if (phyChk) phyChk.checked = true;
+  var hmChk = document.getElementById('hmSecCheck'); if (hmChk) hmChk.checked = true;
+  var rxChk = document.getElementById('rxSecCheck'); if (rxChk) rxChk.checked = false;
 
-    var regEl = document.getElementById('prescRegNo');
-    if (regEl) autoSizeRegInput(regEl);
+  var regEl = document.getElementById('prescRegNo');
+  if (regEl) autoSizeRegInput(regEl);
 
-    document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
-      if (typeof autoGrow === 'function') autoGrow(ta);
-    });
+  document.querySelectorAll('#prescriptionModal textarea').forEach(function(ta) {
+    if (typeof autoGrow === 'function') autoGrow(ta);
+  });
 
-    showPdToast('🔄 Form reset', 'info');
-  }
+  PD_CURRENT_SLOGAN = '';
+  applySloganToPrescription('');
+  setTimeout(loadActiveSloganForPrescription, 200);
 
-
+  showPdToast('🔄 Form reset', 'info');
+}
 
 
   // ================================================================
@@ -9983,6 +9940,8 @@ function viewFollowupPrescription(index) {
               });
             }
           }
+          // ✅ Slogan restore
+initSloganForPrescription_(presc);
         }, 500);
       }, 150);
 
@@ -10737,6 +10696,212 @@ function rxMngDeleteItem(type, catId, itemId) {
     .userDeleteItem(PD_USER_EMAIL, apiType, itemId);
 }
 
+// ================================================================
+// ===== PRESCRIPTION SLOGAN (Frontend) ===========================
+// ================================================================
+var PD_SLOGANS_LIST = [];
+var PD_CURRENT_SLOGAN = '';
+
+function openSloganManager() {
+  if (!PD_USER_EMAIL) { showPdToast('❌ লগইন করুন', 'error'); return; }
+  if (!PD_CAN_PRESCRIBE && !PD_IS_ADMIN) {
+    showPdToast('❌ অনুমতি নেই! শুধুমাত্র prescription writer-রা slogan manage করতে পারবেন।', 'error');
+    return;
+  }
+  var modal = document.getElementById('sloganManagerModal');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  document.getElementById('sloganNewInput').value = '';
+  var cc = document.getElementById('sloganCharCount');
+  if (cc) cc.textContent = '০ / ২০০';
+  loadPrescriptionSlogans();
+}
+
+function closeSloganManager() {
+  var modal = document.getElementById('sloganManagerModal');
+  if (modal) { modal.classList.remove('show'); modal.style.display = 'none'; }
+}
+
+function loadPrescriptionSlogans() {
+  var listEl = document.getElementById('sloganList');
+  if (listEl) listEl.innerHTML = '<div class="pd-empty"><div class="spinner"></div>লোড হচ্ছে...</div>';
+  google.script.run
+    .withSuccessHandler(function (result) {
+      if (!result || !result.success) {
+        if (listEl) listEl.innerHTML = '<div class="pd-empty" style="color:#EA4335;">❌ ' + esc_((result && result.error) || 'লোড ব্যর্থ') + '</div>';
+        return;
+      }
+      PD_SLOGANS_LIST = result.slogans || [];
+      renderSloganList();
+    })
+    .withFailureHandler(function (e) {
+      if (listEl) listEl.innerHTML = '<div class="pd-empty" style="color:#EA4335;">❌ Error: ' + esc_(e) + '</div>';
+    })
+    .getPrescriptionSlogans(PD_USER_EMAIL);
+}
+
+function renderSloganList() {
+  var listEl = document.getElementById('sloganList');
+  if (!listEl) return;
+  if (!PD_SLOGANS_LIST.length) {
+    listEl.innerHTML = '<div class="pd-empty"><i class="fas fa-inbox"></i><br>এখনো কোনো slogan যোগ করা হয়নি। উপরের ইনপুট দিয়ে যোগ করুন।</div>';
+    return;
+  }
+  var html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  PD_SLOGANS_LIST.forEach(function (s) {
+    var isActive = s.isActive;
+    var activeBadge = isActive
+      ? '<span style="background:#34A853;color:#fff;font-size:9.5px;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:700;">ACTIVE</span>'
+      : '';
+    html += '<div class="slogan-item' + (isActive ? ' active' : '') + '">';
+    html += '<div class="slogan-text">✦ ' + esc_(s.text) + activeBadge + '</div>';
+    html += '<div class="slogan-actions">';
+    if (!isActive) {
+      html += '<button type="button" class="btn-slogan-activate" onclick="setActiveSlogan(\'' + esc_(s.id) + '\')" title="Active সেট করুন"><i class="fas fa-check"></i> Active</button>';
+    }
+    html += '<button type="button" class="btn-slogan-edit" onclick="editSlogan(\'' + esc_(s.id) + '\')" title="Edit"><i class="fas fa-pen"></i> Edit</button>';
+    html += '<button type="button" class="btn-slogan-delete" onclick="deleteSlogan(\'' + esc_(s.id) + '\')" title="Delete"><i class="fas fa-trash"></i> Delete</button>';
+    html += '</div></div>';
+  });
+  html += '</div>';
+  listEl.innerHTML = html;
+}
+
+function addNewSlogan() {
+  var inp = document.getElementById('sloganNewInput');
+  var text = (inp.value || '').trim();
+  if (!text) { showPdToast('❌ Slogan লিখুন!', 'error'); inp.focus(); return; }
+  if (text.length > 200) { showPdToast('❌ ২০০ অক্ষরের বেশি নয়!', 'error'); return; }
+  google.script.run
+    .withSuccessHandler(function (result) {
+      if (result && result.success) {
+        inp.value = '';
+        var cc = document.getElementById('sloganCharCount');
+        if (cc) cc.textContent = '০ / ২০০';
+        showPdToast('✅ ' + (result.message || 'Slogan যোগ হয়েছে'), 'success');
+        loadPrescriptionSlogans();
+      } else {
+        showPdToast('❌ ' + ((result && result.error) || 'যোগ করা যায়নি'), 'error');
+      }
+    })
+    .withFailureHandler(function (e) { showPdToast('❌ Error: ' + e, 'error'); })
+    .addPrescriptionSlogan(PD_USER_EMAIL, text);
+}
+
+function editSlogan(sloganId) {
+  var s = PD_SLOGANS_LIST.find(function (x) { return x.id === sloganId; });
+  if (!s) return;
+  var newText = prompt('Slogan সম্পাদনা করুন:', s.text);
+  if (newText === null) return;
+  newText = newText.trim();
+  if (!newText || newText === s.text) return;
+  if (newText.length > 200) { showPdToast('❌ ২০০ অক্ষরের বেশি নয়!', 'error'); return; }
+  google.script.run
+    .withSuccessHandler(function (result) {
+      if (result && result.success) {
+        showPdToast('✅ ' + (result.message || 'আপডেট হয়েছে'), 'success');
+        loadPrescriptionSlogans();
+        // যদি active slogan-টা এইটাই হয় → display-ও আপডেট
+        if (s.isActive) { PD_CURRENT_SLOGAN = newText; applySloganToPrescription(newText); }
+      } else {
+        showPdToast('❌ ' + ((result && result.error) || 'ব্যর্থ'), 'error');
+      }
+    })
+    .withFailureHandler(function (e) { showPdToast('❌ Error: ' + e, 'error'); })
+    .updatePrescriptionSlogan(PD_USER_EMAIL, sloganId, newText);
+}
+
+function deleteSlogan(sloganId) {
+  var s = PD_SLOGANS_LIST.find(function (x) { return x.id === sloganId; });
+  if (!s) return;
+  if (!confirm('এই slogan টি মুছে ফেলতে চান?\n\n"' + s.text + '"')) return;
+  google.script.run
+    .withSuccessHandler(function (result) {
+      if (result && result.success) {
+        showPdToast('✅ ' + (result.message || 'মুছে ফেলা হয়েছে'), 'success');
+        if (s.isActive) { PD_CURRENT_SLOGAN = ''; applySloganToPrescription(''); }
+        loadPrescriptionSlogans();
+      } else {
+        showPdToast('❌ ' + ((result && result.error) || 'ব্যর্থ'), 'error');
+      }
+    })
+    .withFailureHandler(function (e) { showPdToast('❌ Error: ' + e, 'error'); })
+    .deletePrescriptionSlogan(PD_USER_EMAIL, sloganId);
+}
+
+function setActiveSlogan(sloganId) {
+  google.script.run
+    .withSuccessHandler(function (result) {
+      if (result && result.success) {
+        var s = PD_SLOGANS_LIST.find(function (x) { return x.id === sloganId; });
+        if (s) { PD_CURRENT_SLOGAN = s.text; applySloganToPrescription(s.text); }
+        showPdToast('✅ ' + (result.message || 'Active সেট হয়েছে'), 'success');
+        loadPrescriptionSlogans();
+      } else {
+        showPdToast('❌ ' + ((result && result.error) || 'ব্যর্থ'), 'error');
+      }
+    })
+    .withFailureHandler(function (e) { showPdToast('❌ Error: ' + e, 'error'); })
+    .setActivePrescriptionSlogan(PD_USER_EMAIL, sloganId);
+}
+
+function applySloganToPrescription(text) {
+  var display = document.getElementById('prescSloganDisplay');
+  var span = document.getElementById('prescSloganText');
+  if (!display || !span) return;
+  if (text && text.trim()) {
+    span.textContent = '✦ ' + text.trim() + ' ✦';
+    display.style.display = 'block';
+  } else {
+    span.textContent = '';
+    display.style.display = 'none';
+  }
+}
+
+function loadActiveSloganForPrescription() {
+  google.script.run
+    .withSuccessHandler(function (result) {
+      if (result && result.success && result.slogans) {
+        PD_SLOGANS_LIST = result.slogans;
+        var active = result.slogans.find(function (s) { return s.isActive; });
+        if (active) {
+          PD_CURRENT_SLOGAN = active.text;
+          applySloganToPrescription(active.text);
+        }
+      }
+    })
+    .withFailureHandler(function () {})
+    .getPrescriptionSlogans(PD_USER_EMAIL);
+}
+
+// Helper — existing/new prescription-এ slogan বসায়
+// presc = null/undefined → নতুন prescription → active slogan লোড
+// presc = object → বিদ্যমান prescription → সংরক্ষিত slogan ফিরিয়ে দেয়
+function initSloganForPrescription_(presc) {
+  var isExisting = presc && (
+    presc.prescribeDate || presc.cc || presc.diagnosis || presc.rx ||
+    (presc.medicineItems && presc.medicineItems.length) ||
+    (presc.physiotherapyItems && presc.physiotherapyItems.length) ||
+    (presc.homeManagement && presc.homeManagement.length) ||
+    presc.slogan
+  );
+  if (isExisting) {
+    PD_CURRENT_SLOGAN = presc.slogan || '';
+    applySloganToPrescription(presc.slogan || '');
+  } else {
+    PD_CURRENT_SLOGAN = '';
+    applySloganToPrescription('');
+    setTimeout(loadActiveSloganForPrescription, 250);
+  }
+}
+
+window.openSloganManager = openSloganManager;
+window.closeSloganManager = closeSloganManager;
+window.addNewSlogan = addNewSlogan;
+window.editSlogan = editSlogan;
+window.deleteSlogan = deleteSlogan;
+window.setActiveSlogan = setActiveSlogan;
+
 // Expose to window
 window.switchRxMode = switchRxMode;
 window.toggleRxInputSection = toggleRxInputSection;
@@ -10936,7 +11101,6 @@ function rxRemoveMedicine(med) {
   rxRebuildRxBox_();
 }
 
-window.switchRxMode = switchRxMode;
 window.rxInsertPhysioItem = rxInsertPhysioItem;
 window.rxRemovePhysioItem = rxRemovePhysioItem;
 window.rxInsertHmItem = rxInsertHmItem;
@@ -11180,6 +11344,48 @@ window.buildPdfFileName_ = buildPdfFileName_;
       </div>
     </div>
     <iframe id="formPdfPreviewFrame" src="" style="flex:1;width:100%;border:none;"></iframe>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- ===== SLOGAN MANAGER MODAL ===================================== -->
+<!-- ================================================================ -->
+<div class="pd-modal-overlay" id="sloganManagerModal">
+  <div class="pd-modal-box" style="max-width:600px;">
+    <span class="pd-modal-close" onclick="closeSloganManager()"><i class="fas fa-times"></i></span>
+    <h3><i class="fas fa-quote-left"></i> Slogan Manager</h3>
+    <div style="margin-top:14px;">
+      <div style="background:#f0f7ff;border-left:4px solid #1A73E8;padding:10px 14px;border-radius:6px;margin-bottom:14px;font-size:12.5px;color:#1a3c6e;line-height:1.55;">
+        <i class="fas fa-info-circle"></i> এখানে যোগ করা slogan গুলো prescription-এ দেখানো হবে। শুধুমাত্র যিনি prescription তৈরি করেন তিনিই এই slogans <strong>add / edit / delete</strong> করতে পারবেন।
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12.5px;font-weight:700;color:#5f6368;margin-bottom:6px;display:block;">
+          <i class="fas fa-plus-circle"></i> নতুন Slogan যোগ করুন
+        </label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="sloganNewInput" maxlength="200" placeholder="আপনার slogan লিখুন..."
+                 oninput="var e=document.getElementById('sloganCharCount'); if(e) e.textContent=this.value.length + ' / ২০০';"
+                 onkeydown="if(event.key==='Enter'){event.preventDefault();addNewSlogan();}"
+                 style="flex:1;min-width:180px;padding:9px 12px;border:1px solid #dadce0;border-radius:6px;font-size:14px;font-family:inherit;">
+          <button type="button" class="btn btn-success" onclick="addNewSlogan()" style="padding:9px 18px;white-space:nowrap;">
+            <i class="fas fa-plus"></i> যোগ করুন
+          </button>
+        </div>
+        <div style="font-size:11px;color:#9e9e9e;margin-top:5px;">
+          <span id="sloganCharCount">০ / ২০০</span> অক্ষর
+        </div>
+      </div>
+
+      <div style="border-top:1px solid #e8eaed;padding-top:14px;">
+        <div style="font-size:12.5px;font-weight:700;color:#5f6368;margin-bottom:10px;">
+          <i class="fas fa-list"></i> আপনার Slogan তালিকা
+        </div>
+        <div id="sloganList" style="max-height:50vh;overflow-y:auto;">
+          <div class="pd-empty">লোড হচ্ছে...</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
