@@ -4772,7 +4772,7 @@ function toggleSignatureType(type) {
           var centerDisplay = PD_USER_CENTER || 'নির্ধারিত নয়';
           document.getElementById('pdUserCenter').textContent = centerDisplay;
 
-          var fullCenterName = PD_USER_CENTER ? 'প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র, ' + PD_USER_CENTER : 'কেন্দ্র নির্ধারিত নয়';
+          var fullCenterName = PD_USER_CENTER ? ' ' + PD_USER_CENTER : 'কেন্দ্র নির্ধারিত নয়';
           document.getElementById('pdCenterName').textContent = fullCenterName;
 
           document.getElementById('regCenterNameDisplay').textContent = PD_USER_CENTER || 'Meherpur';
@@ -8880,7 +8880,7 @@ function initReceptionChat() {
 
 function startReceptionChatSession_() {
   if (!rcChatRoomId) return;
-  var displayName = rcChatRoomId.replace(/^প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র, /, '');
+  var displayName = rcChatRoomId.replace(/^ /, '');
   document.getElementById('rcChatTitle').textContent = '💬 ' + displayName + ' কেন্দ্র চ্যাট';
   rcChatKnownCount = 0;
   rcChatLastRenderedTs = 0;
