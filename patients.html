@@ -2949,7 +2949,7 @@
 
   <div class="pd-center-banner" id="pdCenterBanner">
     <i class="fas fa-building"></i>
-    <span class="cname" id="pdCenterName"> </span>
+    <span class="cname" id="pdCenterName">প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র, মেহেরপুর</span>
     <span class="ccount"><i class="fas fa-user"></i> <span id="pdCenterPatientCount">০</span> জন রোগী</span>
   </div>
 
@@ -4765,14 +4765,15 @@ function toggleSignatureType(type) {
     google.script.run
       .withSuccessHandler(function(user) {
         if (user && user.email) {
-          PD_USER_CENTER = user.center || '';
+          // 💡 DUPLICATE FIX: ডাটাবেজে বা ব্যাকএন্ডে যদি একাধিকবার prefix থাকে, তবে সব মুছে ফেলবে
+          PD_USER_CENTER = (user.center || '').replace(/প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র,\s*/g, '').trim();
           PD_IS_ADMIN = user.isAdmin || false;
           PD_USER_ROLE = user.designation || '';
 
           var centerDisplay = PD_USER_CENTER || 'নির্ধারিত নয়';
           document.getElementById('pdUserCenter').textContent = centerDisplay;
 
-          var fullCenterName = PD_USER_CENTER ? ' ' + PD_USER_CENTER : 'কেন্দ্র নির্ধারিত নয়';
+          var fullCenterName = PD_USER_CENTER ? 'প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র, ' + PD_USER_CENTER : 'কেন্দ্র নির্ধারিত নয়';
           document.getElementById('pdCenterName').textContent = fullCenterName;
 
           document.getElementById('regCenterNameDisplay').textContent = PD_USER_CENTER || 'Meherpur';
@@ -8880,7 +8881,7 @@ function initReceptionChat() {
 
 function startReceptionChatSession_() {
   if (!rcChatRoomId) return;
-  var displayName = rcChatRoomId.replace(/^ /, '');
+  var displayName = rcChatRoomId.replace(/^প্রতিবন্ধী সেবা ও সাহায্য কেন্দ্র, /, '');
   document.getElementById('rcChatTitle').textContent = '💬 ' + displayName + ' কেন্দ্র চ্যাট';
   rcChatKnownCount = 0;
   rcChatLastRenderedTs = 0;
